@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function PasswordChangedScreen({ navigation }) {
   return (
@@ -36,42 +37,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
-    width: width * 0.18,
-    height: width * 0.18,
-    marginBottom: height * 0.04,
+    width: horizontalScale(67.5),
+    height: verticalScale(67.5),
+    marginBottom: verticalScale(32.48),
   },
   title: {
-    fontSize: width * 0.06,
+    fontSize: moderateScale(22.5),
     fontWeight: '700',
     color: '#5B3926',
-    marginBottom: height * 0.01,
+    marginBottom: verticalScale(8.12),
     fontFamily: 'System',
     textAlign: 'center',
   },
   desc: {
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     color: '#888',
-    marginBottom: height * 0.03,
+    marginBottom: verticalScale(24.36),
     fontFamily: 'System',
     textAlign: 'center',
   },
   backButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginTop: height * 0.012,
-    marginBottom: height * 0.022,
+    marginTop: verticalScale(9.744),
+    marginBottom: verticalScale(17.864),
   },
   backButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
 });

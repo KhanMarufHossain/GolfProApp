@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={width * 0.18} height={width * 0.18} />
+  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Club Docket</Text>
         <Text style={styles.subtitle}>Welcome Back!</Text>
         <Text style={styles.desc}>To login, enter your email address</Text>
@@ -33,7 +34,7 @@ export default function LoginScreen({ navigation }) {
               secureTextEntry
             />
             <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={width * 0.055} color="#B7B7B7" />
+              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
             </TouchableOpacity>
           </View>
         </View>
@@ -95,51 +96,51 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: width * 0.18,
-    height: width * 0.18,
-    marginBottom: height * 0.02,
+    width: horizontalScale(67.5),
+    height: verticalScale(67.5),
+    marginBottom: verticalScale(16.24),
   },
   title: {
-    fontSize: width * 0.07,
+    fontSize: moderateScale(26.25),
     fontWeight: '600',
     color: '#5B3926',
-    marginBottom: height * 0.01,
+    marginBottom: verticalScale(8.12),
     fontFamily: 'System',
   },
   subtitle: {
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
     fontWeight: '500',
     color: '#222',
-    marginBottom: height * 0.005,
+    marginBottom: verticalScale(4.06),
     fontFamily: 'System',
   },
   desc: {
-    fontSize: width * 0.032,
+    fontSize: moderateScale(12),
     color: '#888',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     fontFamily: 'System',
   },
   inputGroup: {
     width: '100%',
-    marginBottom: height * 0.015,
+    marginBottom: verticalScale(12.18),
   },
   inputLabel: {
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     color: '#5B3926',
     marginBottom: 4,
     fontWeight: '500',
   },
   input: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    paddingHorizontal: width * 0.04,
-    paddingVertical: height * 0.018,
-    fontSize: width * 0.045,
+    borderRadius: moderateScale(8),
+    paddingHorizontal: horizontalScale(15),
+    paddingVertical: verticalScale(14.616),
+    fontSize: moderateScale(16.875),
     color: '#222',
     borderWidth: 1,
     borderColor: '#EFE7E1',
@@ -149,36 +150,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   eyeButton: {
-    padding: 8,
-    marginLeft: -36,
+    padding: moderateScale(8),
+    marginLeft: horizontalScale(-36),
     zIndex: 1,
   },
   forgotLink: {
     alignSelf: 'flex-end',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
   },
   forgotText: {
     color: '#8B5C2A',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     fontWeight: '500',
   },
   loginButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
   },
   loginButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
   orRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     width: '100%',
   },
   orLine: {
@@ -187,41 +188,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFE7E1',
   },
   orText: {
-    marginHorizontal: 10,
+    marginHorizontal: horizontalScale(10),
     color: '#B7B7B7',
     fontWeight: '500',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
   },
   socialRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
   },
   socialButton: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: moderateScale(8),
     borderWidth: 1,
     borderColor: '#EFE7E1',
-    padding: width * 0.025,
-    marginHorizontal: 8,
+    padding: moderateScale(9.375),
+    marginHorizontal: horizontalScale(8),
   },
   socialIcon: {
-    width: width * 0.08,
-    height: width * 0.08,
+    width: horizontalScale(30),
+    height: verticalScale(30),
   },
   signupRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: height * 0.01,
+    marginTop: verticalScale(8.12),
   },
   signupText: {
     color: '#888',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
   },
   signupLink: {
     color: '#8B5C2A',
     fontWeight: '600',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
   },
 });

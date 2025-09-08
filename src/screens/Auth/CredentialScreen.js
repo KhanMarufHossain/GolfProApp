@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function CredentialScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={width * 0.25} height={width * 0.25} />
+  <ClubDocket width={horizontalScale(93.75)} height={verticalScale(93.75)} />
         <Text style={styles.title}>Club Docket</Text>
         <View style={styles.buttonRow}>
           <TouchableOpacity
@@ -39,18 +40,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
   },
   logo: {
-    width: width * 0.25,
-    height: width * 0.25,
-    marginBottom: height * 0.03,
+    width: horizontalScale(93.75),
+    height: verticalScale(93.75),
+    marginBottom: verticalScale(24.36),
   },
   title: {
-    fontSize: width * 0.07,
+    fontSize: moderateScale(26.25),
     fontWeight: 'bold',
     color: '#5B3926',
-    marginBottom: height * 0.06,
+    marginBottom: verticalScale(48.72),
     fontFamily: 'System',
   },
   buttonRow: {
@@ -61,9 +62,9 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     backgroundColor: '#EFE7E1',
-    paddingVertical: height * 0.018,
-    borderRadius: 8,
-    marginHorizontal: 6,
+    paddingVertical: verticalScale(14.616),
+    borderRadius: moderateScale(8),
+    marginHorizontal: horizontalScale(6),
     alignItems: 'center',
   },
   loginButton: {
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#8B5C2A',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
   loginButtonText: {
     color: '#fff',

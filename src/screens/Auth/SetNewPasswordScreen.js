@@ -1,16 +1,17 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function SetNewPasswordScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={width * 0.18} height={width * 0.18} />
+  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Set new password</Text>
         <Text style={styles.desc}>
@@ -27,7 +28,7 @@ export default function SetNewPasswordScreen({ navigation }) {
               secureTextEntry
             />
             <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={width * 0.055} color="#B7B7B7" />
+              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
             </TouchableOpacity>
           </View>
         </View>
@@ -41,7 +42,7 @@ export default function SetNewPasswordScreen({ navigation }) {
               secureTextEntry
             />
             <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={width * 0.055} color="#B7B7B7" />
+              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
             </TouchableOpacity>
           </View>
         </View>
@@ -55,7 +56,7 @@ export default function SetNewPasswordScreen({ navigation }) {
               secureTextEntry
             />
             <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={width * 0.055} color="#B7B7B7" />
+              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
             </TouchableOpacity>
           </View>
         </View>
@@ -80,50 +81,50 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
   },
   logo: {
-    width: width * 0.18,
-    height: width * 0.18,
-    marginBottom: height * 0.02,
+    width: horizontalScale(67.5),
+    height: verticalScale(67.5),
+    marginBottom: verticalScale(16.24),
   },
   title: {
-    fontSize: width * 0.07,
+    fontSize: moderateScale(26.25),
     fontWeight: '600',
     color: '#5B3926',
-    marginBottom: height * 0.01,
+    marginBottom: verticalScale(8.12),
     fontFamily: 'System',
   },
   subtitle: {
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
     fontWeight: '500',
     color: '#222',
-    marginBottom: height * 0.005,
+    marginBottom: verticalScale(4.06),
     fontFamily: 'System',
   },
   desc: {
-    fontSize: width * 0.032,
+    fontSize: moderateScale(12),
     color: '#888',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     fontFamily: 'System',
     textAlign: 'center',
   },
   inputGroup: {
     width: '100%',
-    marginBottom: height * 0.015,
+    marginBottom: verticalScale(12.18),
   },
   inputLabel: {
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     color: '#5B3926',
     marginBottom: 4,
     fontWeight: '500',
   },
   input: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    paddingHorizontal: width * 0.04,
-    paddingVertical: height * 0.018,
-    fontSize: width * 0.045,
+    borderRadius: moderateScale(8),
+    paddingHorizontal: horizontalScale(15),
+    paddingVertical: verticalScale(14.616),
+    fontSize: moderateScale(16.875),
     color: '#222',
     borderWidth: 1,
     borderColor: '#EFE7E1',
@@ -133,22 +134,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   eyeButton: {
-    padding: 8,
-    marginLeft: -36,
+    padding: moderateScale(8),
+    marginLeft: horizontalScale(-36),
     zIndex: 1,
   },
   continueButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginTop: height * 0.012,
-    marginBottom: height * 0.022,
+    marginTop: verticalScale(9.744),
+    marginBottom: verticalScale(17.864),
   },
   continueButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
 });

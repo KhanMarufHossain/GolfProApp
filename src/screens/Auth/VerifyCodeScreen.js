@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function VerifyCodeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={width * 0.18} height={width * 0.18} />
+  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Verify Code</Text>
         <Text style={styles.desc}>
@@ -48,71 +49,71 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
   },
   logo: {
-    width: width * 0.18,
-    height: width * 0.18,
-    marginBottom: height * 0.02,
+    width: horizontalScale(67.5),
+    height: verticalScale(67.5),
+    marginBottom: verticalScale(16.24),
   },
   title: {
-    fontSize: width * 0.07,
+    fontSize: moderateScale(26.25),
     fontWeight: '600',
     color: '#5B3926',
-    marginBottom: height * 0.01,
+    marginBottom: verticalScale(8.12),
     fontFamily: 'System',
   },
   subtitle: {
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
     fontWeight: '500',
     color: '#222',
-    marginBottom: height * 0.005,
+    marginBottom: verticalScale(4.06),
     fontFamily: 'System',
   },
   desc: {
-    fontSize: width * 0.032,
+    fontSize: moderateScale(12),
     color: '#888',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     textAlign: 'center',
     fontFamily: 'System',
   },
   codeRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     width: '100%',
   },
   codeInput: {
-    width: width * 0.12,
-    height: width * 0.12,
-    borderRadius: 8,
+    width: horizontalScale(45),
+    height: verticalScale(45),
+    borderRadius: moderateScale(8),
     borderWidth: 1,
     borderColor: '#EFE7E1',
     backgroundColor: '#F5F5F5',
     textAlign: 'center',
-    fontSize: width * 0.06,
+    fontSize: moderateScale(22.5),
     color: '#222',
-    marginHorizontal: width * 0.015,
+    marginHorizontal: horizontalScale(5.625),
   },
   nextButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginBottom: height * 0.012,
+    marginBottom: verticalScale(9.744),
   },
   nextButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
   resendLink: {
-    marginBottom: height * 0.012,
+    marginBottom: verticalScale(9.744),
   },
   resendText: {
     color: '#8B5C2A',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     textAlign: 'center',
     textDecorationLine: 'underline',
   },
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   },
   backToLoginText: {
     color: '#8B5C2A',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     fontWeight: '500',
   },
 });

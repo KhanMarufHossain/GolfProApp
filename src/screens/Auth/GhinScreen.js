@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function GhinScreen({ navigation }) {
   return (
@@ -63,60 +64,60 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
   },
   usgaLogo: {
-    width: width * 0.35,
-    height: width * 0.16,
-    marginBottom: height * 0.03,
+    width: horizontalScale(131.25),
+    height: verticalScale(60),
+    marginBottom: verticalScale(24.36),
   },
   ghinTitle: {
-    fontSize: width * 0.038,
+    fontSize: moderateScale(14.25),
     color: '#5B3926',
     textAlign: 'center',
-    marginBottom: height * 0.03,
+    marginBottom: verticalScale(24.36),
     fontWeight: '500',
   },
   inputGroup: {
     width: '100%',
-    marginBottom: height * 0.015,
+    marginBottom: verticalScale(12.18),
   },
   inputLabel: {
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     color: '#5B3926',
     marginBottom: 4,
     fontWeight: '500',
   },
   input: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    paddingHorizontal: width * 0.04,
-    paddingVertical: height * 0.018,
-    fontSize: width * 0.045,
+    borderRadius: moderateScale(8),
+    paddingHorizontal: horizontalScale(15),
+    paddingVertical: verticalScale(14.616),
+    fontSize: moderateScale(16.875),
     color: '#222',
     borderWidth: 1,
     borderColor: '#EFE7E1',
   },
   loginButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginTop: height * 0.012,
-    marginBottom: height * 0.012,
+    marginTop: verticalScale(9.744),
+    marginBottom: verticalScale(9.744),
   },
   loginButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
   backToMain: {
-    marginBottom: height * 0.012,
+    marginBottom: verticalScale(9.744),
   },
   backToMainText: {
     color: '#8B5C2A',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     fontWeight: '500',
   },
   forgotLink: {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     color: '#B7B7B7',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     textDecorationLine: 'underline',
   },
 });

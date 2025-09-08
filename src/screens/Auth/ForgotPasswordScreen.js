@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const { width, height } = Dimensions.get('window');
+
 
 export default function ForgotPasswordScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={width * 0.18} height={width * 0.18} />
+  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Forgot Password</Text>
         <Text style={styles.desc}>Enter your email to reset password</Text>
@@ -50,74 +51,74 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: width * 0.08,
+    paddingHorizontal: horizontalScale(30),
   },
   logo: {
-    width: width * 0.18,
-    height: width * 0.18,
-    marginBottom: height * 0.02,
+    width: horizontalScale(67.5),
+    height: verticalScale(67.5),
+    marginBottom: verticalScale(16.24),
   },
   title: {
-    fontSize: width * 0.07,
+    fontSize: moderateScale(26.25),
     fontWeight: '600',
     color: '#5B3926',
-    marginBottom: height * 0.01,
+    marginBottom: verticalScale(8.12),
     fontFamily: 'System',
   },
   subtitle: {
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
     fontWeight: '500',
     color: '#222',
-    marginBottom: height * 0.005,
+    marginBottom: verticalScale(4.06),
     fontFamily: 'System',
   },
   desc: {
-    fontSize: width * 0.032,
+    fontSize: moderateScale(12),
     color: '#888',
-    marginBottom: height * 0.02,
+    marginBottom: verticalScale(16.24),
     fontFamily: 'System',
     textAlign: 'center',
   },
   inputGroup: {
     width: '100%',
-    marginBottom: height * 0.015,
+    marginBottom: verticalScale(12.18),
   },
   inputLabel: {
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     color: '#5B3926',
     marginBottom: 4,
     fontWeight: '500',
   },
   input: {
     backgroundColor: '#F5F5F5',
-    borderRadius: 8,
-    paddingHorizontal: width * 0.04,
-    paddingVertical: height * 0.018,
-    fontSize: width * 0.045,
+    borderRadius: moderateScale(8),
+    paddingHorizontal: horizontalScale(15),
+    paddingVertical: verticalScale(14.616),
+    fontSize: moderateScale(16.875),
     color: '#222',
     borderWidth: 1,
     borderColor: '#EFE7E1',
   },
   nextButton: {
     backgroundColor: '#8B5C2A',
-    borderRadius: 8,
-    paddingVertical: height * 0.018,
+    borderRadius: moderateScale(8),
+    paddingVertical: verticalScale(14.616),
     alignItems: 'center',
     width: '100%',
-    marginTop: height * 0.012,
-    marginBottom: height * 0.022,
+    marginTop: verticalScale(9.744),
+    marginBottom: verticalScale(17.864),
   },
   nextButtonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: width * 0.045,
+    fontSize: moderateScale(16.875),
   },
   backToLogin: {
     marginTop: 2,
   },
   backToLoginText: {
     color: '#8B5C2A',
-    fontSize: width * 0.035,
+    fontSize: moderateScale(13.125),
     fontWeight: '500',
   },
 });
