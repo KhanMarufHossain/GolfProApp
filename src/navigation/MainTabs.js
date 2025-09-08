@@ -9,10 +9,13 @@ import PlayIcon from '../../assets/play.svg';
 import CalculatorIcon from '../../assets/calculator.svg';
 import AccountIcon from '../../assets/account.svg';
 import { moderateScale } from '../utils/dimensions';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -33,8 +36,16 @@ export default function MainTabs() {
         tabBarActiveTintColor: '#8B5C2A',
         tabBarInactiveTintColor: '#B7B7B7',
         tabBarStyle: {
-          height: moderateScale(60),
-          paddingBottom: moderateScale(8),
+          height: moderateScale(60) + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom - moderateScale(5) : moderateScale(8),
+          paddingTop: moderateScale(8),
+          borderTopWidth: 1,
+          borderTopColor: '#EFE7E1',
+          backgroundColor: '#fff',
+        },
+        tabBarLabelStyle: {
+          fontSize: moderateScale(12),
+          fontWeight: '600',
         },
       })}
     >
