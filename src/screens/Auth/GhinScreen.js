@@ -34,7 +34,7 @@ export default function GhinScreen({ navigation }) {
         </View>
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={() => navigation.navigate('Credential')}
+          onPress={() => navigation.navigate('ChooseRole')}
         >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>

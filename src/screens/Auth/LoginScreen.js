@@ -68,7 +68,7 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.socialButton}
-            onPress={() => navigation.navigate('ChooseRole')}
+            onPress={() => navigation.navigate('Ghin')}
           >
             <Image
               source={require('../../../assets/USGA_Logo.png')}
