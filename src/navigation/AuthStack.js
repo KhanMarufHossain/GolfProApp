@@ -12,6 +12,7 @@ import SetNewPasswordScreen from '../screens/Auth/SetNewPasswordScreen';
 import VerifySuccessScreen from '../screens/Auth/VerifySuccessScreen';
 import PasswordChangedScreen from '../screens/Auth/PasswordChangedScreen';
 import ChooseRoleScreen from '../screens/Auth/ChooseRoleScreen';
+import MainTabs from './MainTabs';
 
 const Stack = createStackNavigator();
 
@@ -20,7 +21,7 @@ export default function AuthStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Credential" component={CredentialScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-  <Stack.Screen name="ChooseRole" component={ChooseRoleScreen} />
+      <Stack.Screen name="ChooseRole" component={ChooseRoleScreen} />
       <Stack.Screen name="Ghin" component={GhinScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -28,6 +29,7 @@ export default function AuthStack() {
       <Stack.Screen name="SetNewPassword" component={SetNewPasswordScreen} />
       <Stack.Screen name="VerifySuccess" component={VerifySuccessScreen} />
       <Stack.Screen name="PasswordChanged" component={PasswordChangedScreen} />
+      <Stack.Screen name="MainTabs" component={MainTabs} />
     </Stack.Navigator>
   );
 }

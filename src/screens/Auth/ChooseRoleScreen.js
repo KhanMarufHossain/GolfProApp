@@ -13,10 +13,11 @@ export default function ChooseRoleScreen({ navigation }) {
 
   const onSelect = (r) => {
     setRole(r);
-    // small delay for visual feedback then navigate
     setTimeout(() => {
-      // replace with the next screen in your flow
-      navigation.navigate('Ghin');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
     }, 220);
   };
 

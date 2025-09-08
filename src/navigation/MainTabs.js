@@ -1,0 +1,47 @@
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import CommunityScreen from '../screens/Main/CommunityScreen';
+import PlayScreen from '../screens/Main/PlayScreen';
+import CalculatorScreen from '../screens/Main/CalculatorScreen';
+import AccountScreen from '../screens/Main/AccountScreen';
+import CommunityIcon from '../../assets/community.svg';
+import PlayIcon from '../../assets/play.svg';
+import CalculatorIcon from '../../assets/calculator.svg';
+import AccountIcon from '../../assets/account.svg';
+import { moderateScale } from '../utils/dimensions';
+
+const Tab = createBottomTabNavigator();
+
+export default function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarShowLabel: true,
+        tabBarIcon: ({ focused, color, size }) => {
+          size = moderateScale(24);
+          if (route.name === 'Community') {
+            return <CommunityIcon width={size} height={size} fill={color} />;
+          } else if (route.name === 'Play') {
+            return <PlayIcon width={size} height={size} fill={color} />;
+          } else if (route.name === 'HCP Calculator') {
+            return <CalculatorIcon width={size} height={size} fill={color} />;
+          } else if (route.name === 'Account') {
+            return <AccountIcon width={size} height={size} fill={color} />;
+          }
+        },
+        tabBarActiveTintColor: '#8B5C2A',
+        tabBarInactiveTintColor: '#B7B7B7',
+        tabBarStyle: {
+          height: moderateScale(60),
+          paddingBottom: moderateScale(8),
+        },
+      })}
+    >
+      <Tab.Screen name="Community" component={CommunityScreen} />
+      <Tab.Screen name="Play" component={PlayScreen} />
+      <Tab.Screen name="HCP Calculator" component={CalculatorScreen} />
+      <Tab.Screen name="Account" component={AccountScreen} />
+    </Tab.Navigator>
+  );
+}
