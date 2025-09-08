@@ -41,7 +41,7 @@ export default function MainTabs() {
           paddingTop: moderateScale(8),
           borderTopWidth: 1,
           borderTopColor: '#EFE7E1',
-          backgroundColor: '#fff',
+          backgroundColor: '#F5EDE8',
         },
         tabBarLabelStyle: {
           fontSize: moderateScale(12),
