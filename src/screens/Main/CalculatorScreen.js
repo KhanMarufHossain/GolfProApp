@@ -11,7 +11,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
-import api from '../../services/api';
+import coursesService from '../../services/coursesService';
+import handicapService from '../../services/handicapService';
 
 // Assumptions:
 // - GET /courses returns [{ id, name, par, courseRating, slopeRating }]
@@ -40,7 +41,7 @@ export default function CalculatorScreen() {
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const data = await api.get('/courses');
+      const data = await coursesService.list();
       if (Array.isArray(data)) setCourses(data);
     } catch (e) {
       console.warn('Failed to load courses', e);
@@ -77,7 +78,7 @@ export default function CalculatorScreen() {
 
     setCalculating(true);
     try {
-      const res = await api.post('/handicap/calculate', payload);
+      const res = await handicapService.calculate(payload);
       setResult(res);
       // add to local history
       setHistory((h) => [ { id: Date.now(), payload, result: res }, ...h ]);

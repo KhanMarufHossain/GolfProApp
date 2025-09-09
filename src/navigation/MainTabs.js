@@ -29,7 +29,7 @@ export default function MainTabs() {
             return <PlayIcon width={size} height={size} fill={color} />;
           } else if (route.name === 'HCP Calculator') {
             return <CalculatorIcon width={size} height={size} fill={color} />;
-          } else if (route.name === 'Account') {
+          } else if (route.name === 'Profile') {
             return <AccountIcon width={size} height={size} fill={color} />;
           }
         },
@@ -52,7 +52,7 @@ export default function MainTabs() {
       <Tab.Screen name="Community" component={CommunityScreen} />
       <Tab.Screen name="Play" component={PlayStack} />
       <Tab.Screen name="HCP Calculator" component={CalculatorScreen} />
-      <Tab.Screen name="Account" component={AccountScreen} />
+  <Tab.Screen name="Profile" component={AccountScreen} />
     </Tab.Navigator>
   );
 }

@@ -10,7 +10,25 @@ export default function VerifyCodeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            marginBottom: verticalScale(12),
+            width: horizontalScale(36),
+            height: horizontalScale(36),
+            borderRadius: horizontalScale(18),
+            backgroundColor: '#F3E3D6',
+            justifyContent: 'center',
+            alignItems: 'center',
+            shadowColor: '#000',
+            shadowOpacity: 0.06,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
+          <Text style={{ fontSize: moderateScale(26), fontWeight: '900', color: '#8B5C2A', lineHeight: moderateScale(28) }}>{'<'}</Text>
+        </TouchableOpacity>
+        <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Verify Code</Text>
         <Text style={styles.desc}>
@@ -33,7 +51,7 @@ export default function VerifyCodeScreen({ navigation }) {
           <Text style={styles.resendText}>Don't receive OTP? Resend again</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.backToLogin} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.backToLoginText}>← Back to Login</Text>
+          <Text style={styles.backToLoginText}>{'<'} Back to Login</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

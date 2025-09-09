@@ -47,9 +47,9 @@ export default function CourseScreen({ navigation, route }) {
 
   // Get device width and status bar height for full-bleed hero
   const { width } = Dimensions.get("window");
-  const statusBarHeight =
-    Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
+  const statusBarHeight = Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0;
   const HERO_HEIGHT = verticalScale(260) + statusBarHeight;
+  const MASK_HEIGHT = verticalScale(40);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -65,7 +65,7 @@ export default function CourseScreen({ navigation, route }) {
           style={styles.backBtnAbs}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backTxt}>{"←"}</Text>
+          <Text style={styles.backTxt}>{'<'}</Text>
         </TouchableOpacity>
         {isPublic && (
           <View style={styles.publicBadgeAbs}>
@@ -95,18 +95,16 @@ export default function CourseScreen({ navigation, route }) {
         <View style={[styles.heroBottomMask, { width }]} />
       </View>
 
-      {/* Main content below hero */}
+      {/* Main content below hero - overlap the hero with rounded top */}
       <SafeAreaView style={styles.safe}>
-        <View
-          style={[
-            styles.container,
-            { marginTop: HERO_HEIGHT - verticalScale(32) },
-          ]}
-        >
+        <View style={[styles.contentCard, { marginTop: HERO_HEIGHT - MASK_HEIGHT }]}> 
           {/* DETAIL HEADER: location, name, rank */}
           <View style={styles.headerRow}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.locationLabel}>📍 Location</Text>
+              <View style={styles.locationRow}>
+                <Image source={require('../../../assets/location.png')} style={styles.locationIcon} />
+                <Text style={styles.locationLabel}>Palm Hill Golf Club</Text>
+              </View>
               <Text style={styles.courseName}>{name}</Text>
             </View>
             <View style={styles.rankWrap}>
@@ -114,7 +112,7 @@ export default function CourseScreen({ navigation, route }) {
               <Text style={styles.rankSub}>Rank by World Record</Text>
             </View>
           </View>
-          {/* STATS ROW */}
+
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={styles.statLabel}>Length</Text>
@@ -131,27 +129,32 @@ export default function CourseScreen({ navigation, route }) {
               <Text style={styles.statValue}>{holes} Hole</Text>
             </View>
           </View>
+
           {/* ACTIONS */}
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={styles.smallAction}
-              onPress={() => navigation.navigate("CoursePreview", { course })}
+              onPress={() => navigation.navigate('CoursePreview', { course })}
             >
-              <Text style={styles.smallActionTxt}>🏁 Course Preview</Text>
+              <Image source={require('../../../assets/coursepreview.png')} style={styles.actionIcon} />
+              <Text style={styles.smallActionTxt}>Course Preview</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.smallAction}
-              onPress={() => navigation.navigate("AddPlayer", { course })}
+              onPress={() => navigation.navigate('AddPlayer', { course })}
             >
-              <Text style={styles.smallActionTxt}>➕ Add Player</Text>
+              <Image source={require('../../../assets/addplayer.png')} style={styles.actionIcon} />
+              <Text style={styles.smallActionTxt}>Add Player</Text>
             </TouchableOpacity>
           </View>
+
           <TouchableOpacity
             style={styles.startBtn}
             onPress={() => {
               /* TODO: start round flow */
             }}
           >
+            <Image source={require('../../../assets/startround.png')} style={styles.startIcon} />
             <Text style={styles.startTxt}>Start Round</Text>
           </TouchableOpacity>
         </View>
@@ -163,6 +166,15 @@ export default function CourseScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: "#fff" },
   container: { flex: 1, paddingHorizontal: horizontalScale(20), paddingTop: 0 },
+  contentCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: moderateScale(24),
+    borderTopRightRadius: moderateScale(24),
+    paddingHorizontal: horizontalScale(20),
+    paddingTop: verticalScale(18),
+    zIndex: 5,
+  },
   heroAbsoluteWrap: {
     position: "absolute",
     top: 0,
@@ -178,45 +190,51 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   heroBottomMask: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: -1,
-    height: verticalScale(32),
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopLeftRadius: moderateScale(24),
     borderTopRightRadius: moderateScale(24),
     zIndex: 20,
   },
   // overlays for absolute hero
   backBtnAbs: {
-    position: "absolute",
+    position: 'absolute',
     left: horizontalScale(12),
-    top: verticalScale(36),
-    backgroundColor: "rgba(255,255,255,0.9)",
-    padding: moderateScale(8),
-    borderRadius: moderateScale(20),
+    top: verticalScale(28),
+    width: horizontalScale(36),
+    height: horizontalScale(36),
+    borderRadius: horizontalScale(18),
+    backgroundColor: '#F3E3D6',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 30,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   publicBadgeAbs: {
-    position: "absolute",
+    position: 'absolute',
     left: horizontalScale(12),
-    bottom: verticalScale(24),
-    backgroundColor: "#fff",
+    bottom: verticalScale(20),
+    backgroundColor: '#fff',
     paddingHorizontal: horizontalScale(10),
     paddingVertical: verticalScale(6),
     borderRadius: moderateScale(12),
     zIndex: 30,
   },
   avatarRowAbs: {
-    position: "absolute",
+    position: 'absolute',
     right: horizontalScale(12),
-    top: verticalScale(36),
-    flexDirection: "row",
-    alignItems: "center",
+    top: verticalScale(28),
+    flexDirection: 'row',
+    alignItems: 'center',
     zIndex: 30,
   },
-  backTxt: { fontSize: moderateScale(18) },
+  backTxt: { fontSize: moderateScale(26), fontWeight: '900', color: '#8B5C2A', lineHeight: moderateScale(28) },
   publicTxt: { color: "#2B2540", fontWeight: "600" },
   smallAvatar: {
     width: moderateScale(36),
@@ -240,11 +258,13 @@ const styles = StyleSheet.create({
   avatarInitial: { color: "#fff", fontWeight: "700" },
 
   headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: verticalScale(14),
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: verticalScale(8),
   },
-  locationLabel: { color: "#888", marginBottom: verticalScale(6) },
+  locationRow: { flexDirection: 'row', alignItems: 'center', marginBottom: verticalScale(6) },
+  locationIcon: { width: moderateScale(16), height: moderateScale(16), marginRight: horizontalScale(6), tintColor: '#888' },
+  locationLabel: { color: '#888' },
   courseName: { fontSize: moderateScale(28), fontWeight: "800", color: "#111" },
   rankWrap: { alignItems: "center", marginLeft: horizontalScale(12) },
   rankNum: { fontSize: moderateScale(28), fontWeight: "800", color: "#B5602E" },
@@ -272,6 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: horizontalScale(10),
   },
+  actionIcon: { width: moderateScale(18), height: moderateScale(18), marginBottom: verticalScale(6), tintColor: '#8B5C2A' },
   smallActionTxt: { color: "#8B5C2A", fontWeight: "700" },
 
   startBtn: {
@@ -281,5 +302,6 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
     alignItems: "center",
   },
-  startTxt: { color: "#fff", fontWeight: "700" },
+  startIcon: { width: moderateScale(18), height: moderateScale(18), marginBottom: verticalScale(6), tintColor: '#fff' },
+  startTxt: { color: '#fff', fontWeight: '700' },
 });

@@ -9,6 +9,24 @@ export default function PasswordChangedScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Login')}
+          style={{
+            marginBottom: verticalScale(12),
+            width: horizontalScale(36),
+            height: horizontalScale(36),
+            borderRadius: horizontalScale(18),
+            backgroundColor: '#F3E3D6',
+            justifyContent: 'center',
+            alignItems: 'center',
+            shadowColor: '#000',
+            shadowOpacity: 0.06,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
+          <Text style={{ fontSize: moderateScale(26), fontWeight: '900', color: '#8B5C2A', lineHeight: moderateScale(28) }}>{'<'}</Text>
+        </TouchableOpacity>
         <Image
           source={require('../../../assets/correct.png')}
           style={styles.icon}
@@ -18,12 +36,6 @@ export default function PasswordChangedScreen({ navigation }) {
         <Text style={styles.desc}>
           Return to the login page to enter your account with your new password!
         </Text>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.backButtonText}>← Back To Login</Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
