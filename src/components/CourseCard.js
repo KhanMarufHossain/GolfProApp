@@ -2,15 +2,43 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../utils/dimensions';
 
+/*
+  CourseCard expects a backend-ready `course` object with the shape:
+  {
+    id: string|number,
+    title: string,
+    image: { uri: string } | number (require(...)),
+    holes: number,
+    distance: string,
+    location: string,
+  }
+
+  Fields are optional; sensible defaults are used when missing.
+*/
 export default function CourseCard({ onPress, course = {} }) {
-  const imageSource = course.image ? course.image : require('../../assets/icon.png');
+  const {
+    image = require('../../assets/golfField.png'),
+    // support either `title` or `name` depending on backend
+    title = course.name || 'Untitled Course',
+    // support different backend keys for holes
+    holes = course.holes || course.holesCount || 9,
+    // distance may come as a string from backend (e.g. '1.4 miles')
+    distance = course.distance || course.distanceText || '—',
+    location = course.location || course.clubName || 'Unknown',
+  } = course;
+
+  // image can be a remote uri object { uri } or a local require number
+  const imageSource = image;
+
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.85} onPress={onPress}>
-      <Image source={imageSource} style={styles.image} resizeMode="cover" />
+      <View style={styles.imageWrap}>
+        <Image source={imageSource} style={styles.image} resizeMode="cover" />
+      </View>
       <View style={styles.body}>
-        <Text style={styles.meta}>9 Holes · 1.4 miles</Text>
-        <Text style={styles.title}>Course name</Text>
-        <Text style={styles.loc}>Location</Text>
+        <Text style={styles.meta}>{holes} Holes · {distance}</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.loc}>{location}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -21,16 +49,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: moderateScale(12),
     overflow: 'hidden',
-    marginBottom: verticalScale(16.24),
+  marginBottom: verticalScale(18),
     shadowColor: '#000',
     shadowOpacity: 0.03,
     shadowRadius: moderateScale(6),
     elevation: 2,
   },
-  image: {
+  imageWrap: {
     width: '100%',
     height: verticalScale(140),
     backgroundColor: '#eee',
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderTopLeftRadius: moderateScale(12),
+    borderTopRightRadius: moderateScale(12),
   },
   body: {
     padding: horizontalScale(12),
@@ -44,6 +79,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
     fontWeight: '600',
     color: '#222',
+    marginTop: verticalScale(2),
   },
   loc: {
     color: '#888',

@@ -16,5 +16,5 @@ export default function CoursePreviewScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  field: { width: '100%', height: verticalScale(600) },
+  field: { width: '100%', height: verticalScale(600) }, // Already responsive; adjust if needed
 });

@@ -5,6 +5,10 @@ import CourseScreen from './CourseScreen';
 import AddPlayerScreen from './AddPlayerScreen';
 import CoursePreviewScreen from './CoursePreviewScreen';
 import MapScreen from './MapScreen';
+import NotificationsScreen from './NotificationsScreen';
+import SettingsScreen from './SettingsScreen';
+import LeaderboardScreen from './LeaderboardScreen';
+import TrophyRoomScreen from './TrophyRoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +20,10 @@ export default function PlayStack() {
       <Stack.Screen name="AddPlayer" component={AddPlayerScreen} />
       <Stack.Screen name="CoursePreview" component={CoursePreviewScreen} />
       <Stack.Screen name="Map" component={MapScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Stack.Screen name="TrophyRoom" component={TrophyRoomScreen} />
     </Stack.Navigator>
   );
 }

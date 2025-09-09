@@ -10,7 +10,7 @@ export default function AddPlayerScreen({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginBottom: verticalScale(12) }}>
-          <Text>{'←'}</Text>
+    <Text style={{ fontSize: moderateScale(18) }}>{'\u2190'}</Text>
         </TouchableOpacity>
         <FlatList
           data={data}
@@ -20,8 +20,8 @@ export default function AddPlayerScreen({ navigation }) {
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Image source={require('../../../assets/icon.png')} style={styles.avatar} />
                 <View style={{ marginLeft: horizontalScale(12) }}>
-                  <Text style={{ fontWeight: '600' }}>{item.name}</Text>
-                  <Text style={{ color: '#888' }}>Handicap 17</Text>
+      <Text style={{ fontWeight: '600', fontSize: moderateScale(15) }}>{item.name}</Text>
+      <Text style={{ color: '#888', fontSize: moderateScale(13) }}>Handicap 17</Text>
                 </View>
               </View>
               <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('CoursePreview')}>
