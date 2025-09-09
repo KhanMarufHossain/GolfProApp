@@ -11,6 +11,7 @@ import LeaderboardScreen from './LeaderboardScreen';
 import TrophyRoomScreen from './TrophyRoomScreen';
 import StartRoundScreen from './StartRoundScreen';
 import ActiveRoundScreen from './ActiveRoundScreen';
+import ScoreCardScreen from './ScoreCardScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,6 +24,7 @@ export default function PlayStack() {
       <Stack.Screen name="AddPlayer" component={AddPlayerScreen} />
       <Stack.Screen name="CoursePreview" component={CoursePreviewScreen} />
       <Stack.Screen name="ActiveRound" component={ActiveRoundScreen} />
+  <Stack.Screen name="ScoreCard" component={ScoreCardScreen} />
       <Stack.Screen name="Map" component={MapScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />

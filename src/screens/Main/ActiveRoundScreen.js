@@ -134,7 +134,7 @@ export default function ActiveRoundScreen({ route, navigation }) {
           </View>
 
           {/* Player Shots and Markers */}
-          {(players || []).map((player, pIdx) =>
+       {(playersState || []).map((player, pIdx) =>
             (player.shots || []).map((shot, sIdx) => (
               <View key={`shot-${player.id ?? pIdx}-${shot.id ?? sIdx}`} style={[styles.lineWrapper, lineStyle(pixelPos(shot.from), pixelPos(shot.to))]} >
                  <View style={styles.line} />
@@ -142,14 +142,14 @@ export default function ActiveRoundScreen({ route, navigation }) {
             ))
           )}
 
-       {(players || []).map((player, pIdx) => (
+     {(playersState || []).map((player, pIdx) => (
          <View key={`player-${player.id ?? pIdx}`} style={[styles.playerMarker, { left: pixelPos(player.currentShot).x - 25, top: pixelPos(player.currentShot).y - 25 }]}>
            <Image source={player.avatar} style={styles.playerAvatar} />
            <View style={styles.playerNameChip}><Text style={styles.playerName}>{player.name}</Text></View>
          </View>
        ))}
           
-          {(distanceMarkers || []).map((m, idx) => (
+       {(distanceMarkersState || []).map((m, idx) => (
             <View key={`marker-${m.id ?? idx}`} style={[styles.markerCircle, { left: pixelPos(m.pos).x - 22, top: pixelPos(m.pos).y - 22 }]}>
               <Text style={styles.markerLabelText}>{m.label}</Text>
             </View>
@@ -169,7 +169,7 @@ export default function ActiveRoundScreen({ route, navigation }) {
             <Text style={styles.holeNumberText}>{hole?.number || 1}</Text>
             <View style={styles.topInnerDark}>
               <View style={styles.detailGrid}>
-                <View style={styles.detailCol}><Text style={styles.detailHeader}>Mid Green</Text><Text style={styles.detailValue}>{hole?.length || 156}yds</Text></View>
+                <View style={styles.detailCol}><Text style={styles.detailHeader}>{hole?.featureName || 'Mid Green'}</Text><Text style={styles.detailValue}>{hole?.length || 156}yds</Text></View>
                 <View style={styles.detailCol}><Text style={styles.detailHeader}>Par</Text><Text style={styles.detailValue}>{hole?.par || 3}</Text></View>
                 <View style={styles.detailCol}><Text style={styles.detailHeader}>Handicap</Text><Text style={styles.detailValue}>{hole?.handicap || 9}</Text></View>
               </View>
@@ -186,7 +186,9 @@ export default function ActiveRoundScreen({ route, navigation }) {
                     <TouchableOpacity style={styles.actionBtn} onPress={() => setShowHoleOut(true)}><Text style={styles.actionBtnText}>Hole Out</Text></TouchableOpacity>
             </View>
             <View style={styles.navRow}>
-                <TouchableOpacity style={styles.iconBtn}><ListIcon /></TouchableOpacity>
+                <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('ScoreCard', { round })}>
+                  <ListIcon />
+                </TouchableOpacity>
                 <View style={styles.holeNav}>
                     <TouchableOpacity style={styles.smallBtn}><Text style={styles.smallBtnTxt}>{'<'}</Text></TouchableOpacity>
                     <View style={styles.centerBtn}><Text style={styles.centerBtnTxt}>Hole {hole?.number || 1}</Text></View>
