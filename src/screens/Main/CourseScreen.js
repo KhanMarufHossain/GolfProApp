@@ -151,7 +151,7 @@ export default function CourseScreen({ navigation, route }) {
           <TouchableOpacity
             style={styles.startBtn}
             onPress={() => {
-              /* TODO: start round flow */
+              navigation.navigate('StartRound', { course: { id: course.id, name, image, isPublic, rank, lengthYards, rating, slope, holes } });
             }}
           >
             <Image source={require('../../../assets/startround.png')} style={styles.startIcon} />

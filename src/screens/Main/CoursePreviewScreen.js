@@ -99,72 +99,63 @@ export default function CoursePreviewScreen({ route, navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* top header: back button + centered title (matched to AddPlayerScreen) */}
-      <View style={styles.headerRow}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.headerBackBtn}
-        >
-          <Text style={styles.headerBackTxt}>{'<'}</Text>
-        </TouchableOpacity>
-        <View style={styles.headerTitleWrap} pointerEvents="none">
-          <Text style={styles.headerTitle}>Course preview</Text>
-        </View>
-      </View>
-
       <View style={styles.screen}>
-        {/* Top-left pill with hole summary */}
-        <View style={styles.topPillWrap} pointerEvents="box-none">
-          <View style={styles.topOuterPill}>
-            <View style={styles.holeNumber}><Text style={styles.holeNumberText}>{hole.number || 1}</Text></View>
-            <View style={styles.topInnerDark}>
-              <Text style={styles.innerTitle}>{hole.featureName || 'Mid Green'}</Text>
-              <View style={styles.innerRow}>
-                <View style={styles.chip}><Text style={styles.chipText}>{hole.length ? `${hole.length} yds` : '— yds'}</Text></View>
-                <View style={styles.chip}><Text style={styles.chipText}>Par {hole.par ?? '—'}</Text></View>
-                <View style={styles.chip}><Text style={styles.chipText}>Handicap {hole.handicap ?? '—'}</Text></View>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Rotated course image container */}
         <View style={styles.previewWrap} onLayout={onContainerLayout}>
-          {/* blue rotated border */}
           <View style={styles.rotatedFrame} pointerEvents="none" />
-
           <Image source={imageSource} style={styles.field} resizeMode="cover" />
 
-          {/* crosshair at center of image (example) */}
-          <View style={styles.crosshair} pointerEvents="none">
-            <View style={styles.crossCircle} />
-            <View style={styles.crossLineH} />
-            <View style={styles.crossLineV} />
-          </View>
-
-          {/* line from tee to pin (simple) */}
           {hole.tee && hole.pin && (
             <View
-              style={[styles.routeLine, lineStyle(teePx, pinPx), { left: teePx.x, top: teePx.y }]}
+              style={[styles.routeLine, lineStyle(teePx, pinPx)]}
               pointerEvents="none"
             />
           )}
 
-          {/* markers */}
+          <View style={styles.crosshair} pointerEvents="none">
+            <View style={styles.crossCircle}>
+              <View style={styles.crosshairDot} />
+            </View>
+          </View>
+
           {(hole.markers || []).map((m) => {
             const px = pixelPos(m.pos || { x: 0.5, y: 0.5 });
             return (
-              <View key={m.id} style={[styles.markerWrap, { left: px.x - 18, top: px.y - 18 }]}>
-                <View style={styles.markerCircle} />
-                <View style={styles.markerLabel}><Text style={styles.markerLabelText}>{m.label}</Text></View>
+              <View key={m.id} style={[styles.markerCircle, { left: px.x - 22, top: px.y - 22 }]}>
+                <Text style={styles.markerLabelText}>{m.label}</Text>
               </View>
             );
           })}
         </View>
 
-        {/* Bottom center pill with hole navigation */}
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBackBtn}>
+          <Text style={styles.headerBackTxt}>{'<'}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.topPillWrap} pointerEvents="box-none">
+          <View style={styles.topPill}>
+            <Text style={styles.holeNumberText}>{hole.number || 1}</Text>
+            <View style={styles.topInnerDark}>
+              <View style={styles.detailGrid}>
+                <View style={styles.detailCol}>
+                  <Text style={styles.detailHeader}>Mid Green</Text>
+                  <Text style={styles.detailValue}>{hole.length}yds</Text>
+                </View>
+                <View style={styles.detailCol}>
+                  <Text style={styles.detailHeader}>Par</Text>
+                  <Text style={styles.detailValue}>{hole.par}</Text>
+                </View>
+                <View style={styles.detailCol}>
+                  <Text style={styles.detailHeader}>Handicap</Text>
+                  <Text style={styles.detailValue}>{hole.handicap}</Text>
+                </View>
+              </View>
+              <Text style={styles.downArrow}>▼</Text>
+            </View>
+          </View>
+        </View>
+
         <View style={styles.bottomPillWrap}>
-          <View style={styles.bottomRow}> 
+          <View style={styles.bottomRow}>
             <TouchableOpacity onPress={prevHole} style={styles.smallBtn}><Text style={styles.smallBtnTxt}>{'<'}</Text></TouchableOpacity>
             <View style={styles.centerBtn}><Text style={styles.centerBtnTxt}>Hole {hole.number || 1}</Text></View>
             <TouchableOpacity onPress={nextHole} style={styles.smallBtn}><Text style={styles.smallBtnTxt}>{'>'}</Text></TouchableOpacity>
@@ -177,124 +168,167 @@ export default function CoursePreviewScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
-  screen: { flex: 1, backgroundColor: '#fff' },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(12),
-    paddingTop: verticalScale(10),
-    paddingBottom: verticalScale(6),
-    zIndex: 60,
-  },
+  screen: { flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' },
   headerBackBtn: {
-    width: horizontalScale(36),
-    height: horizontalScale(36),
-    borderRadius: horizontalScale(18),
-    backgroundColor: '#ffffffff',
+    position: 'absolute',
+    top: verticalScale(50),
+    left: horizontalScale(20),
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(20),
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#8e8c8cff',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    zIndex: 100,
   },
-  headerBackTxt: { fontSize: moderateScale(26), fontWeight: '900', color: '#000', lineHeight: moderateScale(28) },
-  headerTitleWrap: { flex: 1, alignItems: 'center', position: 'absolute', left: 0, right: 0 },
-  headerTitle: { fontSize: moderateScale(18), fontWeight: '700', color: '#222' },
-  topPillWrap: { position: 'absolute', left: horizontalScale(14), top: verticalScale(18), zIndex: 40 },
-  topOuterPill: {
+  headerBackTxt: { fontSize: moderateScale(24), color: '#fff', fontWeight: 'bold' },
+
+  topPillWrap: {
+    position: 'absolute',
+    top: verticalScale(50),
+    left: horizontalScale(75),
+    zIndex: 90,
+  },
+  topPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    paddingHorizontal: horizontalScale(6),
+    backgroundColor: 'rgba(229, 229, 231, 0.75)',
+    borderRadius: moderateScale(12),
+    paddingLeft: horizontalScale(15),
+    paddingRight: horizontalScale(5),
+    paddingVertical: verticalScale(5),
+    height: verticalScale(55),
+  },
+  holeNumberText: {
+    fontSize: moderateScale(32),
+    fontWeight: 'bold',
+    color: '#000',
+    marginRight: horizontalScale(10),
   },
   topInnerDark: {
-    backgroundColor: '#3b3f46',
-    paddingHorizontal: horizontalScale(10),
-    paddingVertical: verticalScale(8),
-    borderRadius: moderateScale(10),
-    marginLeft: horizontalScale(6),
-    minWidth: horizontalScale(160),
-  },
-  innerTitle: { color: '#fff', fontWeight: '700', marginBottom: verticalScale(6) },
-  innerRow: { flexDirection: 'row', alignItems: 'center' },
-  chip: { backgroundColor: 'rgba(255,255,255,0.08)', paddingHorizontal: horizontalScale(8), paddingVertical: verticalScale(4), borderRadius: moderateScale(6), marginRight: horizontalScale(8) },
-  chipText: { color: '#fff', fontSize: moderateScale(12) },
-  holeNumber: {
-    width: moderateScale(36),
-    height: moderateScale(36),
-    borderRadius: moderateScale(18),
-    backgroundColor: '#e6e9eb',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: horizontalScale(8),
+    backgroundColor: 'rgba(60, 60, 61, 0.75)',
+    borderRadius: moderateScale(10),
+    paddingVertical: verticalScale(5),
+    paddingHorizontal: horizontalScale(12),
+    height: '100%',
   },
-  holeNumberText: { fontWeight: '700', fontSize: moderateScale(16), color: '#222' },
-  holeMeta: { flexDirection: 'row', alignItems: 'center' },
-  metaLine: { marginRight: horizontalScale(8), color: '#fff', backgroundColor: '#4b5563', paddingHorizontal: 6, paddingVertical: 4, borderRadius: 6, color: '#fff', fontSize: moderateScale(12) },
+  detailGrid: {
+    flexDirection: 'row',
+  },
+  detailCol: {
+    alignItems: 'center',
+    marginHorizontal: horizontalScale(8),
+  },
+  detailHeader: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: moderateScale(11),
+    marginBottom: verticalScale(2),
+  },
+  detailValue: {
+    color: '#fff',
+    fontSize: moderateScale(14),
+    fontWeight: 'bold',
+  },
+  downArrow: {
+    color: '#fff',
+    fontSize: moderateScale(10),
+    marginLeft: horizontalScale(5),
+    transform: [{ scaleY: 0.6 }],
+  },
 
   previewWrap: {
-    flex: 1,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: verticalScale(6),
   },
   rotatedFrame: {
     position: 'absolute',
-    width: '86%',
-    height: '86%',
+    width: '88%',
+    height: '80%',
     borderWidth: 2,
-    borderColor: '#2b9cff',
+    borderColor: '#007AFF',
     transform: [{ rotate: '-12deg' }],
-    zIndex: 2,
-    borderRadius: moderateScale(6),
+    borderRadius: moderateScale(20),
   },
   field: {
-    width: '84%',
-    height: verticalScale(620),
+    width: '86%',
+    height: '78%',
     transform: [{ rotate: '-12deg' }],
-    borderRadius: moderateScale(8),
-    zIndex: 1,
+    borderRadius: moderateScale(20),
   },
 
   crosshair: {
     position: 'absolute',
     left: '50%',
     top: '40%',
-    marginLeft: -40,
-    marginTop: -40,
     width: 80,
     height: 80,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 20,
   },
-  crossCircle: { position: 'absolute', width: 60, height: 60, borderRadius: 30, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)' },
-  crossLineH: { position: 'absolute', width: 2, height: 80, backgroundColor: 'rgba(255,255,255,0.9)' },
-  crossLineV: { position: 'absolute', height: 2, width: 80, backgroundColor: 'rgba(255,255,255,0.9)' },
+  crossCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  crosshairDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+  },
 
   routeLine: {
     position: 'absolute',
     height: 1.6,
-    backgroundColor: '#ffffff',
-    opacity: 0.95,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     zIndex: 15,
+    borderStyle: 'dashed',
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderRadius: 1,
   },
 
-  markerWrap: {
-    position: 'absolute',
-    alignItems: 'center',
+  markerCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
     zIndex: 30,
   },
-  markerCircle: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#1f2937', opacity: 0.95 },
-  markerLabel: { position: 'absolute', top: 42, backgroundColor: '#fff', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12, elevation: 3 },
-  markerLabelText: { color: '#111', fontWeight: '600', fontSize: moderateScale(12) },
+  markerLabelText: { color: '#fff', fontWeight: 'bold', fontSize: moderateScale(12) },
 
-  bottomPillWrap: { position: 'absolute', left: 0, right: 0, bottom: verticalScale(18), alignItems: 'center', zIndex: 40 },
+  bottomPillWrap: { position: 'absolute', bottom: verticalScale(40), zIndex: 40 },
   bottomRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  smallBtn: { backgroundColor: '#8e8e93', width: horizontalScale(44), height: horizontalScale(36), borderRadius: moderateScale(8), alignItems: 'center', justifyContent: 'center', marginHorizontal: horizontalScale(8) },
-  smallBtnTxt: { fontSize: moderateScale(18), color: '#fff', fontWeight: '700' },
-  centerBtn: { backgroundColor: '#e9e9eb', minWidth: horizontalScale(120), paddingHorizontal: horizontalScale(12), paddingVertical: verticalScale(8), borderRadius: moderateScale(12), alignItems: 'center', justifyContent: 'center' },
-  centerBtnTxt: { fontWeight: '700', color: '#222' },
+  smallBtn: {
+    backgroundColor: 'rgba(60, 60, 61, 0.75)',
+    width: horizontalScale(50),
+    height: horizontalScale(40),
+    borderRadius: moderateScale(10),
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: horizontalScale(5),
+  },
+  smallBtnTxt: { fontSize: moderateScale(20), color: '#fff', fontWeight: 'bold' },
+  centerBtn: {
+    backgroundColor: 'rgba(229, 229, 231, 0.75)',
+    minWidth: horizontalScale(120),
+    paddingHorizontal: horizontalScale(15),
+    height: horizontalScale(40),
+    borderRadius: moderateScale(10),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerBtnTxt: { fontWeight: 'bold', color: '#000', fontSize: moderateScale(14) },
 });
