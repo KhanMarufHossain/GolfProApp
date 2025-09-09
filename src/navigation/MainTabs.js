@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CommunityScreen from '../screens/Main/CommunityScreen';
 import PlayStack from '../screens/Main/PlayStack';
 import CalculatorScreen from '../screens/Main/CalculatorScreen';
-import AccountScreen from '../screens/Main/AccountScreen';
+import ProfileStack from '../screens/Main/Profile/ProfileStack';
 import CommunityIcon from '../../assets/community.svg';
 import PlayIcon from '../../assets/play.svg';
 import CalculatorIcon from '../../assets/calculator.svg';
@@ -52,7 +52,7 @@ export default function MainTabs() {
       <Tab.Screen name="Community" component={CommunityScreen} />
       <Tab.Screen name="Play" component={PlayStack} />
       <Tab.Screen name="HCP Calculator" component={CalculatorScreen} />
-  <Tab.Screen name="Profile" component={AccountScreen} />
+  <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );
 }
