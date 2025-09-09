@@ -202,8 +202,8 @@ const styles = StyleSheet.create({
   // overlays for absolute hero
   backBtnAbs: {
     position: 'absolute',
-    left: horizontalScale(12),
-    top: verticalScale(28),
+    left: horizontalScale(20),
+    top: verticalScale(50),
     width: horizontalScale(36),
     height: horizontalScale(36),
     borderRadius: horizontalScale(18),
