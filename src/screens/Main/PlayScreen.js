@@ -186,8 +186,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    paddingTop: verticalScale(100),
-    paddingRight: horizontalScale(20),
+    paddingTop: verticalScale(56), // reduced for closer alignment
+    paddingRight: horizontalScale(6), // reduced for closer alignment
   },
   menuContainer: {
     backgroundColor: 'white',
