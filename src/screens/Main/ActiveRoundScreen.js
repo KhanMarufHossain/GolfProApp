@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import StrokeModal from '../../components/StrokeModal';
+import PuttModal from '../../components/PuttModal';
+import HoleOutModal from '../../components/HoleOutModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import Svg, { Path } from 'react-native-svg';
@@ -57,7 +60,7 @@ export default function ActiveRoundScreen({ route, navigation }) {
     distanceMarkers: [
       { id: 'm1', label: '115y', pos: { x: 0.42, y: 0.62 } },
       { id: 'm2', label: '67y', pos: { x: 0.65, y: 0.2 } },
-      { id: 'm3', label: '167y', pos: { x: 0.4, y: 0.8 } },
+      { id: 'm3', label: '167y', pos: { x: 0.4, y: 0.7 } },
       { id: 'm4', label: '25y', pos: { x: 0.4, y: 0.3 } },
     ],
   };
@@ -65,10 +68,17 @@ export default function ActiveRoundScreen({ route, navigation }) {
   const round = route?.params?.round || mockRound;
   const { hole = mockRound.hole, players = mockRound.players, distanceMarkers = mockRound.distanceMarkers } = round;
 
+  // Local frontend-only state for players and markers (no backend required)
+  const [playersState, setPlayersState] = useState(players);
+  const [distanceMarkersState, setDistanceMarkersState] = useState(distanceMarkers);
+
   // Safe image source with fallback
   const imageSource = round?.course?.image || mockRound.course.image;
 
   const [containerLayout, setContainerLayout] = useState({ width: 1, height: 1, x: 0, y: 0 });
+  const [showStroke, setShowStroke] = useState(false);
+  const [showPutt, setShowPutt] = useState(false);
+  const [showHoleOut, setShowHoleOut] = useState(false);
 
   const onContainerLayout = (e) => setContainerLayout(e.nativeEvent.layout);
 
@@ -85,32 +95,62 @@ export default function ActiveRoundScreen({ route, navigation }) {
     return { width: length, transform: [{ rotate: `${angle}deg` }], left: a.x, top: a.y };
   };
 
+  const handleSave = async (data) => {
+    // Frontend-only: persist shot locally in playersState
+    try {
+      const playerId = data.playerId ?? playersState[0]?.id;
+      const playerIdx = playersState.findIndex((p) => p.id === playerId);
+      const newShot = {
+        id: `shot-${Date.now()}`,
+        from: data.from || { x: 0.5, y: 0.9 },
+        to: data.to || { x: 0.5, y: 0.5 },
+        distance: data.distance || 0,
+        type: data.type || 'shot',
+      };
+
+      if (playerIdx >= 0) {
+        const updated = [...playersState];
+        updated[playerIdx] = {
+          ...updated[playerIdx],
+          shots: [...(updated[playerIdx].shots || []), newShot],
+          currentShot: newShot.to,
+        };
+        setPlayersState(updated);
+      }
+    } catch (e) {
+      console.warn('Failed to save shot locally', e);
+    }
+    // close all modals
+    setShowStroke(false); setShowPutt(false); setShowHoleOut(false);
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.screen}>
         {/* Map Area */}
         <View style={styles.previewWrap} onLayout={onContainerLayout}>
-          <View style={styles.rotatedFrame} />
-          <Image source={imageSource} style={styles.field} resizeMode="cover" />
+          <View style={styles.rotatedFrame}>
+            <Image source={imageSource} style={styles.field} resizeMode="cover" />
+          </View>
 
           {/* Player Shots and Markers */}
-          {(players || []).map(player =>
-            (player.shots || []).map(shot => (
-              <View key={shot.id} style={[styles.lineWrapper, lineStyle(pixelPos(shot.from), pixelPos(shot.to))]} >
+          {(players || []).map((player, pIdx) =>
+            (player.shots || []).map((shot, sIdx) => (
+              <View key={`shot-${player.id ?? pIdx}-${shot.id ?? sIdx}`} style={[styles.lineWrapper, lineStyle(pixelPos(shot.from), pixelPos(shot.to))]} >
                  <View style={styles.line} />
               </View>
             ))
           )}
 
-          {(players || []).map(player => (
-             <View key={player.id} style={[styles.playerMarker, { left: pixelPos(player.currentShot).x - 25, top: pixelPos(player.currentShot).y - 25 }]}>
-                <Image source={player.avatar} style={styles.playerAvatar} />
-                <View style={styles.playerNameChip}><Text style={styles.playerName}>{player.name}</Text></View>
-             </View>
-          ))}
+       {(players || []).map((player, pIdx) => (
+         <View key={`player-${player.id ?? pIdx}`} style={[styles.playerMarker, { left: pixelPos(player.currentShot).x - 25, top: pixelPos(player.currentShot).y - 25 }]}>
+           <Image source={player.avatar} style={styles.playerAvatar} />
+           <View style={styles.playerNameChip}><Text style={styles.playerName}>{player.name}</Text></View>
+         </View>
+       ))}
           
-          {(distanceMarkers || []).map(m => (
-            <View key={m.id} style={[styles.markerCircle, { left: pixelPos(m.pos).x - 22, top: pixelPos(m.pos).y - 22 }]}>
+          {(distanceMarkers || []).map((m, idx) => (
+            <View key={`marker-${m.id ?? idx}`} style={[styles.markerCircle, { left: pixelPos(m.pos).x - 22, top: pixelPos(m.pos).y - 22 }]}>
               <Text style={styles.markerLabelText}>{m.label}</Text>
             </View>
           ))}
@@ -141,9 +181,9 @@ export default function ActiveRoundScreen({ route, navigation }) {
         {/* Bottom Bar */}
         <View style={styles.bottomBar}>
             <View style={styles.actionBtnRow}>
-                <TouchableOpacity style={styles.actionBtn}><Text style={styles.actionBtnText}>+ Stroke 1</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.actionBtn}><Text style={styles.actionBtnText}>+ Putt</Text></TouchableOpacity>
-                <TouchableOpacity style={styles.actionBtn}><Text style={styles.actionBtnText}>Hole Out</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => setShowStroke(true)}><Text style={styles.actionBtnText}>+ Stroke 1</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => setShowPutt(true)}><Text style={styles.actionBtnText}>+ Putt</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => setShowHoleOut(true)}><Text style={styles.actionBtnText}>Hole Out</Text></TouchableOpacity>
             </View>
             <View style={styles.navRow}>
                 <TouchableOpacity style={styles.iconBtn}><ListIcon /></TouchableOpacity>
@@ -156,6 +196,9 @@ export default function ActiveRoundScreen({ route, navigation }) {
             </View>
         </View>
       </View>
+  <StrokeModal visible={showStroke} onClose={() => setShowStroke(false)} onSave={handleSave} />
+  <PuttModal visible={showPutt} onClose={() => setShowPutt(false)} onSave={handleSave} />
+  <HoleOutModal visible={showHoleOut} onClose={() => setShowHoleOut(false)} onSave={handleSave} />
     </SafeAreaView>
   );
 }
@@ -163,14 +206,34 @@ export default function ActiveRoundScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   screen: { flex: 1, backgroundColor: '#fff' },
-  previewWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  rotatedFrame: { position: 'absolute', width: '88%', height: '80%', borderWidth: 2, borderColor: '#007AFF', transform: [{ rotate: '-12deg' }], borderRadius: 20 },
-  field: { width: '86%', height: '78%', transform: [{ rotate: '-12deg' }], borderRadius: 20 },
+  previewWrap: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rotatedFrame: {
+    position: 'absolute',
+    width: '86%',
+    height: '92%',
+    transform: [{ rotate: '-12deg' }],
+    borderRadius: 20,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  field: {
+    width: '100%',
+    height: '100%',
+  },
   
   backBtn: { position: 'absolute', top: verticalScale(50), left: horizontalScale(20), width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center', zIndex: 100 },
   backBtnTxt: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
   
-  topPillWrap: { position: 'absolute', top: verticalScale(50), left: horizontalScale(75), zIndex: 90 },
+  topPillWrap: { position: 'absolute', top: verticalScale(50), left: 0, right: 0, alignItems: 'center', zIndex: 90 },
   topPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(229, 229, 231, 0.8)', borderRadius: 12, paddingLeft: 15, paddingRight: 5, paddingVertical: 5, height: 55 },
   holeNumberText: { fontSize: 32, fontWeight: 'bold', color: '#000', marginRight: 10 },
   topInnerDark: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(60, 60, 61, 0.8)', borderRadius: 10, paddingVertical: 5, paddingHorizontal: 12, height: '100%' },
@@ -195,15 +258,67 @@ const styles = StyleSheet.create({
   playerNameChip: { backgroundColor: '#8B5C2A', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, marginTop: 4 },
   playerName: { color: '#fff', fontSize: 12 },
 
-  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, paddingBottom: verticalScale(20), paddingTop: verticalScale(10), backgroundColor: '#fff' },
-  actionBtnRow: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: verticalScale(15), paddingHorizontal: horizontalScale(20) },
-  actionBtn: { backgroundColor: '#8B5C2A', paddingVertical: verticalScale(12), paddingHorizontal: horizontalScale(16), borderRadius: 12 },
-  actionBtnText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  navRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: horizontalScale(20) },
-  iconBtn: { padding: 8, backgroundColor: '#f0f0f0', borderRadius: 20 },
-  holeNav: { flexDirection: 'row', alignItems: 'center' },
-  smallBtn: { backgroundColor: '#3C3C3D', width: 50, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginHorizontal: 5 },
-  smallBtnTxt: { fontSize: 20, color: '#fff', fontWeight: 'bold' },
-  centerBtn: { backgroundColor: '#E5E5E7', minWidth: 120, paddingHorizontal: 15, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  centerBtnTxt: { fontWeight: 'bold', color: '#000', fontSize: 14 },
+  bottomBar: {
+    position: 'absolute',
+    bottom: verticalScale(0),
+    left: 0,
+    right: 0,
+    paddingHorizontal: horizontalScale(20),
+  },
+  actionBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: verticalScale(15),
+  },
+  actionBtn: {
+    backgroundColor: '#8B5C2A',
+    paddingVertical: verticalScale(12),
+    paddingHorizontal: horizontalScale(24),
+    borderRadius: 25,
+  },
+  actionBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  navRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconBtn: {
+    padding: 12,
+    backgroundColor: 'rgba(90, 90, 90, 0.7)',
+    borderRadius: 25,
+  },
+  holeNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(90, 90, 90, 0.7)',
+    borderRadius: 25,
+    padding: 4,
+  },
+  smallBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  smallBtnTxt: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  centerBtn: {
+    paddingHorizontal: 20,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerBtnTxt: {
+    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 14,
+  },
 });

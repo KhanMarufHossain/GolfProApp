@@ -173,8 +173,16 @@ export default function CalculatorScreen() {
         {result && (
           <View style={styles.resultCard}>
             <Text style={styles.resultTitle}>Result</Text>
-            <Text style={styles.resultValue}>{result.handicapIndex ?? JSON.stringify(result)}</Text>
-            {result.details && <Text style={styles.resultDetails}>{JSON.stringify(result.details)}</Text>}
+            <Text style={styles.resultValue}>
+              {typeof result === 'object' ? (result.handicapIndex ?? '-') : String(result)}
+            </Text>
+            {result?.details ? (
+              <Text style={styles.resultDetails} numberOfLines={6} ellipsizeMode="tail">
+                {typeof result.details === 'object'
+                  ? (JSON.stringify(result.details).slice(0, 500) + (JSON.stringify(result.details).length > 500 ? '…' : ''))
+                  : String(result.details)}
+              </Text>
+            ) : null}
           </View>
         )}
 
