@@ -8,7 +8,7 @@ const data = new Array(6).fill(0).map((_, i) => ({
   id: i,
   title: `Course ${i + 1}`,
   // remote example: { uri: 'https://...' }
-  image: require('../../../assets/golfField.png'),
+  image: require('../../../assets/golffield1.jpg'),
   holes: 9,
   distance: `${(1 + i * 0.5).toFixed(1)} miles`,
   location: 'Local Club',
