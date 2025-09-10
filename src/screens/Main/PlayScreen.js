@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal } from 'react-native';
 import CourseCard from '../../components/CourseCard';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
+import { colors } from '../../utils/theme'; // Add this import if not already present
 
 const data = new Array(6).fill(0).map((_, i) => ({
   id: i,
@@ -28,7 +29,7 @@ export default function PlayScreen({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
-          <View style={styles.avatarWrap}> 
+          <View style={styles.avatarWrap}>
             <Image source={require('../../../assets/man.png')} style={styles.avatar} />
           </View>
           <View style={styles.headerTexts}>
@@ -104,34 +105,35 @@ export default function PlayScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
+  safe: { flex: 1, backgroundColor: colors.bg },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: horizontalScale(20),
     paddingTop: verticalScale(40),
     paddingBottom: verticalScale(12),
   },
   headerLeftRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   avatarWrap: {
     width: horizontalScale(48),
     height: verticalScale(48),
     borderRadius: moderateScale(24),
-    overflow: 'hidden',
+    overflow: "hidden",
     marginRight: horizontalScale(12),
   },
-  avatar: { width: '100%', height: '100%' },
+  avatar: { width: "100%", height: "100%" },
   headerTexts: { flex: 1 },
-  greeting: { fontSize: moderateScale(18), fontWeight: '600', color: '#222' },
-  sub: { color: '#888', marginTop: verticalScale(4) },
+  greeting: { fontSize: moderateScale(18), fontWeight: "600", color: "#222" },
+  greet: { fontSize: moderateScale(16), fontWeight: "700", color: colors.text },
+  sub: { color: colors.textMute, marginTop: verticalScale(4) },
   headerRightRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconButton: {
     marginLeft: horizontalScale(16),
@@ -142,13 +144,13 @@ const styles = StyleSheet.create({
     height: moderateScale(24),
   },
   notificationDot: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     right: 5,
     width: moderateScale(8),
     height: moderateScale(8),
     borderRadius: moderateScale(4),
-    backgroundColor: 'red',
+    backgroundColor: "red",
   },
   searchRow: {
     paddingHorizontal: horizontalScale(20),
