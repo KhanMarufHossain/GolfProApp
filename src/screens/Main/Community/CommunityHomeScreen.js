@@ -10,7 +10,7 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
-import { moderateScale } from '../../../utils/dimensions';
+import { moderateScale, horizontalScale, verticalScale } from '../../../utils/dimensions';
 import { colors } from '../../../utils/theme';
 import PostCard from '../../../components/PostCard';
 import { fetchFeed, likePost } from '../../../services/communityService';
@@ -130,22 +130,24 @@ export default function CommunityHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.topHeader}>
-        <View style={styles.profileRow}>
-          <Image source={require('../../../../assets/man.png')} style={styles.avatar} />
-          <View style={{ flex: 1 }}>
-            <Text style={styles.greet}>Hey, Player 👋</Text>
+      <View style={styles.header}>
+        <View style={styles.headerLeftRow}>
+          <View style={styles.avatarWrap}>
+            <Image source={require('../../../../assets/man.png')} style={styles.avatar} />
+          </View>
+          <View style={styles.headerTexts}>
+            <Text style={styles.greeting}>Hey, Player 👋</Text>
             <Text style={styles.sub}>Choose your playground</Text>
           </View>
         </View>
 
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Image source={require('../../../../assets/bell.png')} style={styles.icon} />
+        <View style={styles.headerRightRow}>
+          <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={styles.iconButton}>
+            <Image source={require('../../../../assets/bell.png')} style={styles.headerIcon} />
             <View style={styles.notificationDot} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Image source={require('../../../../assets/dots-icon.png')} style={styles.iconDots} />
+          <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.iconButton}>
+            <Image source={require('../../../../assets/dots-icon.png')} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -327,20 +329,52 @@ function LeaderboardCard() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
-  topHeader: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: moderateScale(16),
-    paddingTop: moderateScale(4),
-    paddingBottom: moderateScale(8),
+    paddingHorizontal: horizontalScale(20),
+    paddingTop: verticalScale(40),
+    paddingBottom: verticalScale(12),
   },
-  profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  avatar: { width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), marginRight: moderateScale(12) },
+  headerLeftRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatarWrap: {
+    width: horizontalScale(48),
+    height: verticalScale(48),
+    borderRadius: moderateScale(24),
+    overflow: 'hidden',
+    marginRight: horizontalScale(12),
+  },
+  avatar: { width: '100%', height: '100%' },
+  headerTexts: { flex: 1 },
+  greeting: { fontSize: moderateScale(18), fontWeight: '600', color: '#222' },
   greet: { fontSize: moderateScale(16), fontWeight: '700', color: colors.text },
-  sub: { fontSize: moderateScale(12), color: colors.textMute, marginTop: 2 },
-  headerRight: { flexDirection: 'row', alignItems: 'center' },
-  iconBtn: { width: moderateScale(34), height: moderateScale(34), borderRadius: moderateScale(17), backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: moderateScale(8), borderWidth: 1, borderColor: '#EFE7E1' },
+  sub: { color: colors.textMute, marginTop: verticalScale(4) },
+  headerRightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    marginLeft: horizontalScale(16),
+    padding: 5,
+  },
+  headerIcon: {
+    width: moderateScale(24),
+    height: moderateScale(24),
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: moderateScale(8),
+    height: moderateScale(8),
+    borderRadius: moderateScale(4),
+    backgroundColor: 'red',
+  },
   icon: { width: moderateScale(18), height: moderateScale(18), resizeMode: 'contain', tintColor: colors.text },
   iconDots: { width: moderateScale(20), height: moderateScale(20), resizeMode: 'contain', tintColor: colors.text },
   notificationDot: { position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#E33', },
