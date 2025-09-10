@@ -1,4 +1,4 @@
-// simple frontend mock for players
+// Players service with dummy data.
 const players = [
   { id: 1, name: 'Kristin Watson', hcp: 17, avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
   { id: 2, name: 'Eleanor Pena', hcp: 17, avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
@@ -8,8 +8,6 @@ const players = [
 
 export default {
   list: async () => {
-    // simulate network delay
-    await new Promise((r) => setTimeout(r, 150));
     return players;
   },
 };

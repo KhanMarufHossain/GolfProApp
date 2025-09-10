@@ -16,22 +16,6 @@ import {
   moderateScale,
 } from "../../utils/dimensions";
 
-/*
-  CourseScreen is backend-ready. It accepts a `route.params.course` object with common keys:
-  {
-    id,
-    name || title,
-    image: { uri } | require(...),
-    isPublic: boolean,
-    rank: number,
-    lengthYards: number,
-    rating: number,
-    slope: number,
-    holes: number,
-  }
-
-  Falls back to sensible defaults when fields are missing.
-*/
 export default function CourseScreen({ navigation, route }) {
   const course = route?.params?.course || {};
   const {

@@ -30,7 +30,6 @@ const ListIcon = () => (
 
 
 export default function ActiveRoundScreen({ route, navigation }) {
-  // Backend-ready data structure
   const mockRound = {
     course: {
       name: 'Mock Golf Club',

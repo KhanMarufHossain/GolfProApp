@@ -1,4 +1,4 @@
-// Frontend-only profile service with mock data; backend-ready shape.
+// Profile service with dummy data.
 let _profile = {
   id: 'me',
   name: 'John Blake',
@@ -33,26 +33,20 @@ let _posts = [
   },
 ];
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
 export async function getProfile() {
-  await delay(200);
   return { ok: true, data: JSON.parse(JSON.stringify(_profile)) };
 }
 
 export async function updateProfile(patch) {
-  await delay(200);
   _profile = { ..._profile, ...patch };
   return { ok: true, data: JSON.parse(JSON.stringify(_profile)) };
 }
 
 export async function getMyPosts() {
-  await delay(200);
   return { ok: true, data: JSON.parse(JSON.stringify(_posts)) };
 }
 
 export async function getMyScorecards() {
-  await delay(200);
   return { ok: true, data: [
     { id: 'r1', course: 'East Potomac', date: new Date().toISOString(), gross: 82, net: 78 },
     { id: 'r2', course: 'Langston', date: new Date().toISOString(), gross: 85, net: 80 },

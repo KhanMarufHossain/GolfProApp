@@ -2,27 +2,11 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../utils/dimensions';
 
-/*
-  CourseCard expects a backend-ready `course` object with the shape:
-  {
-    id: string|number,
-    title: string,
-    image: { uri: string } | number (require(...)),
-    holes: number,
-    distance: string,
-    location: string,
-  }
-
-  Fields are optional; sensible defaults are used when missing.
-*/
 export default function CourseCard({ onPress, course = {} }) {
   const {
     image = require('../../assets/golfField.png'),
-    // support either `title` or `name` depending on backend
     title = course.name || 'Untitled Course',
-    // support different backend keys for holes
     holes = course.holes || course.holesCount || 9,
-    // distance may come as a string from backend (e.g. '1.4 miles')
     distance = course.distance || course.distanceText || '—',
     location = course.location || course.clubName || 'Unknown',
   } = course;

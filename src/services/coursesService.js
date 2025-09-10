@@ -1,4 +1,4 @@
-// Frontend-phase mock for courses. Replace with real API calls when backend is ready.
+// Courses service with dummy data.
 const mockCourses = [
   { id: 1, name: 'Steelwood Golf Club', par: 72, courseRating: 72.5, slopeRating: 113 },
   { id: 2, name: 'Riverbend Course', par: 71, courseRating: 71.2, slopeRating: 115 },
@@ -6,8 +6,6 @@ const mockCourses = [
 ];
 
 export const list = async () => {
-  // emulate network latency
-  await new Promise((r) => setTimeout(r, 300));
   return mockCourses;
 };
 

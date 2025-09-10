@@ -49,7 +49,6 @@ export default function StartRoundScreen({ navigation, route }) {
   const res = await roundsService.startRound(payload);
   // roundsService.startRound returns { ok, data }, so pass the data object.
   navigation.navigate('ActiveRound', { round: res?.data ?? res });
-  // navigate to Play screen or round detail when backend ready
   };
 
   const renderFriend = ({ item }) => (

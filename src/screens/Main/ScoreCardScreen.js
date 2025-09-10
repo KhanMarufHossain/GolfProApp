@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 
 export default function ScoreCardScreen({ route, navigation }) {
-  // Backend-ready: accept round data from params, fall back to local mock
   const mockRound = useMemo(() => ({
     date: new Date(),
     course: { name: 'East Potomac Golf Course', location: 'Location' },

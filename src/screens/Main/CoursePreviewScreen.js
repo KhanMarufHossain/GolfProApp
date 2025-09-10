@@ -10,26 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 // Note: we'll use the same back button style used in AddPlayerScreen for pixel match
 
-/*
-  CoursePreviewScreen
-  - Designed to be 'backend ready': it accepts a `course` object via `route.params.course`.
-  - course.holes is an array of hole objects with optional positional markers as percentages { x: 0..1, y: 0..1 }
-  - If route params are missing, the screen falls back to sensible mock data so the UI can be previewed.
-
-  Minimal hole shape expected by UI:
-  {
-    number: 1,
-    par: 3,
-    handicap: 9,
-    length: 156, // yards
-    tee: { x: 0.5, y: 0.95 },
-    pin: { x: 0.55, y: 0.06 },
-    layup: { x: 0.48, y: 0.45 },
-  }
-*/
-
 export default function CoursePreviewScreen({ route, navigation }) {
-  // backend-ready: accept course and initialHoleIndex via navigation params
   const routeCourse = route?.params?.course;
   const initialIndex = route?.params?.initialHoleIndex || 0;
 

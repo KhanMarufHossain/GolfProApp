@@ -1,6 +1,4 @@
-// Frontend-only community service with in-memory state; backend-ready API shape.
-// Simulates async calls and returns Promises.
-
+// Community service with dummy data.
 let _posts = [
   {
     id: 'post-1',
@@ -26,15 +24,11 @@ let _posts = [
   },
 ];
 
-const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-
 export async function fetchFeed() {
-  await delay(300);
   return { ok: true, data: JSON.parse(JSON.stringify(_posts)) };
 }
 
 export async function createPost({ user, text, image }) {
-  await delay(300);
   const newPost = {
     id: 'post-' + Date.now(),
     user: user || { id: 'me', name: 'You', avatar: require('../../assets/man.png') },
@@ -50,7 +44,6 @@ export async function createPost({ user, text, image }) {
 }
 
 export async function likePost(postId) {
-  await delay(150);
   _posts = _posts.map((p) => {
     if (p.id !== postId) return p;
     const liked = !p.liked;
@@ -61,7 +54,6 @@ export async function likePost(postId) {
 }
 
 export async function addComment(postId, { user, text }) {
-  await delay(200);
   const comment = { id: 'c-' + Date.now(), user: user || { id: 'me', name: 'You' }, text, createdAt: new Date().toISOString() };
   _posts = _posts.map((p) => (p.id === postId ? { ...p, comments: [...p.comments, comment] } : p));
   const p = _posts.find((x) => x.id === postId);

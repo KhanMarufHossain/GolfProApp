@@ -14,11 +14,6 @@ import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimen
 import coursesService from '../../services/coursesService';
 import handicapService from '../../services/handicapService';
 
-// Assumptions:
-// - GET /courses returns [{ id, name, par, courseRating, slopeRating }]
-// - POST /handicap/calculate accepts { courseId, grossScore, courseRating, slopeRating, date }
-//   and returns { handicapIndex, details }
-
 export default function CalculatorScreen() {
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);

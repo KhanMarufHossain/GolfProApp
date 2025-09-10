@@ -3,11 +3,9 @@ import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity
 import CourseCard from '../../components/CourseCard';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 
-// Example backend-ready course list. In production this will come from an API.
 const data = new Array(6).fill(0).map((_, i) => ({
   id: i,
   title: `Course ${i + 1}`,
-  // remote example: { uri: 'https://...' }
   image: require('../../../assets/golffield1.jpg'),
   holes: 9,
   distance: `${(1 + i * 0.5).toFixed(1)} miles`,
