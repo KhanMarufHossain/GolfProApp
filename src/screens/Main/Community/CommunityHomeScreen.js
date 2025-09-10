@@ -136,18 +136,22 @@ export default function CommunityHomeScreen({ navigation }) {
             <Text style={styles.greet}>Hey, Player 👋</Text>
             <Text style={styles.sub}>Choose your playground</Text>
           </View>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Image source={require('../../../../assets/bell.png')} style={styles.icon} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Image source={require('../../../../assets/dots-icon.png')} style={styles.iconDots} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Image source={require('../../../../assets/bell.png')} style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconBtn}>
+              <Image source={require('../../../../assets/dots-icon.png')} style={styles.iconDots} />
+            </TouchableOpacity>
+          </View>
         </View>
+      </View>
+      <View style={styles.segmentContainer}>
         <View style={styles.segmentWrap}>
-          <TouchableOpacity onPress={() => setSegment('feed')} style={[styles.segmentBtn, segment === 'feed' && styles.segmentActive]}> 
+          <TouchableOpacity onPress={() => setSegment('feed')} style={[styles.segmentBtn, segment === 'feed' && styles.segmentActive]}>
             <Text style={[styles.segmentTxt, segment === 'feed' && styles.segmentTxtActive]}>News Feed</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSegment('event')} style={[styles.segmentBtn, segment === 'event' && styles.segmentActive]}> 
+          <TouchableOpacity onPress={() => setSegment('event')} style={[styles.segmentBtn, segment === 'event' && styles.segmentActive]}>
             <Text style={[styles.segmentTxt, segment === 'event' && styles.segmentTxtActive]}>Event</Text>
           </TouchableOpacity>
         </View>
@@ -179,10 +183,10 @@ export default function CommunityHomeScreen({ navigation }) {
         />
       ) : (
         <View style={{ flex: 1 }}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterBar} contentContainerStyle={{ paddingHorizontal: moderateScale(12) }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterBar}>
             {FILTERS.map((f) => (
-              <TouchableOpacity key={f} onPress={() => setFilter(f)} style={[styles.filterPill, filter === f && styles.filterPillActive]}>
-                <Text style={[styles.filterTxt, filter === f && styles.filterTxtActive]}>{f}</Text>
+              <TouchableOpacity key={f} onPress={() => setFilter(f)} style={[styles.filterCard, filter === f && styles.filterCardActive]}>
+                <Text style={[styles.filterCardText, filter === f && styles.filterCardTextActive]}>{f}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -318,15 +322,24 @@ function LeaderboardCard() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F5EDE8' },
-  topHeader: { paddingHorizontal: moderateScale(16), paddingTop: moderateScale(4), paddingBottom: moderateScale(8) },
-  profileRow: { flexDirection: 'row', alignItems: 'center' },
+  topHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(16),
+    paddingTop: moderateScale(4),
+    paddingBottom: moderateScale(8),
+  },
+  profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   avatar: { width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), marginRight: moderateScale(12) },
   greet: { fontSize: moderateScale(16), fontWeight: '700', color: '#222' },
   sub: { fontSize: moderateScale(12), color: '#6E6E6E', marginTop: 2 },
+  headerRight: { flexDirection: 'row', alignItems: 'center' },
   iconBtn: { width: moderateScale(34), height: moderateScale(34), borderRadius: moderateScale(17), backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: moderateScale(8), borderWidth: 1, borderColor: '#EFE7E1' },
   icon: { width: moderateScale(18), height: moderateScale(18), resizeMode: 'contain' },
   iconDots: { width: moderateScale(20), height: moderateScale(20), resizeMode: 'contain' },
-  segmentWrap: { flexDirection: 'row', marginTop: moderateScale(16), backgroundColor: '#E9DFD9', padding: 4, borderRadius: 14, alignSelf: 'flex-start' },
+  segmentContainer: { paddingHorizontal: moderateScale(16), paddingTop: moderateScale(12) },
+  segmentWrap: { flexDirection: 'row', backgroundColor: '#E9DFD9', padding: 4, borderRadius: 14, alignSelf: 'flex-start' },
   segmentBtn: { paddingVertical: 6, paddingHorizontal: 18, borderRadius: 12 },
   segmentActive: { backgroundColor: '#FFFFFF' },
   segmentTxt: { fontSize: moderateScale(13), fontWeight: '600', color: '#7A6A61' },
@@ -334,11 +347,27 @@ const styles = StyleSheet.create({
   feedList: { padding: moderateScale(16), paddingBottom: moderateScale(120) },
   fab: { position: 'absolute', right: moderateScale(18), bottom: moderateScale(28), width: moderateScale(50), height: moderateScale(50), borderRadius: moderateScale(10), backgroundColor: '#8B5C2A', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.15, shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 6 },
   fabTxt: { color: '#fff', fontSize: moderateScale(20), fontWeight: '700' },
-  filterBar: { marginBottom: moderateScale(8) },
-  filterPill: { paddingVertical: 6, paddingHorizontal: 14, backgroundColor: '#E9DFD9', borderRadius: 16, marginRight: 8 },
-  filterPillActive: { backgroundColor: '#8B5C2A' },
-  filterTxt: { color: '#7A6A61', fontWeight: '600', fontSize: moderateScale(12) },
-  filterTxtActive: { color: '#FFFFFF' },
+  filterBar: { paddingVertical: moderateScale(12), paddingHorizontal: moderateScale(16) },
+  filterCard: {
+    width: moderateScale(80),
+    height: moderateScale(100),
+    borderRadius: moderateScale(12),
+    backgroundColor: '#E9DFD9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: moderateScale(10),
+  },
+  filterCardActive: {
+    backgroundColor: '#8B5C2A',
+  },
+  filterCardText: {
+    color: '#7A6A61',
+    fontWeight: '600',
+    fontSize: moderateScale(14),
+  },
+  filterCardTextActive: {
+    color: '#FFFFFF',
+  },
   eventList: { paddingHorizontal: moderateScale(16), paddingBottom: moderateScale(40) },
   eventCard: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: moderateScale(16), marginBottom: moderateScale(14), borderWidth: 1, borderColor: '#EFE7E1' },
   club: { fontSize: moderateScale(14), fontWeight: '700', color: '#222' },
