@@ -10,6 +10,7 @@ import {
   RefreshControl,
   ScrollView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // <-- added
 import {
   moderateScale,
   horizontalScale,
@@ -86,6 +87,8 @@ const mockEvents = [
 const FILTERS = ["All", "Match", "Active", "Upcoming", "Finish"];
 
 export default function CommunityHomeScreen({ navigation }) {
+  const insets = useSafeAreaInsets(); // <-- added
+
   const [segment, setSegment] = useState("feed");
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -158,6 +161,7 @@ export default function CommunityHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
+      {/* override paddingTop with inset to avoid double/top-gap */}
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
@@ -482,7 +486,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: horizontalScale(20),
-    paddingTop: verticalScale(40),
+    paddingTop: verticalScale(15),
     paddingBottom: verticalScale(12),
   },
   headerLeftRow: {

@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: horizontalScale(20),
-    paddingTop: verticalScale(40),
+    paddingTop: verticalScale(53),
     paddingBottom: verticalScale(12),
   },
   headerLeftRow: {
