@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { moderateScale } from '../../../utils/dimensions';
+import { colors } from '../../../utils/theme';
 import PostCard from '../../../components/PostCard';
 import { fetchFeed, likePost } from '../../../services/communityService';
 
@@ -325,7 +326,7 @@ function LeaderboardCard() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F5EDE8' },
+  safe: { flex: 1, backgroundColor: colors.bg },
   topHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -336,19 +337,19 @@ const styles = StyleSheet.create({
   },
   profileRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   avatar: { width: moderateScale(44), height: moderateScale(44), borderRadius: moderateScale(22), marginRight: moderateScale(12) },
-  greet: { fontSize: moderateScale(16), fontWeight: '700', color: '#222' },
-  sub: { fontSize: moderateScale(12), color: '#6E6E6E', marginTop: 2 },
+  greet: { fontSize: moderateScale(16), fontWeight: '700', color: colors.text },
+  sub: { fontSize: moderateScale(12), color: colors.textMute, marginTop: 2 },
   headerRight: { flexDirection: 'row', alignItems: 'center' },
   iconBtn: { width: moderateScale(34), height: moderateScale(34), borderRadius: moderateScale(17), backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: moderateScale(8), borderWidth: 1, borderColor: '#EFE7E1' },
-  icon: { width: moderateScale(18), height: moderateScale(18), resizeMode: 'contain' },
-  iconDots: { width: moderateScale(20), height: moderateScale(20), resizeMode: 'contain' },
+  icon: { width: moderateScale(18), height: moderateScale(18), resizeMode: 'contain', tintColor: colors.text },
+  iconDots: { width: moderateScale(20), height: moderateScale(20), resizeMode: 'contain', tintColor: colors.text },
   notificationDot: { position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#E33', },
   segmentContainer: { paddingHorizontal: moderateScale(16), paddingTop: moderateScale(12), paddingBottom: moderateScale(8) },
   segmentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   segmentItem: { flex: 1, alignItems: 'center', paddingVertical: moderateScale(8) },
-  segmentTxt: { fontSize: moderateScale(16), fontWeight: '700', color: '#7A6A61' },
-  segmentTxtActive: { color: '#1E2250' },
-  segmentUnderline: { height: 2, backgroundColor: '#D7A66B', width: '50%', marginTop: moderateScale(8), borderRadius: 2 },
+  segmentTxt: { fontSize: moderateScale(15), fontWeight: '700', color: colors.textMute },
+  segmentTxtActive: { color: colors.text },
+  segmentUnderline: { height: 2, backgroundColor: colors.accent, width: '50%', marginTop: moderateScale(8), borderRadius: 2 },
   segmentUnderlineRight: { marginLeft: '50%' },
   feedList: { padding: moderateScale(16), paddingBottom: moderateScale(120) },
   fab: { position: 'absolute', right: moderateScale(18), bottom: moderateScale(28), width: moderateScale(50), height: moderateScale(50), borderRadius: moderateScale(10), backgroundColor: '#8B5C2A', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.15, shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 6 },
