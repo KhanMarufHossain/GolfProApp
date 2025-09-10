@@ -136,25 +136,29 @@ export default function CommunityHomeScreen({ navigation }) {
             <Text style={styles.greet}>Hey, Player 👋</Text>
             <Text style={styles.sub}>Choose your playground</Text>
           </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconBtn}>
-              <Image source={require('../../../../assets/bell.png')} style={styles.icon} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconBtn}>
-              <Image source={require('../../../../assets/dots-icon.png')} style={styles.iconDots} />
-            </TouchableOpacity>
-          </View>
+        </View>
+
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconBtn}>
+            <Image source={require('../../../../assets/bell.png')} style={styles.icon} />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconBtn}>
+            <Image source={require('../../../../assets/dots-icon.png')} style={styles.iconDots} />
+          </TouchableOpacity>
         </View>
       </View>
+
       <View style={styles.segmentContainer}>
-        <View style={styles.segmentWrap}>
-          <TouchableOpacity onPress={() => setSegment('feed')} style={[styles.segmentBtn, segment === 'feed' && styles.segmentActive]}>
+        <View style={styles.segmentRow}>
+          <TouchableOpacity onPress={() => setSegment('feed')} style={styles.segmentItem}>
             <Text style={[styles.segmentTxt, segment === 'feed' && styles.segmentTxtActive]}>News Feed</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSegment('event')} style={[styles.segmentBtn, segment === 'event' && styles.segmentActive]}>
+          <TouchableOpacity onPress={() => setSegment('event')} style={styles.segmentItem}>
             <Text style={[styles.segmentTxt, segment === 'event' && styles.segmentTxtActive]}>Event</Text>
           </TouchableOpacity>
         </View>
+        <View style={[styles.segmentUnderline, segment === 'event' && styles.segmentUnderlineRight]} />
       </View>
 
       {segment === 'feed' ? (
@@ -338,12 +342,14 @@ const styles = StyleSheet.create({
   iconBtn: { width: moderateScale(34), height: moderateScale(34), borderRadius: moderateScale(17), backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: moderateScale(8), borderWidth: 1, borderColor: '#EFE7E1' },
   icon: { width: moderateScale(18), height: moderateScale(18), resizeMode: 'contain' },
   iconDots: { width: moderateScale(20), height: moderateScale(20), resizeMode: 'contain' },
-  segmentContainer: { paddingHorizontal: moderateScale(16), paddingTop: moderateScale(12) },
-  segmentWrap: { flexDirection: 'row', backgroundColor: '#E9DFD9', padding: 4, borderRadius: 14, alignSelf: 'flex-start' },
-  segmentBtn: { paddingVertical: 6, paddingHorizontal: 18, borderRadius: 12 },
-  segmentActive: { backgroundColor: '#FFFFFF' },
-  segmentTxt: { fontSize: moderateScale(13), fontWeight: '600', color: '#7A6A61' },
-  segmentTxtActive: { color: '#8B5C2A' },
+  notificationDot: { position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#E33', },
+  segmentContainer: { paddingHorizontal: moderateScale(16), paddingTop: moderateScale(12), paddingBottom: moderateScale(8) },
+  segmentRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  segmentItem: { flex: 1, alignItems: 'center', paddingVertical: moderateScale(8) },
+  segmentTxt: { fontSize: moderateScale(16), fontWeight: '700', color: '#7A6A61' },
+  segmentTxtActive: { color: '#1E2250' },
+  segmentUnderline: { height: 2, backgroundColor: '#D7A66B', width: '50%', marginTop: moderateScale(8), borderRadius: 2 },
+  segmentUnderlineRight: { marginLeft: '50%' },
   feedList: { padding: moderateScale(16), paddingBottom: moderateScale(120) },
   fab: { position: 'absolute', right: moderateScale(18), bottom: moderateScale(28), width: moderateScale(50), height: moderateScale(50), borderRadius: moderateScale(10), backgroundColor: '#8B5C2A', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.15, shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 6 },
   fabTxt: { color: '#fff', fontSize: moderateScale(20), fontWeight: '700' },
