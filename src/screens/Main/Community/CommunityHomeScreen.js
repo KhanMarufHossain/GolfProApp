@@ -159,8 +159,8 @@ export default function CommunityHomeScreen({ navigation }) {
   }, [feed, events]);
 
   return (
-    <SafeAreaView style={styles.safe}>
-      {/* Header */}
+    
+      <View style={{flex : 1, backgroundColor: colors.bg}}>
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
@@ -332,8 +332,8 @@ export default function CommunityHomeScreen({ navigation }) {
         >
           <Text style={styles.fabTxt}>✎</Text>
         </TouchableOpacity>
-      )}
-    </SafeAreaView>
+      )}</View>
+    
   );
 }
 
@@ -536,7 +536,7 @@ function LeaderboardCard() {
 }
 
 const styles = StyleSheet.create({
-  safe: { floex: 1, backgroundColor: colors.bg },
+
 
   // Header styles
   header: {
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: horizontalScale(20),
-    paddingTop: verticalScale(15),
+    paddingTop: verticalScale(50),
     paddingBottom: verticalScale(12),
   },
   headerLeftRow: {
@@ -562,23 +562,24 @@ const styles = StyleSheet.create({
   avatar: { width: "100%", height: "100%" },
   headerTexts: { flex: 1 },
   greeting: { fontSize: moderateScale(18), fontWeight: "600", color: "#222" },
-  sub: { color: colors.textMute, marginTop: verticalScale(4) },
+  sub: { color: colors.textMute, marginTop: verticalScale(4), fontSize: moderateScale(13) },
   headerRightRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   iconButton: {
     marginLeft: horizontalScale(16),
-    padding: 5,
+    padding: moderateScale(6),
   },
   headerIcon: {
-    width: moderateScale(24),
-    height: moderateScale(24),
+    width: moderateScale(22),
+    height: moderateScale(22),
+    resizeMode: "contain",
   },
   notificationDot: {
     position: "absolute",
-    top: 5,
-    right: 5,
+    top: verticalScale(4),
+    right: horizontalScale(4),
     width: moderateScale(8),
     height: moderateScale(8),
     borderRadius: moderateScale(4),
@@ -608,19 +609,19 @@ const styles = StyleSheet.create({
   },
   segmentTxtActive: { color: colors.text },
   segmentUnderline: {
-    height: 2,
+    height: verticalScale(2),
     backgroundColor: colors.accent,
     width: "50%",
     marginTop: moderateScale(8),
-    borderRadius: 2,
+    borderRadius: moderateScale(2),
   },
   segmentUnderlineRight: { marginLeft: "50%" },
 
-  // News Feed styles (unchanged)
+  // News Feed styles (unchanged structure, responsive sizes)
   feedList: { padding: moderateScale(16), paddingBottom: moderateScale(120) },
   fab: {
     position: "absolute",
-    right: moderateScale(18),
+    right: horizontalScale(18),
     width: moderateScale(50),
     height: moderateScale(50),
     borderRadius: moderateScale(10),
@@ -629,8 +630,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     shadowColor: "#000",
     shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: moderateScale(4) },
+    shadowRadius: moderateScale(8),
     elevation: 6,
   },
   fabTxt: { color: "#fff", fontSize: moderateScale(20), fontWeight: "700" },
@@ -643,18 +644,18 @@ const styles = StyleSheet.create({
 
   // Filter pills
   filterScrollView: {
-    maxHeight: moderateScale(60),
+    maxHeight: moderateScale(72),
   },
   filterContainer: {
     paddingHorizontal: moderateScale(14),
-    paddingVertical: moderateScale(0),
-    height: 50,
+    paddingVertical: moderateScale(6),
+    height: verticalScale(50),
     alignItems: "center",
   },
   filterPill: {
     backgroundColor: "#8B5C2A",
-    paddingHorizontal: moderateScale(20),
-    paddingVertical: moderateScale(8),
+    paddingHorizontal: moderateScale(18),
+    paddingVertical: verticalScale(8),
     borderRadius: moderateScale(20),
     marginRight: moderateScale(10),
     minWidth: moderateScale(60),
@@ -679,16 +680,16 @@ const styles = StyleSheet.create({
     paddingTop: moderateScale(8),
   },
 
-  // Event card styles (matching Figma exactly)
+  // Event card styles (matching Figma exactly, scaled)
   eventCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: moderateScale(16),
     padding: moderateScale(16),
     marginBottom: moderateScale(16),
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: moderateScale(2) },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: moderateScale(4),
     elevation: 3,
   },
 
@@ -721,12 +722,14 @@ const styles = StyleSheet.create({
   clubLocation: {
     fontSize: moderateScale(13),
     color: "#666",
-    marginTop: 2,
+    marginTop: verticalScale(2),
   },
   statusBadge: {
     paddingHorizontal: moderateScale(8),
-    paddingVertical: moderateScale(4),
+    paddingVertical: verticalScale(4),
     borderRadius: moderateScale(12),
+    minWidth: moderateScale(64),
+    alignItems: "center",
   },
   statusText: {
     color: "#FFFFFF",
@@ -759,7 +762,7 @@ const styles = StyleSheet.create({
     paddingVertical: moderateScale(8),
   },
   eventTypeIcon: {
-    fontSize: moderateScale(20),
+    fontSize: moderateScale(18),
     marginHorizontal: moderateScale(8),
   },
   eventTypeText: {
@@ -776,7 +779,7 @@ const styles = StyleSheet.create({
   actionButton: {
     backgroundColor: "#F5EDE8",
     paddingHorizontal: moderateScale(12),
-    paddingVertical: moderateScale(8),
+    paddingVertical: verticalScale(8),
     borderRadius: moderateScale(8),
     marginRight: moderateScale(10),
     flexDirection: "row",
@@ -794,9 +797,11 @@ const styles = StyleSheet.create({
   joinButton: {
     backgroundColor: "#8B5C2A",
     paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(8),
+    paddingVertical: verticalScale(8),
     borderRadius: moderateScale(8),
     marginLeft: "auto",
+    minWidth: moderateScale(80),
+    alignItems: "center",
   },
   joinButtonText: {
     color: "#FFFFFF",
@@ -804,53 +809,53 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  // Legacy styles for inline components (unchanged)
+  // Legacy styles for inline components (scaled)
   club: { fontSize: moderateScale(14), fontWeight: "700", color: "#222" },
-  location: { fontSize: moderateScale(12), color: "#6E6E6E", marginTop: 2 },
+  location: { fontSize: moderateScale(12), color: "#6E6E6E", marginTop: verticalScale(2) },
   rowMeta: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: moderateScale(10),
   },
   metaDate: { fontSize: moderateScale(11), color: "#5A5A5A" },
-  metaDot: { marginHorizontal: 6, color: "#5A5A5A" },
+  metaDot: { marginHorizontal: moderateScale(6), color: "#5A5A5A" },
   metaTime: { fontSize: moderateScale(11), color: "#5A5A5A" },
   inlineEventCard: {
     backgroundColor: "#fff",
-    borderRadius: 14,
+    borderRadius: moderateScale(14),
     padding: moderateScale(14),
     borderWidth: 1,
     borderColor: "#EFE7E1",
     marginBottom: moderateScale(14),
   },
   playerList: { marginTop: moderateScale(12) },
-  playerRow: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
+  playerRow: { flexDirection: "row", alignItems: "center", marginBottom: moderateScale(6) },
   rankCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: moderateScale(26),
+    height: moderateScale(26),
+    borderRadius: moderateScale(13),
     backgroundColor: "#E9DFD9",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 10,
+    marginRight: moderateScale(10),
   },
   rankGold: { backgroundColor: "#D9B24A33" },
   rankSilver: { backgroundColor: "#C0C0C033" },
   rankBronze: { backgroundColor: "#CD7F3233" },
-  rankTxt: { fontSize: 12, fontWeight: "700", color: "#8B5C2A" },
-  playerName: { flex: 1, fontSize: 12, fontWeight: "600", color: "#222" },
-  playerScore: { fontSize: 12, fontWeight: "600", color: "#222" },
+  rankTxt: { fontSize: moderateScale(12), fontWeight: "700", color: "#8B5C2A" },
+  playerName: { flex: 1, fontSize: moderateScale(12), fontWeight: "600", color: "#222" },
+  playerScore: { fontSize: moderateScale(12), fontWeight: "600", color: "#222" },
   inlineBtn: {
     marginTop: moderateScale(10),
     backgroundColor: "#F5EDE8",
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingVertical: verticalScale(10),
+    borderRadius: moderateScale(10),
     alignItems: "center",
   },
-  inlineBtnTxt: { color: "#8B5C2A", fontWeight: "600", fontSize: 12 },
+  inlineBtnTxt: { color: "#8B5C2A", fontWeight: "600", fontSize: moderateScale(12) },
   roundStatsCard: {
     backgroundColor: "#fff",
-    borderRadius: 14,
+    borderRadius: moderateScale(14),
     padding: moderateScale(14),
     borderWidth: 1,
     borderColor: "#EFE7E1",
@@ -861,14 +866,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: moderateScale(12),
   },
-  statsSub: { fontSize: 12, fontWeight: "600", color: "#6E6E6E" },
+  statsSub: { fontSize: moderateScale(12), fontWeight: "600", color: "#6E6E6E" },
   statsRowWrap: { flexDirection: "row", justifyContent: "space-between" },
   statItem: { alignItems: "center", flex: 1 },
-  statValue: { fontSize: 16, fontWeight: "700", color: "#222" },
-  statLabel: { marginTop: 4, fontSize: 11, color: "#6E6E6E" },
+  statValue: { fontSize: moderateScale(16), fontWeight: "700", color: "#222" },
+  statLabel: { marginTop: verticalScale(4), fontSize: moderateScale(11), color: "#6E6E6E" },
   leaderboardCard: {
     backgroundColor: "#fff",
-    borderRadius: 14,
+    borderRadius: moderateScale(14),
     padding: moderateScale(14),
     borderWidth: 1,
     borderColor: "#EFE7E1",
