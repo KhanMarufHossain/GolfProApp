@@ -12,6 +12,9 @@ import PostDetailScreen from '../Community/PostDetailScreen';
 import ClubMembersScreen from './ClubMembersScreen';
 import CoursePlayedScreen from './CoursePlayedScreen';
 import ChatThreadScreen from './ChatThreadScreen';
+import MapScreen from '../MapScreen';
+import LeaderboardScreen from '../LeaderboardScreen';
+import TrophyRoomScreen from '../TrophyRoomScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +34,10 @@ export default function ProfileStack() {
       <Stack.Screen name="ChatThread" component={ChatThreadScreen} />
       <Stack.Screen name="ClubMembers" component={ClubMembersScreen} />
       <Stack.Screen name="CoursePlayed" component={CoursePlayedScreen} />
+      {/* Shared routes for overflow menu so club users can navigate without Play tab */}
+      <Stack.Screen name="Map" component={MapScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Stack.Screen name="TrophyRoom" component={TrophyRoomScreen} />
     </Stack.Navigator>
   );
 }

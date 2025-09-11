@@ -2,18 +2,47 @@ import React from 'react';
 import { Modal, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../utils/dimensions';
 import { colors } from '../utils/theme';
+import { useUser } from '../context/UserContext';
 
-export default function OverflowMenu({ visible, onClose, onSelect }) {
-  const items = [
+export default function OverflowMenu({ visible, onClose, onSelect, navigation }) {
+  const { userType } = useUser();
+  const isClub = userType === 'club';
+
+  const baseItems = [
     { key: 'Settings', label: 'Settings', icon: require('../../assets/settings-icon.png'), route: 'Settings' },
     { key: 'Map', label: 'Map', icon: require('../../assets/map-icon.png'), route: 'Map' },
     { key: 'Leaderboard', label: 'Leaderboard', icon: require('../../assets/leaderboard-icon.png'), route: 'Leaderboard' },
     { key: 'TrophyRoom', label: 'Trophy Room', icon: require('../../assets/trophy-icon.png'), route: 'TrophyRoom' },
   ];
+  const items = isClub ? baseItems.filter(i => i.key !== 'Settings') : baseItems;
 
   const handle = (route) => {
     onClose && onClose();
-    onSelect && onSelect(route);
+    // Prefer caller-provided routing
+    if (onSelect) {
+      onSelect(route);
+      return;
+    }
+    // Smart default routing
+    if (navigation) {
+      try {
+        const state = navigation.getState ? navigation.getState() : null;
+        const routeNames = state?.routeNames || [];
+        if (routeNames.includes(route)) {
+          navigation.navigate(route);
+          return;
+        }
+        if (routeNames.includes('Play')) {
+          navigation.navigate('Play', { screen: route });
+          return;
+        }
+        // Fallback: try direct
+        navigation.navigate(route);
+      } catch (e) {
+        // Last resort
+        navigation.navigate(route);
+      }
+    }
   };
 
   return (

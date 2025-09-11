@@ -117,7 +117,9 @@ export default function LeaderboardScreen({ navigation }) {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}><Text style={styles.backTxt}>{'<'}</Text></TouchableOpacity>
         <View style={{alignSelf: 'center', marginRight: 135,}}><Text style={styles.headerTitle}>Leaderboard</Text></View>
-        
+        <TouchableOpacity onPress={() => setMenuVisible(true)} style={styles.headerRight}>
+          <Image source={require('../../../assets/dots-icon.png')} style={styles.headerIcon} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>

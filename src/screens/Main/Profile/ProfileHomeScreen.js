@@ -355,11 +355,16 @@ const ProfileHomeScreen = ({ navigation }) => {
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
         onSelect={(route) => {
-          if (['Map','Leaderboard','TrophyRoom','Settings'].includes(route)) {
-            navigation?.navigate('Play', { screen: route });
-          } else {
-            navigation?.navigate(route);
+          if (["Map","Leaderboard","TrophyRoom"].includes(route)) {
+            navigation.navigate(route);
+            return;
           }
+          if (route === 'Settings') {
+            // Club uses Settings tab; golfer can also reach Settings tab via MainTabs
+            navigation.navigate('Settings');
+            return;
+          }
+          navigation.navigate(route);
         }}
       />
     </View>
