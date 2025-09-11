@@ -480,7 +480,7 @@ function LeaderboardCard() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
+  safe: {  backgroundColor: colors.bg },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
