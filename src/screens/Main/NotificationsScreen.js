@@ -71,11 +71,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+    paddingTop: verticalScale(50),
     
   },
   header: {
     height: verticalScale(56),
     flexDirection: 'row',
+    
     paddingTop: verticalScale(10),
     alignItems: 'center',
     justifyContent: 'space-between',
