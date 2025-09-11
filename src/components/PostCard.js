@@ -11,7 +11,7 @@ export default function PostCard({ post, onPress, onLike, onComment, style, init
     onToggleAdd && onToggleAdd(next, post?.user);
   };
   return (
-    <TouchableOpacity activeOpacity={0.95} onPress={onPress} style={[styles.card, style]}>
+    <View style={[styles.card, style]}>
       <View style={styles.header}>
         <Image source={post.user?.avatar} style={styles.avatar} />
         <View style={{ marginLeft: 12, flex: 1 }}>
@@ -47,7 +47,7 @@ export default function PostCard({ post, onPress, onLike, onComment, style, init
           </TouchableOpacity>
         </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }
 

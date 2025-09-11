@@ -318,6 +318,7 @@ export default function CommunityHomeScreen({ navigation }) {
               <EventCard
                 event={item}
                 onToggleJoin={() => toggleJoin(item.id)}
+                navigation={navigation}
               />
             )}
           />
@@ -337,7 +338,7 @@ export default function CommunityHomeScreen({ navigation }) {
   );
 }
 
-function EventCard({ event, onToggleJoin }) {
+function EventCard({ event, onToggleJoin, navigation }) {
   const getStatusIcon = () => {
     switch (event.status) {
       case "joined":
@@ -358,6 +359,23 @@ function EventCard({ event, onToggleJoin }) {
       default:
         return "#8B5C2A";
     }
+  };
+
+  const navigateToCourse = () => {
+    const courseData = {
+      id: event.id,
+      name: event.club,
+      title: event.club,
+      location: event.location,
+      image: require('../../../../assets/golfField.png'),
+      holes: 18,
+      lengthYards: 6599,
+      rating: 70.4,
+      slope: 115,
+      isPublic: true,
+      rank: 1
+    };
+    navigation.navigate('PlayStack', { screen: 'Course', params: { course: courseData } });
   };
 
   return (
@@ -423,7 +441,7 @@ function EventCard({ event, onToggleJoin }) {
 
       {/* Action Buttons */}
       <View style={styles.actionButtonsRow}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={navigateToCourse}>
           <Image source={require('../../../../assets/Flag.png')} style={styles.actionButtonIconImg} />
           <Text style={styles.actionButtonText}>Course View</Text>
         </TouchableOpacity>
