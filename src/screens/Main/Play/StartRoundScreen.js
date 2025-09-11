@@ -8,11 +8,11 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
+import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
-import playersService from '../../services/playersService';
-import roundsService from '../../services/roundsService';
-import PlayIcon from '../../../assets/play.svg';
+import playersService from '../../../services/playersService';
+import roundsService from '../../../services/roundsService';
+import PlayIcon from '../../../../assets/play.svg';
 
 export default function StartRoundScreen({ navigation, route }) {
   const course = route?.params?.course || { name: 'Course Name' };
@@ -54,7 +54,7 @@ export default function StartRoundScreen({ navigation, route }) {
   const renderFriend = ({ item }) => (
     <View style={styles.friendRow}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Image source={item.avatar ? { uri: item.avatar } : require('../../../assets/icon.png')} style={styles.friendAvatar} />
+        <Image source={item.avatar ? { uri: item.avatar } : require('../../../../assets/icon.png')} style={styles.friendAvatar} />
         <View style={{ marginLeft: horizontalScale(12) }}>
           <Text style={styles.friendName}>{item.name}</Text>
           <Text style={styles.friendHcp}>HCP {item.hcp}</Text>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import StrokeModal from '../../components/StrokeModal';
-import PuttModal from '../../components/PuttModal';
-import HoleOutModal from '../../components/HoleOutModal';
+import StrokeModal from '../../../components/StrokeModal';
+import PuttModal from '../../../components/PuttModal';
+import HoleOutModal from '../../../components/HoleOutModal';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
+import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import Svg, { Path } from 'react-native-svg';
 
 // Placeholder for the target icon, assuming Frame 2147226375.svg is this.
@@ -33,7 +33,7 @@ export default function ActiveRoundScreen({ route, navigation }) {
   const mockRound = {
     course: {
       name: 'Mock Golf Club',
-      image: require('../../../assets/coursePreviewimage.png'),
+      image: require('../../../../assets/coursePreviewimage.png'),
     },
     hole: {
       number: 1,
@@ -48,7 +48,7 @@ export default function ActiveRoundScreen({ route, navigation }) {
       {
         id: 'p1',
         name: 'John Blake',
-        avatar: require('../../../assets/man.png'),
+        avatar: require('../../../../assets/man.png'),
         shots: [
           { id: 's1', from: { x: 0.5, y: 0.92 }, to: { x: 0.45, y: 0.4 }, distance: 167 },
           { id: 's2', from: { x: 0.45, y: 0.4 }, to: { x: 0.48, y: 0.25 }, distance: 25 },

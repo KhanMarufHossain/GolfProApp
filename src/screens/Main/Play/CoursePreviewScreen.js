@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
+import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 // Note: we'll use the same back button style used in AddPlayerScreen for pixel match
 
 export default function CoursePreviewScreen({ route, navigation }) {
@@ -17,7 +17,7 @@ export default function CoursePreviewScreen({ route, navigation }) {
   const mockCourse = {
     id: 'mock-1',
     name: 'Mock Golf Club',
-    image: require('../../../assets/golfField.png'),
+    image: require('../../../../assets/golfField.png'),
     holes: [
       {
         number: 1,
@@ -64,7 +64,7 @@ export default function CoursePreviewScreen({ route, navigation }) {
     setHoleIndex((i) => Math.min(holes.length - 1, i + 1));
   }
 
-  const imageSource = course.image || require('../../../assets/golfField.png');
+  const imageSource = course.image || require('../../../../assets/golfField.png');
 
   const teePx = pixelPos(hole.tee);
   const pinPx = pixelPos(hole.pin);

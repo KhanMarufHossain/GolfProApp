@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, Image, StyleSheet } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
+import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 
 const data = new Array(8).fill(0).map((_, i) => ({ id: i, name: `Player ${i + 1}` }));
 
@@ -38,13 +38,13 @@ export default function AddPlayerScreen({ navigation }) {
           renderItem={({ item }) => (
             <View style={styles.row}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image source={require('../../../assets/icon.png')} style={styles.avatar} />
+                <Image source={require('../../../../assets/icon.png')} style={styles.avatar} />
                 <View style={{ marginLeft: horizontalScale(12) }}>
                   <Text style={{ fontWeight: '600', fontSize: moderateScale(15) }}>{item.name}</Text>
                   <Text style={{ color: '#888', fontSize: moderateScale(13) }}>Handicap 17</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate('CoursePreview')}>
+              <TouchableOpacity style={styles.addBtn} onPress={() => navigation.goBack()}>
                 <Text style={{ color: '#fff' }}>Add</Text>
               </TouchableOpacity>
             </View>

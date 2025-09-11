@@ -1,17 +1,17 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import PlayScreen from './PlayScreen';
-import CourseScreen from './CourseScreen';
-import AddPlayerScreen from './AddPlayerScreen';
-import CoursePreviewScreen from './CoursePreviewScreen';
+import PlayScreen from './Play/PlayScreen';
+import CourseScreen from './Play/CourseScreen';
+import AddPlayerScreen from './Play/AddPlayerScreen';
+import CoursePreviewScreen from './Play/CoursePreviewScreen';
 import MapScreen from './MapScreen';
 import NotificationsScreen from './NotificationsScreen';
 import SettingsScreen from './SettingsScreen';
 import LeaderboardScreen from './LeaderboardScreen';
 import TrophyRoomScreen from './TrophyRoomScreen';
-import StartRoundScreen from './StartRoundScreen';
-import ActiveRoundScreen from './ActiveRoundScreen';
-import ScoreCardScreen from './ScoreCardScreen';
+import StartRoundScreen from './Play/StartRoundScreen';
+import ActiveRoundScreen from './Play/ActiveRoundScreen';
+import ScoreCardScreen from './Play/ScoreCardScreen';
 
 const Stack = createStackNavigator();
 

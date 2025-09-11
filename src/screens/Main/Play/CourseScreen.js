@@ -14,12 +14,12 @@ import {
   horizontalScale,
   verticalScale,
   moderateScale,
-} from "../../utils/dimensions";
+} from "../../../utils/dimensions";
 
 export default function CourseScreen({ navigation, route }) {
   const course = route?.params?.course || {};
   const {
-    image = require("../../../assets/golfField.png"),
+    image = require("../../../../assets/golfField.png"),
     name = course.title || course.name || "Course Name",
     isPublic = course.isPublic ?? true,
     rank = course.rank || 1,
@@ -58,7 +58,7 @@ export default function CourseScreen({ navigation, route }) {
         )}
         <View style={styles.avatarRowAbs}>
           <Image
-            source={require("../../../assets/man.png")}
+            source={require("../../../../assets/man.png")}
             style={styles.smallAvatar}
           />
           <View style={styles.avatarStack}>
@@ -86,7 +86,7 @@ export default function CourseScreen({ navigation, route }) {
           <View style={styles.headerRow}>
             <View style={{ flex: 1 }}>
               <View style={styles.locationRow}>
-                <Image source={require('../../../assets/location.png')} style={styles.locationIcon} />
+                <Image source={require('../../../../assets/location.png')} style={styles.locationIcon} />
                 <Text style={styles.locationLabel}>Palm Hill Golf Club</Text>
               </View>
               <Text style={styles.courseName}>{name}</Text>
@@ -120,14 +120,14 @@ export default function CourseScreen({ navigation, route }) {
               style={styles.smallAction}
               onPress={() => navigation.navigate('CoursePreview', { course })}
             >
-              <Image source={require('../../../assets/coursepreview.png')} style={styles.actionIcon} />
+              <Image source={require('../../../../assets/coursepreview.png')} style={styles.actionIcon} />
               <Text style={styles.smallActionTxt}>Course Preview</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.smallAction}
               onPress={() => navigation.navigate('AddPlayer', { course })}
             >
-              <Image source={require('../../../assets/addplayer.png')} style={styles.actionIcon} />
+              <Image source={require('../../../../assets/addplayer.png')} style={styles.actionIcon} />
               <Text style={styles.smallActionTxt}>Add Player</Text>
             </TouchableOpacity>
           </View>
@@ -138,7 +138,7 @@ export default function CourseScreen({ navigation, route }) {
               navigation.navigate('StartRound', { course: { id: course.id, name, image, isPublic, rank, lengthYards, rating, slope, holes } });
             }}
           >
-            <Image source={require('../../../assets/startround.png')} style={styles.startIcon} />
+            <Image source={require('../../../../assets/startround.png')} style={styles.startIcon} />
             <Text style={styles.startTxt}>Start Round</Text>
           </TouchableOpacity>
         </View>

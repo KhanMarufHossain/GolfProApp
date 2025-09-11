@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal } from 'react-native';
-import CourseCard from '../../components/CourseCard';
-import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
-import { colors } from '../../utils/theme'; // Add this import if not already present
+import CourseCard from '../../../components/CourseCard';
+import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
+import { colors } from '../../../utils/theme'; // Add this import if not already present
 
 const data = new Array(6).fill(0).map((_, i) => ({
   id: i,
+  name: `Course ${i + 1}`,
   title: `Course ${i + 1}`,
-  image: require('../../../assets/golffield1.jpg'),
+  image: require('../../../../assets/golffield1.jpg'),
   holes: 9,
   distance: `${(1 + i * 0.5).toFixed(1)} miles`,
   location: 'Local Club',
+  clubName: 'Local Club',
+  lengthYards: 6599 + i * 100,
+  rating: 70.4,
+  slope: 115,
+  isPublic: true,
+  rank: i + 1
 }));
 
 export default function PlayScreen({ navigation }) {
@@ -25,12 +32,22 @@ export default function PlayScreen({ navigation }) {
     navigation.navigate(screen);
   };
 
+  const handleSearch = () => {
+    // Handle search functionality - can be expanded based on requirements
+    console.log('Search pressed');
+  };
+
+  const handleFilter = () => {
+    // Handle filter functionality - can be expanded based on requirements
+    console.log('Filter pressed');
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
-            <Image source={require('../../../assets/man.png')} style={styles.avatar} />
+            <Image source={require('../../../../assets/man.png')} style={styles.avatar} />
           </View>
           <View style={styles.headerTexts}>
             <Text style={styles.greeting}>Hey, Player 👋</Text>
@@ -40,22 +57,22 @@ export default function PlayScreen({ navigation }) {
 
         <View style={styles.headerRightRow}>
           <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={styles.iconButton}>
-            <Image source={require('../../../assets/bell.png')} style={styles.headerIcon} />
+            <Image source={require('../../../../assets/bell.png')} style={styles.headerIcon} />
             <View style={styles.notificationDot} />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleMenu} style={styles.iconButton}>
-            <Image source={require('../../../assets/dots-icon.png')} style={styles.headerIcon} />
+            <Image source={require('../../../../assets/dots-icon.png')} style={styles.headerIcon} />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Search row */}
       <View style={styles.searchRow}>
-        <TouchableOpacity style={styles.searchBox} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.searchBox} activeOpacity={0.8} onPress={handleSearch}>
           <Text style={styles.searchText}>🔍  Search Courses</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.filterBtn} activeOpacity={0.8}>
-          <Image source={require('../../../assets/filter.png')} style={styles.filterIcon} />
+        <TouchableOpacity style={styles.filterBtn} activeOpacity={0.8} onPress={handleFilter}>
+          <Image source={require('../../../../assets/filter.png')} style={styles.filterIcon} />
         </TouchableOpacity>
       </View>
 
@@ -65,7 +82,7 @@ export default function PlayScreen({ navigation }) {
           keyExtractor={(i) => String(i.id)}
           contentContainerStyle={{ paddingHorizontal: horizontalScale(20), paddingTop: verticalScale(12) }}
           renderItem={({ item }) => (
-            <CourseCard onPress={() => navigation.navigate('Course')} course={item} />
+            <CourseCard onPress={() => navigation.navigate('Course', { course: item })} course={item} />
           )}
         />
       </View>
@@ -76,28 +93,36 @@ export default function PlayScreen({ navigation }) {
         visible={menuVisible}
         onRequestClose={toggleMenu}
       >
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={toggleMenu}>
-          <View style={styles.menuContainer}>
+        <TouchableOpacity 
+          style={styles.modalOverlay} 
+          activeOpacity={1} 
+          onPress={toggleMenu}
+        >
+          <TouchableOpacity 
+            style={styles.menuContainer} 
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
+          >
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Settings')}>
-              <Image source={require('../../../assets/settings-icon.png')} style={styles.menuIcon} />
+              <Image source={require('../../../../assets/settings-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Settings</Text>
             </TouchableOpacity>
             <View style={styles.menuDivider} />
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Map')}>
-              <Image source={require('../../../assets/map-icon.png')} style={styles.menuIcon} />
+              <Image source={require('../../../../assets/map-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Map</Text>
             </TouchableOpacity>
             <View style={styles.menuDivider} />
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Leaderboard')}>
-              <Image source={require('../../../assets/leaderboard-icon.png')} style={styles.menuIcon} />
+              <Image source={require('../../../../assets/leaderboard-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Leaderboard</Text>
             </TouchableOpacity>
             <View style={styles.menuDivider} />
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('TrophyRoom')}>
-              <Image source={require('../../../assets/trophy-icon.png')} style={styles.menuIcon} />
+              <Image source={require('../../../../assets/trophy-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Trophy Room</Text>
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </SafeAreaView>
@@ -145,12 +170,14 @@ const styles = StyleSheet.create({
   },
   notificationDot: {
     position: "absolute",
-    top: 5,
-    right: 5,
-    width: moderateScale(8),
-    height: moderateScale(8),
-    borderRadius: moderateScale(4),
-    backgroundColor: "red",
+    top: 3,
+    right: 3,
+    width: moderateScale(10),
+    height: moderateScale(10),
+    borderRadius: moderateScale(5),
+    backgroundColor: "#FF4444",
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   searchRow: {
     paddingHorizontal: horizontalScale(20),
@@ -186,41 +213,45 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    paddingTop: verticalScale(56), // reduced for closer alignment
-    paddingRight: horizontalScale(6), // reduced for closer alignment
+    paddingTop: verticalScale(100), // Position below header
+    paddingRight: horizontalScale(20), // Align with right edge
   },
   menuContainer: {
     backgroundColor: 'white',
     borderRadius: moderateScale(12),
-    padding: moderateScale(10),
-    width: horizontalScale(200),
+    paddingVertical: moderateScale(8),
+    paddingHorizontal: moderateScale(4),
+    width: horizontalScale(180),
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: verticalScale(12),
-    paddingHorizontal: horizontalScale(10),
+    paddingVertical: verticalScale(14),
+    paddingHorizontal: horizontalScale(16),
+    borderRadius: moderateScale(8),
   },
   menuIcon: {
-    width: moderateScale(20),
-    height: moderateScale(20),
-    marginRight: horizontalScale(15),
+    width: moderateScale(18),
+    height: moderateScale(18),
+    marginRight: horizontalScale(12),
     tintColor: '#333'
   },
   menuText: {
-    fontSize: moderateScale(16),
+    fontSize: moderateScale(15),
     color: '#333',
+    fontWeight: '500',
   },
   menuDivider: {
     height: 1,
     backgroundColor: '#f0f0f0',
+    marginHorizontal: horizontalScale(12),
   },
 });
