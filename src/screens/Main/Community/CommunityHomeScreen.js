@@ -381,7 +381,10 @@ function EventCard({ event, onToggleJoin }) {
               { backgroundColor: getStatusColor() },
             ]}
           >
-            <Text style={styles.statusText}>✓ Joined</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={require('../../../../assets/Tick.png')} style={styles.statusIcon} />
+              <Text style={[styles.statusText, { marginLeft: moderateScale(8) }]}>Joined</Text>
+            </View>
           </View>
         )}
         {event.status === "live" && (
@@ -391,33 +394,42 @@ function EventCard({ event, onToggleJoin }) {
               { backgroundColor: getStatusColor() },
             ]}
           >
-            <Text style={styles.statusText}>📍 Live</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Image source={require('../../../../assets/Radio.png')} style={styles.statusIcon} />
+              <Text style={[styles.statusText, { marginLeft: moderateScale(8) }]}>Live</Text>
+            </View>
           </View>
         )}
       </View>
 
       {/* Date and Time */}
       <View style={styles.dateTimeRow}>
-        <Text style={styles.dateText}>📅 {event.date}</Text>
-        <Text style={styles.timeText}>🕐 {event.time}</Text>
+        <View style={styles.iconTextRow}>
+          <Image source={require('../../../../assets/Calendar.png')} style={styles.metaIcon} />
+          <Text style={styles.dateText}>{event.date}</Text>
+        </View>
+        <View style={[styles.iconTextRow, { marginLeft: moderateScale(20) }]}>
+          <Image source={require('../../../../assets/Clock.png')} style={styles.metaIcon} />
+          <Text style={styles.timeText}>{event.time}</Text>
+        </View>
       </View>
 
       {/* Event Type with Trophy Icons */}
       <View style={styles.eventTypeRow}>
-        <Text style={styles.eventTypeIcon}>🏆</Text>
+        <Image source={require('../../../../assets/trophy-icon.png')} style={styles.eventTypeIconImg} />
         <Text style={styles.eventTypeText}>{event.type}</Text>
-        <Text style={styles.eventTypeIcon}>🏆</Text>
+        <Image source={require('../../../../assets/trophy-icon.png')} style={styles.eventTypeIconImg} />
       </View>
 
       {/* Action Buttons */}
       <View style={styles.actionButtonsRow}>
         <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonIcon}>🏌️</Text>
+          <Image source={require('../../../../assets/Flag.png')} style={styles.actionButtonIconImg} />
           <Text style={styles.actionButtonText}>Course View</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonIcon}>🏆</Text>
+          <Image source={require('../../../../assets/trophy-icon.png')} style={styles.actionButtonIconImg} />
           <Text style={styles.actionButtonText}>Bracket</Text>
         </TouchableOpacity>
 
@@ -440,9 +452,11 @@ function InlineEventCard({ event, mode }) {
       <Text style={styles.club}>{event.club}</Text>
       <Text style={styles.location}>{event.location}</Text>
       <View style={styles.rowMeta}>
-        <Text style={styles.metaDate}>{event.date}</Text>
+        <Image source={require('../../../../assets/Calendar.png')} style={[styles.metaIcon, { width: moderateScale(14), height: moderateScale(14) }]} />
+        <Text style={[styles.metaDate, { marginLeft: moderateScale(6) }]}>{event.date}</Text>
         <Text style={styles.metaDot}>•</Text>
-        <Text style={styles.metaTime}>{event.time}</Text>
+        <Image source={require('../../../../assets/Clock.png')} style={[styles.metaIcon, { width: moderateScale(14), height: moderateScale(14) }]} />
+        <Text style={[styles.metaTime, { marginLeft: moderateScale(6) }]}>{event.time}</Text>
       </View>
       <View style={styles.playerList}>
         {[
@@ -662,7 +676,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filterPill: {
-    backgroundColor: "#8B5C2A",
+  backgroundColor: "#EFE7E1",
     paddingHorizontal: moderateScale(18),
     paddingVertical: verticalScale(8),
     borderRadius: moderateScale(20),
@@ -671,10 +685,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filterPillActive: {
-    backgroundColor: "#8B5C2A",
+  backgroundColor: "#8B5C2A",
   },
   filterPillText: {
-    color: "#FFFFFF",
+  color: "#8B5C2A",
     fontSize: moderateScale(14),
     fontWeight: "600",
   },
@@ -745,6 +759,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(11),
     fontWeight: "600",
   },
+  statusIcon: { width: moderateScale(16), height: moderateScale(16), tintColor: '#FFFFFF' },
 
   // Date and time row
   dateTimeRow: {
@@ -752,6 +767,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: moderateScale(12),
   },
+  iconTextRow: { flexDirection: 'row', alignItems: 'center' },
+  metaIcon: { width: moderateScale(20), height: moderateScale(20), tintColor: '#8B5C2A', marginRight: moderateScale(8) },
   dateText: {
     fontSize: moderateScale(13),
     color: "#666",
@@ -770,10 +787,7 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(16),
     paddingVertical: moderateScale(8),
   },
-  eventTypeIcon: {
-    fontSize: moderateScale(18),
-    marginHorizontal: moderateScale(8),
-  },
+  eventTypeIconImg: { width: moderateScale(24), height: moderateScale(24), tintColor: '#8B5C2A', marginHorizontal: moderateScale(12) },
   eventTypeText: {
     fontSize: moderateScale(16),
     fontWeight: "700",
@@ -794,10 +808,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  actionButtonIcon: {
-    fontSize: moderateScale(12),
-    marginRight: moderateScale(4),
-  },
+  actionButtonIconImg: { width: moderateScale(18), height: moderateScale(18), tintColor: '#8B5C2A', marginRight: moderateScale(8) },
   actionButtonText: {
     fontSize: moderateScale(12),
     color: "#8B5C2A",
@@ -863,8 +874,8 @@ const styles = StyleSheet.create({
   },
   inlineBtnTxt: { color: "#8B5C2A", fontWeight: "600", fontSize: moderateScale(12) },
   inlineIcon: {
-    width: moderateScale(16),
-    height: moderateScale(16),
+    width: moderateScale(22),
+    height: moderateScale(22),
     tintColor: "#8B5C2A",
   },
   roundStatsCard: {
