@@ -331,11 +331,15 @@ export default function CommunityHomeScreen({ navigation }) {
         visible={menuVisible}
         onClose={() => setMenuVisible(false)}
         onSelect={(route) => {
-          if (["Map","Leaderboard","TrophyRoom","Settings"].includes(route)) {
-            navigation.navigate('Play', { screen: route });
-          } else {
+          if (["Map","Leaderboard","TrophyRoom"].includes(route)) {
             navigation.navigate(route);
+            return;
           }
+          if (route === 'Settings') {
+            navigation.navigate('Settings');
+            return;
+          }
+          navigation.navigate(route);
         }}
       />
 
@@ -513,7 +517,7 @@ function InlineEventCard({ event, mode, navigation }) {
           </View>
         ))}
       </View>
-  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('Play', { screen: 'ScoreCard' })}>
+  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('ScoreCard')}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
           {mode === 'live' && (
@@ -581,7 +585,7 @@ function LeaderboardCard({ navigation }) {
           </View>
         ))}
       </View>
-  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('Play', { screen: 'Leaderboard' })}>
+  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('Leaderboard')}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
           <Text style={[styles.inlineBtnTxt, { marginLeft: 8 }]}>Leaderboard</Text>

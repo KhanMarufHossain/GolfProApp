@@ -197,7 +197,7 @@ export default function LeaderboardScreen({ navigation }) {
         </View>
       </Modal>
 
-      <OverflowMenu visible={menuVisible} onClose={() => setMenuVisible(false)} navigation={navigation} />
+  <OverflowMenu visible={menuVisible} onClose={() => setMenuVisible(false)} navigation={navigation} />
     </View>
   );
 }

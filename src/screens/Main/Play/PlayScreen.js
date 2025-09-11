@@ -29,7 +29,8 @@ export default function PlayScreen({ navigation }) {
 
   const navigateTo = (screen) => {
     setMenuVisible(false);
-    navigation.navigate(screen);
+    // Use push to ensure we stay within PlayStack and preserve back to Play
+    navigation.push(screen);
   };
 
   const handleSearch = () => {
