@@ -1,612 +1,301 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  ScrollView,
   Image,
+  TouchableOpacity,
   FlatList,
-} from "react-native";
-import { getProfile } from "../../../services/profileService";
-import { colors, radius, spacing } from "../../../utils/theme";
-import { horizontalScale, verticalScale, moderateScale } from "../../../utils/dimensions";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  horizontalScale,
+  moderateScale,
+  verticalScale,
+} from '../../../utils/dimensions';
+import { colors } from '../../../utils/theme';
+import PostCard from '../../../components/PostCard';
+import { fetchFeed, likePost } from '../../../services/communityService';
 
-export default function ProfileHomeScreen({ navigation }) {
-  const [profile, setProfile] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("Posts");
+const ProfileHomeScreen = ({ navigation }) => {
+  const [feed, setFeed] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadProfile();
+  const loadFeed = useCallback(async () => {
+    setLoading(true);
+    const res = await fetchFeed();
+    if (res.ok) setFeed(res.data);
+    setLoading(false);
   }, []);
 
-  const loadProfile = async () => {
-    // Mock data for golfer profile
-    const mockProfile = {
-      name: "John Smith",
-      handicap: "15.2",
-      location: "San Diego, CA",
-      bio: "Golf enthusiast who loves to play and improve every day. Always looking for new courses to explore and connect with fellow golfers!",
-      coverImage: require('../../../../assets/golfField.png'),
-      avatar: require('../../../../assets/man.png'),
-      stats: {
-        rounds: "127",
-        followers: "234",
-        following: "156"
-      },
-      posts: [
-        {
-          id: 1,
-          content: "Great round at Torrey Pines today! Shot my personal best of 76!",
-          image: require('../../../../assets/coursepreview.png'),
-          likes: 23,
-          comments: 8,
-          time: "2 hours ago"
-        },
-        {
-          id: 2,
-          content: "Working on my short game at the practice facility.",
-          likes: 15,
-          comments: 4,
-          time: "1 day ago"
-        }
-      ],
-      recentRounds: [
-        { id: 1, course: "Torrey Pines", date: "Sept 8, 2024", score: "82", par: 72 },
-        { id: 2, course: "Pebble Beach", date: "Sept 5, 2024", score: "76", par: 72 },
-        { id: 3, course: "Augusta National", date: "Sept 1, 2024", score: "88", par: 72 },
-      ],
-      stats_detailed: {
-        averageScore: "82.4",
-        bestRound: "76",
-        totalRounds: "127",
-        handicapTrend: "↓ 0.3"
-      }
-    };
-    setProfile(mockProfile);
-  };
+  useEffect(() => {
+    loadFeed();
+  }, [loadFeed]);
 
-  if (!profile) return null;
-
-  const renderProfileHeader = () => (
-    <View style={styles.profileHeader}>
-      <Image source={profile.coverImage} style={styles.coverImage} />
-      
-      <View style={styles.profileInfo}>
-        <View style={styles.avatarContainer}>
-          <Image source={profile.avatar} style={styles.avatar} />
-          <View style={styles.profileDetails}>
-            <Text style={styles.playerName}>{profile.name}</Text>
-            <Text style={styles.handicapLocation}>HCP {profile.handicap} • {profile.location}</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.editButton}
-            onPress={() => navigation.navigate("EditProfile", { profile })}
-          >
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <TouchableOpacity style={styles.statItem}>
-            <Text style={styles.statNumber}>{profile.stats.rounds}</Text>
-            <Text style={styles.statLabel}>Rounds</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.statItem}
-            onPress={() => navigation.navigate("Followers")}
-          >
-            <Text style={styles.statNumber}>{profile.stats.followers}</Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.statItem}>
-            <Text style={styles.statNumber}>{profile.stats.following}</Text>
-            <Text style={styles.statLabel}>Following</Text>
-          </TouchableOpacity>
-        </View>
-
-        {profile.bio && (
-          <Text style={styles.bioText}>{profile.bio}</Text>
-        )}
-      </View>
-    </View>
-  );
-
-  const renderQuickActions = () => (
-    <View style={styles.quickActionsContainer}>
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => navigation.navigate("Scorecards")}
-      >
-        <Text style={styles.quickActionIcon}>📊</Text>
-        <Text style={styles.quickActionText}>Scorecards</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => navigation.navigate("Followers")}
-      >
-        <Text style={styles.quickActionIcon}>👥</Text>
-        <Text style={styles.quickActionText}>Friends</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => navigation.navigate("ProfileSettings")}
-      >
-        <Text style={styles.quickActionIcon}>⚙️</Text>
-        <Text style={styles.quickActionText}>Settings</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderTabNavigation = () => (
-    <View style={styles.tabContainer}>
-      {["Posts", "Rounds", "Stats"].map((tab) => (
-        <TouchableOpacity
-          key={tab}
-          onPress={() => setSelectedTab(tab)}
-          style={[
-            styles.tabButton,
-            selectedTab === tab && styles.activeTabButton
-          ]}
-        >
-          <Text style={[
-            styles.tabText,
-            selectedTab === tab && styles.activeTabText
-          ]}>
-            {tab}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
-  const renderPost = ({ item }) => (
-    <View style={styles.postCard}>
-      <View style={styles.postHeader}>
-        <Image source={profile.avatar} style={styles.postAvatar} />
-        <View style={styles.postUserInfo}>
-          <Text style={styles.postUserName}>{profile.name}</Text>
-          <Text style={styles.postTime}>{item.time}</Text>
-        </View>
-      </View>
-      <Text style={styles.postContent}>{item.content}</Text>
-      {item.image && (
-        <Image source={item.image} style={styles.postImage} />
-      )}
-      <View style={styles.postActions}>
-        <TouchableOpacity style={styles.postAction}>
-          <Text style={styles.postActionText}>👍 {item.likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.postAction}>
-          <Text style={styles.postActionText}>💬 {item.comments}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.postAction}>
-          <Text style={styles.postActionText}>📤</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const renderRoundCard = ({ item }) => (
-    <View style={styles.roundCard}>
-      <View style={styles.roundInfo}>
-        <Text style={styles.roundCourseName}>{item.course}</Text>
-        <Text style={styles.roundDate}>{item.date}</Text>
-      </View>
-      <View style={styles.roundScore}>
-        <Text style={styles.roundScoreText}>{item.score}</Text>
-        <Text style={styles.roundPar}>Par {item.par}</Text>
-      </View>
-    </View>
-  );
-
-  const renderTabContent = () => {
-    switch (selectedTab) {
-      case "Posts":
-        return (
-          <FlatList
-            data={profile.posts}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderPost}
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
-          />
-        );
-      
-      case "Rounds":
-        return (
-          <FlatList
-            data={profile.recentRounds}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderRoundCard}
-            showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
-          />
-        );
-      
-      case "Stats":
-        return (
-          <View style={styles.statsSection}>
-            <View style={styles.statRow}>
-              <View style={styles.statBox}>
-                <Text style={styles.statTitle}>Average Score</Text>
-                <Text style={styles.statValue}>{profile.stats_detailed.averageScore}</Text>
-              </View>
-              <View style={styles.statBox}>
-                <Text style={styles.statTitle}>Best Round</Text>
-                <Text style={styles.statValue}>{profile.stats_detailed.bestRound}</Text>
-              </View>
-            </View>
-            <View style={styles.statRow}>
-              <View style={styles.statBox}>
-                <Text style={styles.statTitle}>Total Rounds</Text>
-                <Text style={styles.statValue}>{profile.stats_detailed.totalRounds}</Text>
-              </View>
-              <View style={styles.statBox}>
-                <Text style={styles.statTitle}>Handicap Trend</Text>
-                <Text style={styles.statValue}>{profile.stats_detailed.handicapTrend}</Text>
-              </View>
-            </View>
-          </View>
-        );
-      
-      default:
-        return null;
+  const onLike = async (id) => {
+    const res = await likePost(id);
+    if (res.ok) {
+      setFeed((prev) => prev.map((p) => (p.id === id ? res.data : p)));
     }
   };
 
+  const profile = {
+    name: 'Nick Ribeiro',
+    location: 'Kansas US',
+    avatar: require('../../../../assets/man.png'),
+    coverImage: require('../../../../assets/golffield1.jpg'),
+    stats: {
+      hp: '18.5',
+      friends: '1254',
+      clubMembers: '1254',
+      coursePlayed: '1254',
+    },
+  };
+
+  const renderPlayer = (player, index) => (
+    <View key={index} style={styles.playerRow}>
+      <View style={styles.playerInfo}>
+        <View
+          style={[
+            styles.tierBadge,
+            {
+              backgroundColor:
+                player.tier === 'T1'
+                  ? '#FFD700'
+                  : player.tier === 'T2'
+                  ? '#C0C0C0'
+                  : '#CD7F32',
+            },
+          ]}>
+          <Text style={styles.tierText}>{player.tier}</Text>
+        </View>
+        <Image source={player.avatar} style={styles.playerAvatar} />
+        <Text style={styles.playerName}>{player.name}</Text>
+      </View>
+      <Text style={styles.playerScore}>{player.score}</Text>
+    </View>
+  );
+
+  const renderFeedItem = ({ item }) => (
+    <PostCard
+      post={item}
+      onPress={() => navigation && navigation.navigate('PostDetail', { postId: item.id })}
+      onLike={() => onLike(item.id)}
+      onComment={() => navigation && navigation.navigate('PostDetail', { postId: item.id, focus: 'comment' })}
+    />
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View  style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate("Notifications")}
-          >
-            <Text style={styles.headerButtonText}>🔔</Text>
-            <View style={styles.notificationBadge} />
+          <TouchableOpacity>
+            <Image
+              source={require('../../../../assets/bell.png')}
+              style={styles.headerIcon}
+            />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate("ProfileSettings")}
-          >
-            <Text style={styles.headerButtonText}>⋯</Text>
+          <TouchableOpacity>
+            <Image
+              source={require('../../../../assets/dots-icon.png')}
+              style={styles.headerIcon}
+            />
           </TouchableOpacity>
         </View>
       </View>
+      <FlatList
+        data={feed}
+        keyExtractor={(item) => item.id}
+        renderItem={renderFeedItem}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={() => (
+          <>
+            <View style={styles.profileHeader}>
+              <Image source={profile.coverImage} style={styles.coverImage} />
+              <View style={styles.profileInfo}>
+                <Image source={profile.avatar} style={styles.avatar} />
+                <View>
+                  <Text style={styles.profileName}>{profile.name}</Text>
+                  <Text style={styles.profileLocation}>{profile.location}</Text>
+                </View>
+                <View style={styles.t1Badge}>
+                  <Text style={styles.t1BadgeText}>T1</Text>
+                </View>
+              </View>
+            </View>
 
-      {/* Render a single VirtualizedList (FlatList) for Posts or Rounds to avoid nesting inside a ScrollView. */}
-      {selectedTab === 'Posts' || selectedTab === 'Rounds' ? (
-        <FlatList
-          data={selectedTab === 'Posts' ? profile.posts : profile.recentRounds}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={selectedTab === 'Posts' ? renderPost : renderRoundCard}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollView}
-          ListHeaderComponent={() => (
-            <>
-              {renderProfileHeader()}
-              {renderQuickActions()}
-              {renderTabNavigation()}
-            </>
-          )}
-        />
-      ) : (
-        // Stats tab -- does not include additional VirtualizedLists, safe to use a ScrollView
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          {renderProfileHeader()}
-          {renderQuickActions()}
-          {renderTabNavigation()}
-          <View style={styles.tabContentContainer}>{renderTabContent()}</View>
-        </ScrollView>
-      )}
-    </SafeAreaView>
+            <View style={styles.statsBar}>
+              <View style={styles.statPill}>
+                <Text style={styles.statLabel}>#HP</Text>
+                <Text style={styles.statValue}>{profile.stats.hp}</Text>
+              </View>
+              <View style={styles.statPill}>
+                <Text style={styles.statLabel}>Friends</Text>
+                <Text style={styles.statValue}>{profile.stats.friends}</Text>
+              </View>
+              <View style={styles.statPill}>
+                <Text style={styles.statLabel}>Club Members</Text>
+                <Text style={styles.statValue}>{profile.stats.clubMembers}</Text>
+              </View>
+              <View style={styles.statPill}>
+                <Text style={styles.statLabel}>Course Played</Text>
+                <Text style={styles.statValue}>{profile.stats.coursePlayed}</Text>
+              </View>
+            </View>
+
+            <View style={styles.actionsBar}>
+              <TouchableOpacity style={[styles.actionPill, styles.actionPillPrimary]} activeOpacity={0.8}>
+                <Image source={require('../../../../assets/rectangle.png')} style={[styles.actionIcon, { tintColor: '#fff' }]} />
+                <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>Feed</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8}>
+                <Image source={require('../../../../assets/addFriend.png')} style={[styles.actionIcon, { tintColor: colors.accent }]} />
+                <Text style={styles.actionPillText}>Friend</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8}>
+                <Image source={require('../../../../assets/Comment.png')} style={[styles.actionIcon, { tintColor: colors.accent }]} />
+                <Text style={styles.actionPillText}>Messages</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: 'white',
+
   },
   header: {
-    height: verticalScale(56),
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: horizontalScale(16),
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    alignItems: 'center',
+    marginTop:verticalScale(30),
+    padding: moderateScale(15),
+    backgroundColor: 'white',
   },
   headerTitle: {
     fontSize: moderateScale(20),
-    fontWeight: '700',
-    color: colors.text,
+    fontWeight: 'bold',
   },
   headerActions: {
     flexDirection: 'row',
   },
-  headerButton: {
-    width: moderateScale(32),
-    height: moderateScale(32),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: horizontalScale(8),
-  },
-  headerButtonText: {
-    fontSize: moderateScale(18),
-    color: colors.text,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.like,
-  },
-  scrollView: {
-    flex: 1,
+  headerIcon: {
+    width: moderateScale(20),
+    height: moderateScale(20),
+    marginLeft: moderateScale(15),
+    resizeMode: 'contain',
   },
   profileHeader: {
-    backgroundColor: colors.surface,
-    marginBottom: verticalScale(12),
+    backgroundColor: 'white',
   },
   coverImage: {
     width: '100%',
-    height: verticalScale(160),
-    resizeMode: 'cover',
+    height: verticalScale(150),
   },
   profileInfo: {
-    paddingHorizontal: horizontalScale(16),
-    paddingBottom: verticalScale(20),
-  },
-  avatarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: moderateScale(15),
     marginTop: verticalScale(-30),
-    marginBottom: verticalScale(16),
   },
   avatar: {
-    width: moderateScale(80),
-    height: moderateScale(80),
-    borderRadius: moderateScale(40),
-    borderWidth: 4,
-    borderColor: colors.surface,
+    width: moderateScale(60),
+    height: moderateScale(60),
+    borderRadius: moderateScale(30),
+    borderWidth: 3,
+    borderColor: 'white',
+    marginRight: moderateScale(10),
   },
-  profileDetails: {
-    flex: 1,
-    marginLeft: horizontalScale(16),
-    marginTop: verticalScale(20),
+  profileName: {
+    fontSize: moderateScale(18),
+    fontWeight: 'bold',
+    paddingTop: verticalScale(20),
   },
-  playerName: {
-    fontSize: moderateScale(24),
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: verticalScale(2),
-  },
-  handicapLocation: {
+  profileLocation: {
     fontSize: moderateScale(14),
-    color: colors.textMute,
+    color: 'gray',
   },
-  editButton: {
-    paddingHorizontal: horizontalScale(20),
-    paddingVertical: verticalScale(8),
-    backgroundColor: colors.accent,
-    borderRadius: radius.md,
-    marginTop: verticalScale(20),
+  t1Badge: {
+    backgroundColor: '#FFD700',
+    borderRadius: moderateScale(15),
+    paddingHorizontal: moderateScale(10),
+    paddingVertical: moderateScale(5),
+    marginLeft: 'auto',
   },
-  editButtonText: {
-    color: colors.surface,
-    fontWeight: '600',
-    fontSize: moderateScale(14),
+  t1BadgeText: {
+    fontWeight: 'bold',
   },
-  statsContainer: {
+  statsBar: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: verticalScale(16),
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
-    marginVertical: verticalScale(16),
+    justifyContent: 'space-between',
+    paddingHorizontal: horizontalScale(12),
+    paddingVertical: verticalScale(12),
+    backgroundColor: 'white',
   },
-  statItem: {
+  statPill: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EFE7E1',
+    borderRadius: moderateScale(16),
+    paddingVertical: verticalScale(12),
+    marginHorizontal: horizontalScale(4),
     alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: moderateScale(20),
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: verticalScale(4),
   },
   statLabel: {
+    color: '#6E6E6E',
     fontSize: moderateScale(12),
-    color: colors.textMute,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  bioText: {
-    fontSize: moderateScale(14),
-    color: colors.text,
-    lineHeight: moderateScale(20),
-    marginTop: verticalScale(-8),
-  },
-  quickActionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: colors.surface,
-    paddingVertical: verticalScale(16),
-    marginBottom: verticalScale(12),
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border,
-  },
-  quickActionButton: {
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(16),
-    paddingVertical: verticalScale(12),
-    backgroundColor: colors.accentSoft,
-    borderRadius: radius.md,
-    minWidth: horizontalScale(80),
-  },
-  quickActionIcon: {
-    fontSize: moderateScale(24),
-    marginBottom: verticalScale(8),
-  },
-  quickActionText: {
-    fontSize: moderateScale(12),
-    color: colors.accent,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    paddingHorizontal: horizontalScale(16),
-    paddingTop: verticalScale(16),
-    marginBottom: verticalScale(12),
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: verticalScale(12),
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-    marginHorizontal: horizontalScale(4),
-  },
-  activeTabButton: {
-    borderBottomColor: colors.accent,
-  },
-  tabText: {
-    fontSize: moderateScale(16),
-    fontWeight: '600',
-    color: colors.textMute,
-  },
-  activeTabText: {
-    color: colors.accent,
-  },
-  tabContentContainer: {
-    backgroundColor: colors.surface,
-    minHeight: verticalScale(200),
-  },
-  postCard: {
-    paddingHorizontal: horizontalScale(16),
-    paddingVertical: verticalScale(16),
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: verticalScale(12),
-  },
-  postAvatar: {
-    width: moderateScale(40),
-    height: moderateScale(40),
-    borderRadius: moderateScale(20),
-    marginRight: horizontalScale(12),
-  },
-  postUserInfo: {
-    flex: 1,
-  },
-  postUserName: {
-    fontSize: moderateScale(16),
-    fontWeight: '600',
-    color: colors.text,
-  },
-  postTime: {
-    fontSize: moderateScale(12),
-    color: colors.textMute,
-  },
-  postContent: {
-    fontSize: moderateScale(14),
-    color: colors.text,
-    lineHeight: moderateScale(20),
-    marginBottom: verticalScale(12),
-  },
-  postImage: {
-    width: '100%',
-    height: verticalScale(180),
-    borderRadius: radius.md,
-    marginBottom: verticalScale(12),
-  },
-  postActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  postAction: {
-    paddingVertical: verticalScale(8),
-    paddingHorizontal: horizontalScale(12),
-  },
-  postActionText: {
-    fontSize: moderateScale(14),
-    color: colors.textMute,
-  },
-  roundCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(16),
-    paddingVertical: verticalScale(16),
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  roundInfo: {
-    flex: 1,
-  },
-  roundCourseName: {
-    fontSize: moderateScale(16),
-    fontWeight: '600',
-    color: colors.text,
     marginBottom: verticalScale(4),
-  },
-  roundDate: {
-    fontSize: moderateScale(12),
-    color: colors.textMute,
-  },
-  roundScore: {
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(16),
-  },
-  roundScoreText: {
-    fontSize: moderateScale(20),
-    fontWeight: '700',
-    color: colors.accent,
-    marginBottom: verticalScale(2),
-  },
-  roundPar: {
-    fontSize: moderateScale(12),
-    color: colors.textMute,
-  },
-  statsSection: {
-    padding: horizontalScale(16),
-  },
-  statRow: {
-    flexDirection: 'row',
-    marginBottom: verticalScale(16),
-  },
-  statBox: {
-    flex: 1,
-    backgroundColor: colors.accentSoft,
-    padding: horizontalScale(16),
-    borderRadius: radius.md,
-    alignItems: 'center',
-    marginHorizontal: horizontalScale(4),
-  },
-  statTitle: {
-    fontSize: moderateScale(12),
-    color: colors.textMute,
-    marginBottom: verticalScale(8),
-    textAlign: 'center',
+    fontWeight: '600',
   },
   statValue: {
-    fontSize: moderateScale(20),
+    color: '#1E2250',
+    fontSize: moderateScale(16),
     fontWeight: '700',
-    color: colors.accent,
+  },
+  actionsBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: horizontalScale(12),
+    paddingBottom: verticalScale(8),
+    paddingTop: verticalScale(2),
+    backgroundColor: 'white',
+    marginBottom: verticalScale(10),
+  },
+  actionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EADBD0',
+    borderRadius: moderateScale(20),
+    paddingVertical: verticalScale(10),
+    paddingHorizontal: horizontalScale(16),
+    marginHorizontal: horizontalScale(4),
+    width: horizontalScale(100),
+  },
+  actionPillPrimary: {
+    backgroundColor: '#8B5C2A',
+  },
+  actionPillText: {
+    color: '#8B5C2A',
+    fontWeight: '700',
+    fontSize: moderateScale(12),
+    marginLeft: horizontalScale(6),
+  },
+  actionPillTextPrimary: {
+    color: '#FFFFFF',
+  },
+  actionIcon: {
+    width: moderateScale(16),
+    height: moderateScale(16),
+    resizeMode: 'contain',
   },
 });
+
+export default ProfileHomeScreen;

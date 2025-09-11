@@ -279,14 +279,31 @@ export default function ProfileHomeScreen({ navigation }) {
         </View>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {renderProfileHeader()}
-        {renderQuickActions()}
-        {renderTabNavigation()}
-        <View style={styles.tabContentContainer}>
-          {renderTabContent()}
-        </View>
-      </ScrollView>
+      {/* Render a single VirtualizedList (FlatList) for Posts or Rounds to avoid nesting inside a ScrollView. */}
+      {selectedTab === 'Posts' || selectedTab === 'Rounds' ? (
+        <FlatList
+          data={selectedTab === 'Posts' ? profile.posts : profile.recentRounds}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={selectedTab === 'Posts' ? renderPost : renderRoundCard}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollView}
+          ListHeaderComponent={() => (
+            <>
+              {renderProfileHeader()}
+              {renderQuickActions()}
+              {renderTabNavigation()}
+            </>
+          )}
+        />
+      ) : (
+        // Stats tab -- does not include additional VirtualizedLists, safe to use a ScrollView
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {renderProfileHeader()}
+          {renderQuickActions()}
+          {renderTabNavigation()}
+          <View style={styles.tabContentContainer}>{renderTabContent()}</View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
