@@ -18,6 +18,7 @@ import {
 } from "../../../utils/dimensions";
 import { colors } from "../../../utils/theme";
 import PostCard from "../../../components/PostCard";
+import OverflowMenu from "../../../components/OverflowMenu";
 import { fetchFeed, likePost } from "../../../services/communityService";
 
 // Temporary mock events – replace with API integration later
@@ -94,6 +95,7 @@ export default function CommunityHomeScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState(mockEvents);
   const [filter, setFilter] = useState("All");
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
@@ -187,7 +189,7 @@ export default function CommunityHomeScreen({ navigation }) {
             <View style={styles.notificationDot} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Settings")}
+            onPress={() => setMenuVisible(true)}
             style={styles.iconButton}
           >
             <Image
@@ -198,7 +200,7 @@ export default function CommunityHomeScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Segment Tabs */}
+  {/* Segment Tabs */}
       <View style={styles.segmentContainer}>
         <View style={styles.segmentRow}>
           <TouchableOpacity
@@ -324,6 +326,18 @@ export default function CommunityHomeScreen({ navigation }) {
           />
         </View>
       )}
+
+      <OverflowMenu
+        visible={menuVisible}
+        onClose={() => setMenuVisible(false)}
+        onSelect={(route) => {
+          if (["Map","Leaderboard","TrophyRoom","Settings"].includes(route)) {
+            navigation.navigate('Play', { screen: route });
+          } else {
+            navigation.navigate(route);
+          }
+        }}
+      />
 
       {/* FAB for News Feed only */}
       {segment === "feed" && (

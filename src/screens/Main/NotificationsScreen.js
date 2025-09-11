@@ -47,7 +47,7 @@ export default function NotificationsScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backButtonText}>←</Text>
@@ -63,7 +63,7 @@ export default function NotificationsScreen({ navigation }) {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -71,10 +71,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.bg,
+    
   },
   header: {
     height: verticalScale(56),
     flexDirection: 'row',
+    paddingTop: verticalScale(10),
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: horizontalScale(16),

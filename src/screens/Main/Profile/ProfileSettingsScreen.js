@@ -92,7 +92,9 @@ export default function ProfileSettingsScreen({ navigation }) {
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.sectionContent}>
-        {children}
+        {Array.isArray(children)
+          ? children.map((child, idx) => React.cloneElement(child, { key: `${title}-${idx}` }))
+          : children}
       </View>
     </View>
   );

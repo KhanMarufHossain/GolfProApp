@@ -10,8 +10,13 @@ const mockConversations = [
 ];
 
 export default function MessagesScreen({ navigation }) {
+  const openChat = (item) => {
+    const conversation = { id: item.id, name: item.user.name, avatar: item.user.avatar };
+    navigation.navigate('ChatThread', { conversation });
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.row} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.row} activeOpacity={0.8} onPress={() => openChat(item)}>
       <Image source={item.user.avatar} style={styles.avatar} />
       <View style={{ flex: 1 }}>
         <Text style={styles.name}>{item.user.name}</Text>

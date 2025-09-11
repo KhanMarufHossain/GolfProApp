@@ -9,6 +9,10 @@ import ProfileSettingsScreen from './ProfileSettingsScreen';
 import { useUser } from '../../../context/UserContext';
 import NotificationsScreen from '../NotificationsScreen';
 import MessagesScreen from './MessagesScreen';
+import PostDetailScreen from '../Community/PostDetailScreen';
+import ClubMembersScreen from './ClubMembersScreen';
+import CoursePlayedScreen from './CoursePlayedScreen';
+import ChatThreadScreen from './ChatThreadScreen';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +32,10 @@ export default function ProfileStack() {
       <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Messages" component={MessagesScreen} />
+      <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+      <Stack.Screen name="ChatThread" component={ChatThreadScreen} />
+      <Stack.Screen name="ClubMembers" component={ClubMembersScreen} />
+      <Stack.Screen name="CoursePlayed" component={CoursePlayedScreen} />
     </Stack.Navigator>
   );
 }

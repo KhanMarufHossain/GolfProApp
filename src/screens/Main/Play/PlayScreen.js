@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal } from 'react-native';
+import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import CourseCard from '../../../components/CourseCard';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { colors } from '../../../utils/theme'; // Add this import if not already present
@@ -87,22 +87,11 @@ export default function PlayScreen({ navigation }) {
         />
       </View>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={menuVisible}
-        onRequestClose={toggleMenu}
-      >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          activeOpacity={1} 
-          onPress={toggleMenu}
-        >
-          <TouchableOpacity 
-            style={styles.menuContainer} 
-            activeOpacity={1}
-            onPress={(e) => e.stopPropagation()}
-          >
+      <Modal animationType="fade" transparent visible={menuVisible} onRequestClose={toggleMenu}>
+        <TouchableWithoutFeedback onPress={toggleMenu}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.menuContainer}>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigateTo('Settings')}>
               <Image source={require('../../../../assets/settings-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Settings</Text>
@@ -122,8 +111,10 @@ export default function PlayScreen({ navigation }) {
               <Image source={require('../../../../assets/trophy-icon.png')} style={styles.menuIcon} />
               <Text style={styles.menuText}>Trophy Room</Text>
             </TouchableOpacity>
-          </TouchableOpacity>
-        </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </SafeAreaView>
   );

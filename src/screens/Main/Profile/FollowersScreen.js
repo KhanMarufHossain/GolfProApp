@@ -157,7 +157,7 @@ export default function FollowersScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: 'white',
   },
   header: {
     height: verticalScale(56),
