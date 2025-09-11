@@ -239,7 +239,7 @@ export default function CommunityHomeScreen({ navigation }) {
       {/* Content Sections */}
       {segment === "feed" ? (
         // News Feed Section (unchanged)
-        <FlatList
+        <View style={{flex: 1}}><FlatList
           data={compositeFeed}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.feedList}
@@ -273,6 +273,7 @@ export default function CommunityHomeScreen({ navigation }) {
             return null;
           }}
         />
+        </View>
       ) : (
         // Event Section (completely separate with own flex container)
         <View style={styles.eventSectionContainer}>
@@ -535,7 +536,7 @@ function LeaderboardCard() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg },
+  safe: { floex: 1, backgroundColor: colors.bg },
 
   // Header styles
   header: {
@@ -645,8 +646,9 @@ const styles = StyleSheet.create({
     maxHeight: moderateScale(60),
   },
   filterContainer: {
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateScale(12),
+    paddingHorizontal: moderateScale(14),
+    paddingVertical: moderateScale(0),
+    height: 50,
     alignItems: "center",
   },
   filterPill: {
