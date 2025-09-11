@@ -267,11 +267,11 @@ export default function CommunityHomeScreen({ navigation }) {
               );
             }
             if (item.type === "inlineEventLive")
-              return <InlineEventCard event={item.data} mode="live" />;
+              return <InlineEventCard event={item.data} mode="live" navigation={navigation} />;
             if (item.type === "inlineEventView")
-              return <InlineEventCard event={item.data} mode="view" />;
+              return <InlineEventCard event={item.data} mode="view" navigation={navigation} />;
             if (item.type === "roundStats") return <RoundStatsCard />;
-            if (item.type === "leaderboard") return <LeaderboardCard />;
+            if (item.type === "leaderboard") return <LeaderboardCard navigation={navigation} />;
             return null;
           }}
         />
@@ -479,7 +479,7 @@ function EventCard({ event, onToggleJoin, navigation }) {
   );
 }
 
-function InlineEventCard({ event, mode }) {
+function InlineEventCard({ event, mode, navigation }) {
   return (
     <View style={styles.inlineEventCard}>
       <Text style={styles.club}>{event.club}</Text>
@@ -513,7 +513,7 @@ function InlineEventCard({ event, mode }) {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.inlineBtn}>
+  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('Play', { screen: 'ScoreCard' })}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
           {mode === 'live' && (
@@ -553,7 +553,7 @@ function RoundStatsCard() {
   );
 }
 
-function LeaderboardCard() {
+function LeaderboardCard({ navigation }) {
   const players = [
     { name: "Nick Blake", score: "-11 (61)" },
     { name: "Dianne Russell", score: "-7 (65)" },
@@ -581,7 +581,7 @@ function LeaderboardCard() {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.inlineBtn}>
+  <TouchableOpacity style={styles.inlineBtn} onPress={() => navigation.navigate('Play', { screen: 'Leaderboard' })}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
           <Text style={[styles.inlineBtnTxt, { marginLeft: 8 }]}>Leaderboard</Text>
