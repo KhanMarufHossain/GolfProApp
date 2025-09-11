@@ -465,7 +465,7 @@ function EventCard({ event, onToggleJoin, navigation }) {
           <Text style={styles.actionButtonText}>Course View</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('Bracket')}>
           <Image source={require('../../../../assets/trophy-icon.png')} style={styles.actionButtonIconImg} />
           <Text style={styles.actionButtonText}>Bracket</Text>
         </TouchableOpacity>

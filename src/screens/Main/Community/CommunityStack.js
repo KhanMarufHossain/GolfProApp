@@ -7,6 +7,7 @@ import MapScreen from '../MapScreen';
 import LeaderboardScreen from '../LeaderboardScreen';
 import TrophyRoomScreen from '../TrophyRoomScreen';
 import ScoreCardScreen from '../Play/ScoreCardScreen';
+import BracketScreen from '../BracketScreen';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ export default function CommunityStack() {
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
       <Stack.Screen name="TrophyRoom" component={TrophyRoomScreen} />
       <Stack.Screen name="ScoreCard" component={ScoreCardScreen} />
+      <Stack.Screen name="Bracket" component={BracketScreen} />
     </Stack.Navigator>
   );
 }

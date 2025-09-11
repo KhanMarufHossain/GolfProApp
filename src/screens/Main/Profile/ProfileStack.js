@@ -15,6 +15,7 @@ import ChatThreadScreen from './ChatThreadScreen';
 import MapScreen from '../MapScreen';
 import LeaderboardScreen from '../LeaderboardScreen';
 import TrophyRoomScreen from '../TrophyRoomScreen';
+import BracketScreen from '../BracketScreen';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,7 @@ export default function ProfileStack() {
       <Stack.Screen name="Map" component={MapScreen} />
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
       <Stack.Screen name="TrophyRoom" component={TrophyRoomScreen} />
+      <Stack.Screen name="Bracket" component={BracketScreen} />
     </Stack.Navigator>
   );
 }
