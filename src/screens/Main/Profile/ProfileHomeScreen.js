@@ -5,167 +5,483 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
+  ScrollView,
   Image,
+  Dimensions,
 } from "react-native";
-import ProfileHeader from "../../../components/ProfileHeader";
-import PostCard from "../../../components/PostCard";
-import { getProfile, getMyPosts } from "../../../services/profileService";
+import { getProfile } from "../../../services/profileService";
+import { colors, radius, spacing } from "../../../utils/theme";
+import { horizontalScale, verticalScale, moderateScale } from "../../../utils/dimensions";
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function ProfileHomeScreen({ navigation }) {
   const [profile, setProfile] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [tab, setTab] = useState("Posts");
+  const [selectedTab, setSelectedTab] = useState("Posts");
 
   useEffect(() => {
-    (async () => {
-      const p = await getProfile();
-      if (p.ok) setProfile(p.data);
-      const r = await getMyPosts();
-      if (r.ok) setPosts(r.data);
-    })();
+    loadProfile();
   }, []);
+
+  const loadProfile = async () => {
+    // Mock data based on Figma design
+    const mockProfile = {
+      name: "John Smith",
+      handicap: "15.2",
+      location: "San Diego, CA",
+      bio: "Golf enthusiast who loves to play and improve every day. Always looking for new courses to explore!",
+      coverImage: require('../../../../assets/golfField.png'),
+      avatar: require('../../../../assets/man.png'),
+      stats: {
+        rounds: "127",
+        followers: "234",
+        following: "156"
+      },
+      achievements: [
+        { id: 1, title: "First Eagle", icon: "🦅", date: "Aug 2024" },
+        { id: 2, title: "Course Record", icon: "🏆", date: "Jul 2024" },
+        { id: 3, title: "Hole in One", icon: "⭐", date: "Jun 2024" },
+      ],
+      recentRounds: [
+        { id: 1, course: "Torrey Pines", date: "Sept 8, 2024", score: "82", image: require('../../../../assets/coursepreview.png') },
+        { id: 2, course: "Pebble Beach", date: "Sept 5, 2024", score: "76", image: require('../../../../assets/coursepreview.png') },
+        { id: 3, course: "Augusta National", date: "Sept 1, 2024", score: "88", image: require('../../../../assets/coursepreview.png') },
+      ]
+    };
+    setProfile(mockProfile);
+  };
 
   if (!profile) return null;
 
+  const renderProfileHeader = () => (
+    <View style={styles.profileHeader}>
+      <Image source={profile.coverImage} style={styles.coverImage} />
+      
+      <View style={styles.profileInfo}>
+        <View style={styles.avatarContainer}>
+          <Image source={profile.avatar} style={styles.avatar} />
+          <View style={styles.profileDetails}>
+            <Text style={styles.playerName}>{profile.name}</Text>
+            <Text style={styles.handicapLocation}>HCP {profile.handicap} • {profile.location}</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.editButton}
+            onPress={() => navigation.navigate("EditProfile", { profile })}
+          >
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.statsContainer}>
+          <TouchableOpacity style={styles.statItem}>
+            <Text style={styles.statNumber}>{profile.stats.rounds}</Text>
+            <Text style={styles.statLabel}>Rounds</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.statItem}
+            onPress={() => navigation.navigate("Followers")}
+          >
+            <Text style={styles.statNumber}>{profile.stats.followers}</Text>
+            <Text style={styles.statLabel}>Followers</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.statItem}>
+            <Text style={styles.statNumber}>{profile.stats.following}</Text>
+            <Text style={styles.statLabel}>Following</Text>
+          </TouchableOpacity>
+        </View>
+
+        {profile.bio && (
+          <Text style={styles.bioText}>{profile.bio}</Text>
+        )}
+      </View>
+    </View>
+  );
+
+  const renderQuickActions = () => (
+    <View style={styles.quickActionsContainer}>
+      <TouchableOpacity 
+        style={styles.quickActionButton}
+        onPress={() => navigation.navigate("Scorecards")}
+      >
+        <Image source={require('../../../../assets/ClubDocket.svg')} style={styles.quickActionIcon} />
+        <Text style={styles.quickActionText}>Scorecards</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={styles.quickActionButton}>
+        <Image source={require('../../../../assets/trophy-icon.png')} style={styles.quickActionIcon} />
+        <Text style={styles.quickActionText}>Achievements</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={styles.quickActionButton}>
+        <Image source={require('../../../../assets/settings-icon.png')} style={styles.quickActionIcon} />
+        <Text style={styles.quickActionText}>Settings</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderTabNavigation = () => (
+    <View style={styles.tabContainer}>
+      {["Posts", "Rounds", "Stats"].map((tab) => (
+        <TouchableOpacity
+          key={tab}
+          onPress={() => setSelectedTab(tab)}
+          style={[
+            styles.tabButton,
+            selectedTab === tab && styles.activeTabButton
+          ]}
+        >
+          <Text style={[
+            styles.tabText,
+            selectedTab === tab && styles.activeTabText
+          ]}>
+            {tab}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  const renderTabContent = () => {
+    switch (selectedTab) {
+      case "Posts":
+        return (
+          <View style={styles.tabContent}>
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No posts yet</Text>
+              <Text style={styles.emptyStateSubtext}>Share your golf experiences with the community</Text>
+            </View>
+          </View>
+        );
+      
+      case "Rounds":
+        return (
+          <View style={styles.tabContent}>
+            {profile.recentRounds.map((round) => (
+              <TouchableOpacity key={round.id} style={styles.roundCard}>
+                <Image source={round.image} style={styles.roundImage} />
+                <View style={styles.roundInfo}>
+                  <Text style={styles.roundCourseName}>{round.course}</Text>
+                  <Text style={styles.roundDate}>{round.date}</Text>
+                </View>
+                <View style={styles.roundScore}>
+                  <Text style={styles.roundScoreText}>{round.score}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        );
+      
+      case "Stats":
+        return (
+          <View style={styles.tabContent}>
+            <View style={styles.achievementsSection}>
+              <Text style={styles.sectionTitle}>Recent Achievements</Text>
+              {profile.achievements.map((achievement) => (
+                <View key={achievement.id} style={styles.achievementCard}>
+                  <Text style={styles.achievementIcon}>{achievement.icon}</Text>
+                  <View style={styles.achievementInfo}>
+                    <Text style={styles.achievementTitle}>{achievement.title}</Text>
+                    <Text style={styles.achievementDate}>{achievement.date}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.headerBar}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity
-          style={styles.menu}
+          style={styles.menuButton}
           onPress={() => navigation.navigate("ProfileSettings")}
         >
-          <Text style={styles.menuTxt}>⋯</Text>
+          <Text style={styles.menuText}>⋯</Text>
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={tab === "Posts" ? posts : []}
-        keyExtractor={(item, i) => item?.id || String(i)}
-        ListHeaderComponent={
-          <>
-            <ProfileHeader
-              profile={profile}
-              onEdit={() => navigation.navigate("EditProfile", { profile })}
-            />
-            <View style={styles.quickLinks}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Followers")}
-                style={styles.quickBtn}
-              >
-                <Text style={styles.quickTxt}>Followers</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("Scorecards")}
-                style={styles.quickBtn}
-              >
-                <Text style={styles.quickTxt}>Scorecards</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.tabs}>
-              {["Posts", "Courses", "Badges"].map((t) => (
-                <TouchableOpacity
-                  key={t}
-                  onPress={() => setTab(t)}
-                  style={[styles.tabBtn, tab === t && styles.tabActive]}
-                >
-                  <Text
-                    style={[styles.tabTxt, tab === t && styles.tabTxtActive]}
-                  >
-                    {t}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {tab === "Courses" && (
-              <View style={styles.coursesWrap}>
-                {profile.recentCourses.map((c) => (
-                  <View key={c.id} style={styles.courseCard}>
-                    <Image source={c.image} style={styles.courseImg} />
-                    <Text style={styles.courseName}>{c.name}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-            {tab === "Badges" && (
-              <View style={styles.badgesWrap}>
-                {profile.badges.map((b) => (
-                  <View key={b.id} style={styles.badge}>
-                    <Text style={styles.badgeTxt}>{b.label}</Text>
-                  </View>
-                ))}
-              </View>
-            )}
-          </>
-        }
-        renderItem={({ item }) => <PostCard post={item} />}
-        contentContainerStyle={styles.list}
-      />
-    </SafeAreaView>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        {renderProfileHeader()}
+        {renderQuickActions()}
+        {renderTabNavigation()}
+        {renderTabContent()}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
-  headerBar: { height: 48, alignItems: "center", justifyContent: "center" },
-  headerTitle: { fontWeight: "700", fontSize: 18, color: "#222" },
-  menu: {
-    position: "absolute",
-    right: 12,
-    top: 10,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
   },
-  menuTxt: { fontSize: 18 },
-  list: { paddingBottom: 40 },
-  quickLinks: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    paddingVertical: 10,
-    backgroundColor: "#F6EFE9",
+  header: {
+    height: verticalScale(56),
+    flexDirection: 'row',
+    marginTop : verticalScale(30),
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: horizontalScale(16),
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  headerTitle: {
+    fontSize: moderateScale(20),
+    fontWeight: '700',
+    color: colors.text,
+  },
+  menuButton: {
+    position: 'absolute',
+    right: horizontalScale(16),
+    width: moderateScale(32),
+    height: moderateScale(32),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuText: {
+    fontSize: moderateScale(20),
+    color: colors.text,
+    fontWeight: '600',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  profileHeader: {
+    backgroundColor: colors.surface,
+    marginBottom: verticalScale(12),
+  },
+  coverImage: {
+    width: '100%',
+    height: verticalScale(160),
+    resizeMode: 'cover',
+  },
+  profileInfo: {
+    paddingHorizontal: horizontalScale(16),
+    paddingBottom: verticalScale(20),
+  },
+  avatarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: verticalScale(-30),
+    marginBottom: verticalScale(16),
+  },
+  avatar: {
+    width: moderateScale(80),
+    height: moderateScale(80),
+    borderRadius: moderateScale(40),
+    borderWidth: 4,
+    borderColor: colors.surface,
+  },
+  profileDetails: {
+    flex: 1,
+    marginLeft: horizontalScale(16),
+    marginTop: verticalScale(20),
+  },
+  playerName: {
+    fontSize: moderateScale(24),
+    fontWeight: '700',
+    color: colors.text,
+    marginTop : verticalScale(10),
+    marginBottom: verticalScale(2),
+  },
+  handicapLocation: {
+    fontSize: moderateScale(14),
+    color: colors.textMute,
+  },
+  editButton: {
+    paddingHorizontal: horizontalScale(20),
+    paddingVertical: verticalScale(8),
+    backgroundColor: colors.accent,
+    borderRadius: radius.md,
+    marginTop: verticalScale(20),
+  },
+  editButtonText: {
+    color: colors.surface,
+    fontWeight: '600',
+    fontSize: moderateScale(14),
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: verticalScale(16),
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: "#EFE7E1",
+    borderColor: colors.border,
+    marginVertical: verticalScale(16),
   },
-  quickBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#E5D2C2",
+  statItem: {
+    alignItems: 'center',
   },
-  quickTxt: { color: "#8B5C2A", fontWeight: "600" },
-  tabs: { flexDirection: "row", marginTop: 10, paddingHorizontal: 12 },
-  tabBtn: {
+  statNumber: {
+    fontSize: moderateScale(20),
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: verticalScale(4),
+  },
+  statLabel: {
+    fontSize: moderateScale(12),
+    color: colors.textMute,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  bioText: {
+    fontSize: moderateScale(14),
+    color: colors.text,
+    lineHeight: moderateScale(20),
+    marginTop: verticalScale(-8),
+  },
+  quickActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: colors.surface,
+    paddingVertical: verticalScale(16),
+    marginBottom: verticalScale(12),
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border,
+  },
+  quickActionButton: {
+    alignItems: 'center',
+    paddingHorizontal: horizontalScale(16),
+    paddingVertical: verticalScale(12),
+    backgroundColor: colors.accentSoft,
+    borderRadius: radius.md,
+    minWidth: horizontalScale(80),
+  },
+  quickActionIcon: {
+    width: moderateScale(24),
+    height: moderateScale(24),
+    marginBottom: verticalScale(8),
+    tintColor: colors.accent,
+  },
+  quickActionText: {
+    fontSize: moderateScale(12),
+    color: colors.accent,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    paddingHorizontal: horizontalScale(16),
+    paddingTop: verticalScale(16),
+    marginBottom: verticalScale(12),
+  },
+  tabButton: {
     flex: 1,
-    height: 36,
-    marginHorizontal: 6,
-    borderRadius: 10,
-    backgroundColor: "#F1E7DF",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingVertical: verticalScale(12),
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+    marginHorizontal: horizontalScale(4),
   },
-  tabActive: { backgroundColor: "#8B5C2A" },
-  tabTxt: { color: "#8B5C2A", fontWeight: "600" },
-  tabTxtActive: { color: "#fff", fontWeight: "700" },
-  coursesWrap: { padding: 12, flexDirection: "row" },
-  courseCard: { width: 140, marginRight: 12 },
-  courseImg: { width: "100%", height: 90, borderRadius: 8 },
-  courseName: { marginTop: 6, fontWeight: "600", color: "#222" },
-  badgesWrap: { padding: 12, flexDirection: "row", flexWrap: "wrap" },
-  badge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#E5D2C2",
-    margin: 6,
+  activeTabButton: {
+    borderBottomColor: colors.accent,
   },
-  badgeTxt: { color: "#8B5C2A", fontWeight: "600" },
+  tabText: {
+    fontSize: moderateScale(16),
+    fontWeight: '600',
+    color: colors.textMute,
+  },
+  activeTabText: {
+    color: colors.accent,
+  },
+  tabContent: {
+    backgroundColor: colors.surface,
+    paddingHorizontal: horizontalScale(16),
+    paddingBottom: verticalScale(20),
+    minHeight: verticalScale(200),
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: verticalScale(40),
+  },
+  emptyStateText: {
+    fontSize: moderateScale(18),
+    fontWeight: '600',
+    color: colors.textMute,
+    marginBottom: verticalScale(8),
+  },
+  emptyStateSubtext: {
+    fontSize: moderateScale(14),
+    color: colors.textMute,
+    textAlign: 'center',
+  },
+  roundCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: verticalScale(12),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  roundImage: {
+    width: moderateScale(48),
+    height: moderateScale(48),
+    borderRadius: radius.md,
+    marginRight: horizontalScale(12),
+  },
+  roundInfo: {
+    flex: 1,
+  },
+  roundCourseName: {
+    fontSize: moderateScale(16),
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: verticalScale(2),
+  },
+  roundDate: {
+    fontSize: moderateScale(12),
+    color: colors.textMute,
+  },
+  roundScore: {
+    paddingHorizontal: horizontalScale(12),
+    paddingVertical: verticalScale(6),
+    backgroundColor: colors.accentSoft,
+    borderRadius: radius.sm,
+  },
+  roundScoreText: {
+    fontSize: moderateScale(16),
+    fontWeight: '700',
+    color: colors.accent,
+  },
+  achievementsSection: {
+    paddingTop: verticalScale(8),
+  },
+  sectionTitle: {
+    fontSize: moderateScale(18),
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: verticalScale(16),
+  },
+  achievementCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: verticalScale(12),
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  achievementIcon: {
+    fontSize: moderateScale(32),
+    marginRight: horizontalScale(16),
+  },
+  achievementInfo: {
+    flex: 1,
+  },
+  achievementTitle: {
+    fontSize: moderateScale(16),
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: verticalScale(2),
+  },
+  achievementDate: {
+    fontSize: moderateScale(12),
+    color: colors.textMute,
+  },
 });
