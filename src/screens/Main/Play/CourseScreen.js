@@ -57,22 +57,10 @@ export default function CourseScreen({ navigation, route }) {
           </View>
         )}
         <View style={styles.avatarRowAbs}>
-          <Image
-            source={require("../../../../assets/man.png")}
-            style={styles.smallAvatar}
-          />
+          
           <View style={styles.avatarStack}>
-            <View style={[styles.dotAvatar, { backgroundColor: "#F2C94C" }]}>
-              <Text style={styles.avatarInitial}>G</Text>
-            </View>
-            <View
-              style={[
-                styles.dotAvatar,
-                { backgroundColor: "#D17AEE", marginLeft: -8 },
-              ]}
-            >
-              <Text style={styles.avatarInitial}>N</Text>
-            </View>
+            
+            
           </View>
         </View>
         {/* Bottom rounded mask */}
