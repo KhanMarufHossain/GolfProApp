@@ -87,7 +87,7 @@ export default function CalculatorScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Handicap Calculator</Text>
 
         <View style={styles.fieldGroup}>
@@ -100,17 +100,14 @@ export default function CalculatorScreen() {
               {loadingCourses ? (
                 <ActivityIndicator color="#8B5C2A" />
               ) : (
-                <FlatList
-                  data={courses}
-                  keyExtractor={(i) => String(i.id)}
-                  style={{ maxHeight: verticalScale(220) }}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => onSelectCourse(item)} style={styles.dropdownItem}>
+                <ScrollView style={{ maxHeight: verticalScale(220) }} nestedScrollEnabled>
+                  {courses.map((item) => (
+                    <TouchableOpacity key={String(item.id)} onPress={() => onSelectCourse(item)} style={styles.dropdownItem}>
                       <Text style={styles.dropdownItemText}>{item.name}</Text>
                       <Text style={styles.dropdownMeta}>Par {item.par ?? '-'}</Text>
                     </TouchableOpacity>
-                  )}
-                />
+                  ))}
+                </ScrollView>
               )}
             </View>
           )}
