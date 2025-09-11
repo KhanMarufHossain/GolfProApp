@@ -2,13 +2,16 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AuthStack from './src/navigation/AuthStack';
+import { UserProvider } from './src/context/UserContext';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <AuthStack />
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
+        <AuthStack />
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </UserProvider>
   );
 }
 

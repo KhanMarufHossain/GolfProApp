@@ -1,29 +1,92 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { colors } from '../../utils/theme';
+import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 
-export default function NotificationsScreen() {
+export default function NotificationsScreen({ navigation }) {
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Notifications</Text>
-        <Text>No new notifications.</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Notifications</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+      <View style={styles.content}>
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyStateIcon}>🔔</Text>
+          <Text style={styles.emptyStateText}>No new notifications</Text>
+          <Text style={styles.emptyStateSubtext}>
+            When you have notifications, they'll appear here
+          </Text>
+        </View>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: colors.bg,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  header: {
+    height: verticalScale(56),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: horizontalScale(16),
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  backButton: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backButtonText: {
+    fontSize: moderateScale(24),
+    color: colors.accent,
+    fontWeight: '600',
+  },
+  headerTitle: {
+    fontSize: moderateScale(18),
+    fontWeight: '700',
+    color: colors.text,
+  },
+  headerSpacer: {
+    width: moderateScale(40),
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingHorizontal: horizontalScale(32),
+  },
+  emptyStateIcon: {
+    fontSize: moderateScale(48),
+    marginBottom: verticalScale(16),
+  },
+  emptyStateText: {
+    fontSize: moderateScale(18),
+    fontWeight: '600',
+    color: colors.textMute,
+    marginBottom: verticalScale(8),
+    textAlign: 'center',
+  },
+  emptyStateSubtext: {
+    fontSize: moderateScale(14),
+    color: colors.textMute,
+    textAlign: 'center',
+    lineHeight: moderateScale(20),
   },
 });

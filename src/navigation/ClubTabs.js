@@ -1,44 +1,32 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CommunityScreen from '../screens/Main/CommunityScreen';
-import PlayStack from '../screens/Main/PlayStack';
-import CalculatorScreen from '../screens/Main/CalculatorScreen';
-import ProfileStack from '../screens/Main/Profile/ProfileStack';
 import SettingsScreen from '../screens/Main/SettingsScreen';
+import ProfileStack from '../screens/Main/Profile/ProfileStack';
 import CommunityIcon from '../../assets/community.svg';
-import PlayIcon from '../../assets/play.svg';
-import CalculatorIcon from '../../assets/calculator.svg';
 import AccountIcon from '../../assets/account.svg';
 import SettingsIcon from '../../assets/settings-icon.png';
 import { moderateScale } from '../utils/dimensions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useUser } from '../context/UserContext';
 import { Image } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
-export default function MainTabs() {
+export default function ClubTabs() {
   const insets = useSafeAreaInsets();
-  const { userType } = useUser();
-
-  const isClub = userType === 'club';
 
   return (
     <Tab.Navigator
-      initialRouteName={isClub ? "Profile" : "Community"}
+      initialRouteName="Profile"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: true,
         tabBarIcon: ({ focused, color, size }) => {
           size = moderateScale(24);
-          if (route.name === 'Community') {
-            return <CommunityIcon width={size} height={size} fill={color} />;
-          } else if (route.name === 'Play') {
-            return <PlayIcon width={size} height={size} fill={color} />;
-          } else if (route.name === 'HCP Calculator') {
-            return <CalculatorIcon width={size} height={size} fill={color} />;
-          } else if (route.name === 'Profile') {
+          if (route.name === 'Profile') {
             return <AccountIcon width={size} height={size} fill={color} />;
+          } else if (route.name === 'Community') {
+            return <CommunityIcon width={size} height={size} fill={color} />;
           } else if (route.name === 'Settings') {
             return <Image source={SettingsIcon} style={{ width: size, height: size, tintColor: color }} />;
           }
@@ -59,22 +47,9 @@ export default function MainTabs() {
         },
       })}
     >
-      {isClub ? (
-        // Golf Club navigation - Profile, Community, Settings
-        <>
-          <Tab.Screen name="Profile" component={ProfileStack} />
-          <Tab.Screen name="Community" component={CommunityScreen} />
-          <Tab.Screen name="Settings" component={SettingsScreen} />
-        </>
-      ) : (
-        // Golfer navigation - Community, Play, HCP Calculator, Profile
-        <>
-          <Tab.Screen name="Community" component={CommunityScreen} />
-          <Tab.Screen name="Play" component={PlayStack} />
-          <Tab.Screen name="HCP Calculator" component={CalculatorScreen} />
-          <Tab.Screen name="Profile" component={ProfileStack} />
-        </>
-      )}
+      <Tab.Screen name="Profile" component={ProfileStack} />
+      <Tab.Screen name="Community" component={CommunityScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 }

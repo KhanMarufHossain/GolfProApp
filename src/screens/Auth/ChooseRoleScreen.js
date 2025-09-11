@@ -5,14 +5,15 @@ import ClubDocket from '../../../assets/ClubDocket.svg';
 import GolferIcon from '../../../assets/golfer.svg';
 import GolfClubIcon from '../../../assets/golfClub.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { useUser } from '../../context/UserContext';
 
 export default function ChooseRoleScreen({ navigation }) {
   const [role, setRole] = useState(null);
+  const { setUserType } = useUser();
 
   const onSelect = (r) => {
     setRole(r);
+    setUserType(r);
     setTimeout(() => {
       navigation.reset({
         index: 0,
