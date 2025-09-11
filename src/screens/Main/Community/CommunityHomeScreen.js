@@ -467,9 +467,15 @@ function InlineEventCard({ event, mode }) {
         ))}
       </View>
       <TouchableOpacity style={styles.inlineBtn}>
-        <Text style={styles.inlineBtnTxt}>
-          {mode === "live" ? "Live Score" : "View Score"}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
+          {mode === 'live' && (
+            <Image source={require('../../../../assets/Radio.png')} style={[styles.inlineIcon, { marginLeft: 6 }]} />
+          )}
+          <Text style={[styles.inlineBtnTxt, { marginLeft: 8 }]}>
+            {mode === 'live' ? 'Live Score' : 'View Score'}
+          </Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -529,7 +535,10 @@ function LeaderboardCard() {
         ))}
       </View>
       <TouchableOpacity style={styles.inlineBtn}>
-        <Text style={styles.inlineBtnTxt}>Leaderboard</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Image source={require('../../../../assets/eye.png')} style={styles.inlineIcon} />
+          <Text style={[styles.inlineBtnTxt, { marginLeft: 8 }]}>Leaderboard</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -853,6 +862,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   inlineBtnTxt: { color: "#8B5C2A", fontWeight: "600", fontSize: moderateScale(12) },
+  inlineIcon: {
+    width: moderateScale(16),
+    height: moderateScale(16),
+    tintColor: "#8B5C2A",
+  },
   roundStatsCard: {
     backgroundColor: "#fff",
     borderRadius: moderateScale(14),
