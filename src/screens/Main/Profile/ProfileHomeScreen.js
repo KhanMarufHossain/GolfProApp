@@ -90,13 +90,13 @@ const ProfileHomeScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation && navigation.navigate('Notifications')}>
             <Image
               source={require('../../../../assets/bell.png')}
               style={styles.headerIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation && navigation.navigate('ProfileSettings')}>
             <Image
               source={require('../../../../assets/dots-icon.png')}
               style={styles.headerIcon}
@@ -149,11 +149,11 @@ const ProfileHomeScreen = ({ navigation }) => {
                 <Image source={require('../../../../assets/rectangle.png')} style={[styles.actionIcon, { tintColor: '#fff' }]} />
                 <Text style={[styles.actionPillText, styles.actionPillTextPrimary]}>Feed</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8} onPress={() => navigation && navigation.navigate('Followers')}>
                 <Image source={require('../../../../assets/addFriend.png')} style={[styles.actionIcon, { tintColor: colors.accent }]} />
                 <Text style={styles.actionPillText}>Friend</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8}>
+              <TouchableOpacity style={styles.actionPill} activeOpacity={0.8} onPress={() => navigation && navigation.navigate('Messages')}>
                 <Image source={require('../../../../assets/Comment.png')} style={[styles.actionIcon, { tintColor: colors.accent }]} />
                 <Text style={styles.actionPillText}>Messages</Text>
               </TouchableOpacity>

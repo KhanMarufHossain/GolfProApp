@@ -7,6 +7,8 @@ import FollowersScreen from './FollowersScreen';
 import ScorecardsScreen from './ScorecardsScreen';
 import ProfileSettingsScreen from './ProfileSettingsScreen';
 import { useUser } from '../../../context/UserContext';
+import NotificationsScreen from '../NotificationsScreen';
+import MessagesScreen from './MessagesScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,8 @@ export default function ProfileStack() {
       <Stack.Screen name="Followers" component={FollowersScreen} />
       <Stack.Screen name="Scorecards" component={ScorecardsScreen} />
       <Stack.Screen name="ProfileSettings" component={ProfileSettingsScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="Messages" component={MessagesScreen} />
     </Stack.Navigator>
   );
 }
