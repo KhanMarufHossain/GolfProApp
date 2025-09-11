@@ -375,7 +375,8 @@ function EventCard({ event, onToggleJoin, navigation }) {
       isPublic: true,
       rank: 1
     };
-    navigation.navigate('PlayStack', { screen: 'Course', params: { course: courseData } });
+  // navigate to the Play tab and open the nested Course screen
+  navigation.navigate('Play', { screen: 'Course', params: { course: courseData } });
   };
 
   return (
