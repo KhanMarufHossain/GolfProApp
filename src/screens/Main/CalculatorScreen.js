@@ -200,7 +200,7 @@ export default function CalculatorScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
-  container: { paddingHorizontal: horizontalScale(20), paddingBottom: verticalScale(40) },
+  container: { paddingHorizontal: horizontalScale(20), paddingVertical: verticalScale(40) },
   title: { fontSize: moderateScale(22), fontWeight: '700', marginTop: verticalScale(12), marginBottom: verticalScale(16) },
   subtitle: { fontSize: moderateScale(14), color: '#666', marginBottom: verticalScale(8) },
   fieldGroup: { marginBottom: verticalScale(12) },

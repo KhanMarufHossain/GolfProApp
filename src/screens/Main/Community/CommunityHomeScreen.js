@@ -328,7 +328,7 @@ export default function CommunityHomeScreen({ navigation }) {
       {/* FAB for News Feed only */}
       {segment === "feed" && (
         <TouchableOpacity
-          style={[styles.fab, { bottom: insets.bottom + moderateScale(20) }]}
+          style={[styles.fab, { bottom: insets.bottom + moderateScale(-10) }]}
           onPress={() => navigation.navigate("ComposePost")}
         >
           <Text style={styles.fabTxt}>✎</Text>
