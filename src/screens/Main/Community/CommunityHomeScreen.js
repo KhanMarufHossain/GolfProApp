@@ -10,7 +10,7 @@ import {
   RefreshControl,
   ScrollView,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context"; // <-- added
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   moderateScale,
   horizontalScale,
@@ -30,7 +30,7 @@ const mockEvents = [
     time: "12:00 PM",
     type: "Stroke Play",
     joined: true,
-    status: "joined", // joined | live | upcoming | finished
+    status: "joined",
   },
   {
     id: "2",
@@ -60,7 +60,7 @@ const mockEvents = [
     time: "12:00 PM",
     type: "Stroke Play",
     joined: false,
-    status: "active", // maybe user is playing
+    status: "active",
   },
   {
     id: "5",
@@ -87,7 +87,7 @@ const mockEvents = [
 const FILTERS = ["All", "Match", "Active", "Upcoming", "Finish"];
 
 export default function CommunityHomeScreen({ navigation }) {
-  const insets = useSafeAreaInsets(); // <-- added
+  const insets = useSafeAreaInsets();
 
   const [segment, setSegment] = useState("feed");
   const [feed, setFeed] = useState([]);
@@ -137,7 +137,6 @@ export default function CommunityHomeScreen({ navigation }) {
   });
 
   const compositeFeed = useMemo(() => {
-    // Mix demo cards to emulate Figma variety
     let items = [];
     feed.forEach((p, idx) => {
       items.push({ type: "post", id: p.id, data: p });
@@ -161,7 +160,7 @@ export default function CommunityHomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      {/* override paddingTop with inset to avoid double/top-gap */}
+      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
@@ -199,6 +198,7 @@ export default function CommunityHomeScreen({ navigation }) {
         </View>
       </View>
 
+      {/* Segment Tabs */}
       <View style={styles.segmentContainer}>
         <View style={styles.segmentRow}>
           <TouchableOpacity
@@ -236,7 +236,9 @@ export default function CommunityHomeScreen({ navigation }) {
         />
       </View>
 
+      {/* Content Sections */}
       {segment === "feed" ? (
+        // News Feed Section (unchanged)
         <FlatList
           data={compositeFeed}
           keyExtractor={(item) => item.id}
@@ -272,25 +274,28 @@ export default function CommunityHomeScreen({ navigation }) {
           }}
         />
       ) : (
-        <View style={{ flex: 1 }}>
+        // Event Section (completely separate with own flex container)
+        <View style={styles.eventSectionContainer}>
+          {/* Filter Pills */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.filterBar}
+            style={styles.filterScrollView}
+            contentContainerStyle={styles.filterContainer}
           >
             {FILTERS.map((f) => (
               <TouchableOpacity
                 key={f}
                 onPress={() => setFilter(f)}
                 style={[
-                  styles.filterCard,
-                  filter === f && styles.filterCardActive,
+                  styles.filterPill,
+                  filter === f && styles.filterPillActive,
                 ]}
               >
                 <Text
                   style={[
-                    styles.filterCardText,
-                    filter === f && styles.filterCardTextActive,
+                    styles.filterPillText,
+                    filter === f && styles.filterPillTextActive,
                   ]}
                 >
                   {f}
@@ -298,10 +303,16 @@ export default function CommunityHomeScreen({ navigation }) {
               </TouchableOpacity>
             ))}
           </ScrollView>
+
+          {/* Event List */}
           <FlatList
             data={filteredEvents}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.eventList}
+            contentContainerStyle={[
+              styles.eventList,
+              { paddingBottom: insets.bottom + moderateScale(20) },
+            ]}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <EventCard
                 event={item}
@@ -312,9 +323,10 @@ export default function CommunityHomeScreen({ navigation }) {
         </View>
       )}
 
+      {/* FAB for News Feed only */}
       {segment === "feed" && (
         <TouchableOpacity
-          style={styles.fab}
+          style={[styles.fab, { bottom: insets.bottom + moderateScale(20) }]}
           onPress={() => navigation.navigate("ComposePost")}
         >
           <Text style={styles.fabTxt}>✎</Text>
@@ -325,52 +337,95 @@ export default function CommunityHomeScreen({ navigation }) {
 }
 
 function EventCard({ event, onToggleJoin }) {
-  const statusBadge = () => {
-    if (event.joined)
-      return (
-        <View style={[styles.badge, styles.badgeJoined]}>
-          <Text style={styles.badgeTxt}>Joined</Text>
-        </View>
-      );
-    if (event.status === "live")
-      return (
-        <View style={[styles.badge, styles.badgeLive]}>
-          <Text style={styles.badgeTxtSmall}>﹙﹚</Text>
-        </View>
-      );
-    if (event.status === "active")
-      return (
-        <View style={[styles.badge, styles.badgeActive]}>
-          <Text style={styles.badgeTick}>✓</Text>
-        </View>
-      );
-    return null;
+  const getStatusIcon = () => {
+    switch (event.status) {
+      case "joined":
+        return "✓";
+      case "live":
+        return "📍";
+      default:
+        return null;
+    }
+  };
+
+  const getStatusColor = () => {
+    switch (event.status) {
+      case "joined":
+        return "#4CAF50";
+      case "live":
+        return "#FF5722";
+      default:
+        return "#8B5C2A";
+    }
   };
 
   return (
     <View style={styles.eventCard}>
-      {statusBadge()}
-      <Text style={styles.club}>{event.club}</Text>
-      <Text style={styles.location}>{event.location}</Text>
-      <View style={styles.rowMeta}>
-        <Text style={styles.metaDate}>{event.date}</Text>
-        <Text style={styles.metaDot}>•</Text>
-        <Text style={styles.metaTime}>{event.time}</Text>
+      {/* Header with club image and status */}
+      <View style={styles.eventHeader}>
+        <View style={styles.eventHeaderLeft}>
+          <Image
+            source={require("../../../../assets/golfField.png")}
+            style={styles.clubImage}
+          />
+          <View style={styles.eventHeaderText}>
+            <Text style={styles.clubName}>{event.club}</Text>
+            <Text style={styles.clubLocation}>{event.location}</Text>
+          </View>
+        </View>
+        {event.status === "joined" && (
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor() },
+            ]}
+          >
+            <Text style={styles.statusText}>✓ Joined</Text>
+          </View>
+        )}
+        {event.status === "live" && (
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: getStatusColor() },
+            ]}
+          >
+            <Text style={styles.statusText}>📍 Live</Text>
+          </View>
+        )}
       </View>
-      <View style={styles.divider} />
-      <View style={styles.typeRow}>
-        <Text style={styles.typeTxt}>{event.type}</Text>
+
+      {/* Date and Time */}
+      <View style={styles.dateTimeRow}>
+        <Text style={styles.dateText}>📅 {event.date}</Text>
+        <Text style={styles.timeText}>🕐 {event.time}</Text>
       </View>
-      <View style={styles.btnRow}>
-        <TouchableOpacity style={styles.smallBtn}>
-          <Text style={styles.smallBtnTxt}>Course View</Text>
+
+      {/* Event Type with Trophy Icons */}
+      <View style={styles.eventTypeRow}>
+        <Text style={styles.eventTypeIcon}>🏆</Text>
+        <Text style={styles.eventTypeText}>{event.type}</Text>
+        <Text style={styles.eventTypeIcon}>🏆</Text>
+      </View>
+
+      {/* Action Buttons */}
+      <View style={styles.actionButtonsRow}>
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionButtonIcon}>🏌️</Text>
+          <Text style={styles.actionButtonText}>Course View</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.smallBtn}>
-          <Text style={styles.smallBtnTxt}>Bracket</Text>
+
+        <TouchableOpacity style={styles.actionButton}>
+          <Text style={styles.actionButtonIcon}>🏆</Text>
+          <Text style={styles.actionButtonText}>Bracket</Text>
         </TouchableOpacity>
+
         {!event.joined && event.status !== "live" && (
-          <TouchableOpacity onPress={onToggleJoin} style={styles.joinBtn}>
-            <Text style={styles.joinBtnTxt}>+ Join</Text>
+          <TouchableOpacity
+            style={styles.joinButton}
+            onPress={onToggleJoin}
+          >
+            <Text style={styles.joinButtonText}>+ Join</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -480,7 +535,9 @@ function LeaderboardCard() {
 }
 
 const styles = StyleSheet.create({
-  safe: {  backgroundColor: colors.bg },
+  safe: { flex: 1, backgroundColor: colors.bg },
+
+  // Header styles
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -504,7 +561,6 @@ const styles = StyleSheet.create({
   avatar: { width: "100%", height: "100%" },
   headerTexts: { flex: 1 },
   greeting: { fontSize: moderateScale(18), fontWeight: "600", color: "#222" },
-  greet: { fontSize: moderateScale(16), fontWeight: "700", color: colors.text },
   sub: { color: colors.textMute, marginTop: verticalScale(4) },
   headerRightRow: {
     flexDirection: "row",
@@ -527,27 +583,8 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(4),
     backgroundColor: "red",
   },
-  icon: {
-    width: moderateScale(18),
-    height: moderateScale(18),
-    resizeMode: "contain",
-    tintColor: colors.text,
-  },
-  iconDots: {
-    width: moderateScale(20),
-    height: moderateScale(20),
-    resizeMode: "contain",
-    tintColor: colors.text,
-  },
-  notificationDot: {
-    position: "absolute",
-    top: 6,
-    right: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#E33",
-  },
+
+  // Segment styles
   segmentContainer: {
     paddingHorizontal: moderateScale(16),
     paddingTop: moderateScale(12),
@@ -577,11 +614,12 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   segmentUnderlineRight: { marginLeft: "50%" },
+
+  // News Feed styles (unchanged)
   feedList: { padding: moderateScale(16), paddingBottom: moderateScale(120) },
   fab: {
     position: "absolute",
     right: moderateScale(18),
-    bottom: moderateScale(28),
     width: moderateScale(50),
     height: moderateScale(50),
     borderRadius: moderateScale(10),
@@ -595,42 +633,176 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   fabTxt: { color: "#fff", fontSize: moderateScale(20), fontWeight: "700" },
-  filterBar: {
-    paddingVertical: moderateScale(12),
+
+  // Event Section Container - NEW: Separate flex container for events
+  eventSectionContainer: {
+    flex: 1,
+    backgroundColor: "#fff", // White background for event section
+  },
+
+  // Filter pills
+  filterScrollView: {
+    maxHeight: moderateScale(60),
+  },
+  filterContainer: {
     paddingHorizontal: moderateScale(16),
-  },
-  filterCard: {
-    width: moderateScale(80),
-    height: moderateScale(100),
-    borderRadius: moderateScale(12),
-    backgroundColor: "#E9DFD9",
-    justifyContent: "center",
+    paddingVertical: moderateScale(12),
     alignItems: "center",
-    marginRight: moderateScale(10),
   },
-  filterCardActive: {
+  filterPill: {
+    backgroundColor: "#8B5C2A",
+    paddingHorizontal: moderateScale(20),
+    paddingVertical: moderateScale(8),
+    borderRadius: moderateScale(20),
+    marginRight: moderateScale(10),
+    minWidth: moderateScale(60),
+    alignItems: "center",
+  },
+  filterPillActive: {
     backgroundColor: "#8B5C2A",
   },
-  filterCardText: {
-    color: "#7A6A61",
-    fontWeight: "600",
-    fontSize: moderateScale(14),
-  },
-  filterCardTextActive: {
+  filterPillText: {
     color: "#FFFFFF",
+    fontSize: moderateScale(14),
+    fontWeight: "600",
   },
+  filterPillTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
+
+  // Event list
   eventList: {
     paddingHorizontal: moderateScale(16),
-    paddingBottom: moderateScale(40),
+    paddingTop: moderateScale(8),
   },
+
+  // Event card styles (matching Figma exactly)
   eventCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 14,
+    borderRadius: moderateScale(16),
     padding: moderateScale(16),
-    marginBottom: moderateScale(14),
-    borderWidth: 1,
-    borderColor: "#EFE7E1",
+    marginBottom: moderateScale(16),
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
+
+  // Event header
+  eventHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: moderateScale(12),
+  },
+  eventHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  clubImage: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(8),
+    marginRight: moderateScale(12),
+  },
+  eventHeaderText: {
+    flex: 1,
+  },
+  clubName: {
+    fontSize: moderateScale(16),
+    fontWeight: "700",
+    color: "#222",
+  },
+  clubLocation: {
+    fontSize: moderateScale(13),
+    color: "#666",
+    marginTop: 2,
+  },
+  statusBadge: {
+    paddingHorizontal: moderateScale(8),
+    paddingVertical: moderateScale(4),
+    borderRadius: moderateScale(12),
+  },
+  statusText: {
+    color: "#FFFFFF",
+    fontSize: moderateScale(11),
+    fontWeight: "600",
+  },
+
+  // Date and time row
+  dateTimeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: moderateScale(12),
+  },
+  dateText: {
+    fontSize: moderateScale(13),
+    color: "#666",
+    marginRight: moderateScale(20),
+  },
+  timeText: {
+    fontSize: moderateScale(13),
+    color: "#666",
+  },
+
+  // Event type row
+  eventTypeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: moderateScale(16),
+    paddingVertical: moderateScale(8),
+  },
+  eventTypeIcon: {
+    fontSize: moderateScale(20),
+    marginHorizontal: moderateScale(8),
+  },
+  eventTypeText: {
+    fontSize: moderateScale(16),
+    fontWeight: "700",
+    color: "#8B5C2A",
+  },
+
+  // Action buttons
+  actionButtonsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  actionButton: {
+    backgroundColor: "#F5EDE8",
+    paddingHorizontal: moderateScale(12),
+    paddingVertical: moderateScale(8),
+    borderRadius: moderateScale(8),
+    marginRight: moderateScale(10),
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  actionButtonIcon: {
+    fontSize: moderateScale(12),
+    marginRight: moderateScale(4),
+  },
+  actionButtonText: {
+    fontSize: moderateScale(12),
+    color: "#8B5C2A",
+    fontWeight: "600",
+  },
+  joinButton: {
+    backgroundColor: "#8B5C2A",
+    paddingHorizontal: moderateScale(16),
+    paddingVertical: moderateScale(8),
+    borderRadius: moderateScale(8),
+    marginLeft: "auto",
+  },
+  joinButtonText: {
+    color: "#FFFFFF",
+    fontSize: moderateScale(12),
+    fontWeight: "700",
+  },
+
+  // Legacy styles for inline components (unchanged)
   club: { fontSize: moderateScale(14), fontWeight: "700", color: "#222" },
   location: { fontSize: moderateScale(12), color: "#6E6E6E", marginTop: 2 },
   rowMeta: {
@@ -641,69 +813,6 @@ const styles = StyleSheet.create({
   metaDate: { fontSize: moderateScale(11), color: "#5A5A5A" },
   metaDot: { marginHorizontal: 6, color: "#5A5A5A" },
   metaTime: { fontSize: moderateScale(11), color: "#5A5A5A" },
-  divider: {
-    height: 1,
-    backgroundColor: "#EFE7E1",
-    marginVertical: moderateScale(12),
-  },
-  typeRow: { flexDirection: "row", alignItems: "center" },
-  typeTxt: { fontSize: moderateScale(16), fontWeight: "700", color: "#8B5C2A" },
-  btnRow: {
-    flexDirection: "row",
-    marginTop: moderateScale(14),
-    alignItems: "center",
-  },
-  smallBtn: {
-    backgroundColor: "#E9DFD9",
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    marginRight: 12,
-  },
-  smallBtnTxt: {
-    fontSize: moderateScale(12),
-    fontWeight: "600",
-    color: "#8B5C2A",
-  },
-  joinBtn: {
-    marginLeft: "auto",
-    backgroundColor: "#8B5C2A",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-  },
-  joinBtnTxt: {
-    color: "#FFFFFF",
-    fontSize: moderateScale(12),
-    fontWeight: "600",
-  },
-  badge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    zIndex: 2,
-  },
-  badgeJoined: { backgroundColor: "#E9DFD9" },
-  badgeLive: { backgroundColor: "#E9DFD9" },
-  badgeActive: { backgroundColor: "#E9DFD9" },
-  badgeTxt: {
-    fontSize: moderateScale(11),
-    fontWeight: "600",
-    color: "#8B5C2A",
-  },
-  badgeTxtSmall: {
-    fontSize: moderateScale(12),
-    fontWeight: "600",
-    color: "#8B5C2A",
-  },
-  badgeTick: {
-    fontSize: moderateScale(14),
-    fontWeight: "700",
-    color: "#8B5C2A",
-  },
   inlineEventCard: {
     backgroundColor: "#fff",
     borderRadius: 14,
