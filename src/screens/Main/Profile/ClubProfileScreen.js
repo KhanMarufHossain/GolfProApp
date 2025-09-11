@@ -5,7 +5,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
   Image,
   FlatList,
 } from "react-native";
@@ -49,6 +48,24 @@ export default function ClubProfileScreen({ navigation }) {
       }
     ]
   };
+
+  // Mock friends and messages to match Figma-style lists
+  const friends = Array.from({ length: 8 }).map((_, i) => ({
+    id: i + 1,
+    name: i % 2 === 0 ? 'Pebble Beach GC' : 'Augusta National',
+    username: i % 2 === 0 ? '@pebble' : '@augusta',
+    avatar: require('../../../../assets/man.png'),
+    isFollowing: i % 3 === 0,
+  }));
+
+  const messages = Array.from({ length: 6 }).map((_, i) => ({
+    id: i + 1,
+    name: i % 2 === 0 ? 'Pro Shop' : 'Tournament Desk',
+    avatar: require('../../../../assets/man.png'),
+    lastMessage: i % 2 === 0 ? 'Your order is ready for pickup.' : 'Pairings are live now. Good luck!',
+    time: i % 2 === 0 ? '2h' : '1d',
+    unread: i % 4 === 0 ? 2 : 0,
+  }));
 
   const renderHeader = () => (
     <View style={styles.headerContainer}>
@@ -156,37 +173,48 @@ export default function ClubProfileScreen({ navigation }) {
     </View>
   );
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case "Feed":
-        return (
-          <FlatList
-            data={clubData.feed}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderFeedItem}
-            showsVerticalScrollIndicator={false}
-          />
-        );
-      
-      case "Friends":
-        return (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No friends yet</Text>
-            <Text style={styles.emptyStateSubtext}>Connect with other golf clubs and golfers</Text>
-          </View>
-        );
-      
-      case "Messages":
-        return (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No messages</Text>
-            <Text style={styles.emptyStateSubtext}>Start conversations with your members</Text>
-          </View>
-        );
-      
-      default:
-        return null;
+  const renderFriendItem = ({ item }) => (
+    <View style={styles.friendItem}>
+      <Image source={item.avatar} style={styles.friendAvatar} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.friendName}>{item.name}</Text>
+        <Text style={styles.friendMeta}>{item.username}</Text>
+      </View>
+      <TouchableOpacity
+        style={[styles.followBtn, item.isFollowing && styles.followingBtn]}
+      >
+        <Text style={[styles.followBtnText, item.isFollowing && styles.followingBtnText]}>
+          {item.isFollowing ? 'Following' : 'Follow'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderMessageItem = ({ item }) => (
+    <View style={styles.messageItem}>
+      <Image source={item.avatar} style={styles.messageAvatar} />
+      <View style={{ flex: 1, marginRight: horizontalScale(8) }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Text style={styles.messageName}>{item.name}</Text>
+          <Text style={styles.messageTime}>{item.time}</Text>
+        </View>
+        <Text style={styles.messagePreview} numberOfLines={1}>{item.lastMessage}</Text>
+      </View>
+      {item.unread > 0 && (
+        <View style={styles.unreadBadge}><Text style={styles.unreadText}>{item.unread}</Text></View>
+      )}
+    </View>
+  );
+
+  // Decide data and item renderer by tab
+  const getListProps = () => {
+    if (activeTab === 'Feed') {
+      return { data: clubData.feed, renderItem: renderFeedItem };
     }
+    if (activeTab === 'Friends') {
+      return { data: friends, renderItem: renderFriendItem };
+    }
+    return { data: messages, renderItem: renderMessageItem };
   };
 
   return (
@@ -203,17 +231,29 @@ export default function ClubProfileScreen({ navigation }) {
         </View>
       </View>
 
-      <ScrollView 
-        style={styles.scrollView} 
+      {/* Use a single VirtualizedList to avoid nesting inside a ScrollView */}
+      <FlatList
+        {...getListProps()}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[1]}
-      >
-        {renderHeader()}
-        {renderTabNavigation()}
-        <View style={styles.tabContentContainer}>
-          {renderTabContent()}
-        </View>
-      </ScrollView>
+        ListHeaderComponent={() => (
+          <>
+            {renderHeader()}
+            {renderTabNavigation()}
+          </>
+        )}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyStateText}>
+              {activeTab === 'Friends' ? 'No friends yet' : 'No messages'}
+            </Text>
+            <Text style={styles.emptyStateSubtext}>
+              {activeTab === 'Friends' ? 'Connect with other golf clubs and golfers' : 'Start conversations with your members'}
+            </Text>
+          </View>
+        )}
+        contentContainerStyle={styles.scrollView}
+      />
     </SafeAreaView>
   );
 }
