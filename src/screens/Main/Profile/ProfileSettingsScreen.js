@@ -230,7 +230,7 @@ export default function ProfileSettingsScreen({ navigation }) {
             'Privacy Policy',
             'Learn about our privacy practices',
             null,
-            () => console.log('Navigate to Privacy Policy'),
+            () => navigation.navigate('SettingsPrivacyPolicy'),
             'arrow'
           ),
         ])}

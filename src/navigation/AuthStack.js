@@ -15,6 +15,15 @@ import ChooseRoleScreen from '../screens/Auth/ChooseRoleScreen';
 import MainTabs from './MainTabs';
 import NotificationsScreen from '../screens/Main/NotificationsScreen';
 import SettingsScreen from '../screens/Main/SettingsScreen';
+import SettingsPrivacyPolicyScreen from '../screens/Main/SettingsPrivacyPolicyScreen';
+import SettingsEditProfileScreen from '../screens/Main/SettingsEditProfileScreen';
+import SettingsPersonalInfoScreen from '../screens/Main/SettingsPersonalInfoScreen';
+import SettingsEditAvatarScreen from '../screens/Main/SettingsEditAvatarScreen';
+import SettingsEditCoverScreen from '../screens/Main/SettingsEditCoverScreen';
+import SettingsChangePasswordScreen from '../screens/Main/SettingsChangePasswordScreen';
+import SettingsProfileDetailsScreen from '../screens/Main/SettingsProfileDetailsScreen';
+import SettingsPhoneScreen from '../screens/Main/SettingsPhoneScreen';
+import SettingsPhotosScreen from '../screens/Main/SettingsPhotosScreen';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +43,16 @@ export default function AuthStack() {
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      {/* Settings detail screens so they are reachable from the Settings tab */}
+      <Stack.Screen name="SettingsPrivacyPolicy" component={SettingsPrivacyPolicyScreen} />
+      <Stack.Screen name="SettingsEditProfile" component={SettingsEditProfileScreen} />
+      <Stack.Screen name="SettingsPersonalInfo" component={SettingsPersonalInfoScreen} />
+      <Stack.Screen name="SettingsEditAvatar" component={SettingsEditAvatarScreen} />
+      <Stack.Screen name="SettingsEditCover" component={SettingsEditCoverScreen} />
+      <Stack.Screen name="SettingsChangePassword" component={SettingsChangePasswordScreen} />
+      <Stack.Screen name="SettingsProfileDetails" component={SettingsProfileDetailsScreen} />
+      <Stack.Screen name="SettingsPhone" component={SettingsPhoneScreen} />
+      <Stack.Screen name="SettingsPhotos" component={SettingsPhotosScreen} />
     </Stack.Navigator>
   );
 }
