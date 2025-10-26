@@ -19,7 +19,8 @@
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.13.1",
     "react-native-svg": "^15.12.1",
-    "expo-screen-orientation": "~8.1.7"
+    "expo-screen-orientation": "~8.1.7",
+    "react-native-gesture-handler": "~2.24.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

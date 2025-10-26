@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.marufhossain03.GolfProApp"
+      "bundleIdentifier": "com.nick.GolfProApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.marufhossain03.GolfProApp"
+      "package": "com.nick.GolfProApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
