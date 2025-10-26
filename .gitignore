@@ -35,3 +35,11 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+
+# Native platform source directories
+# If you intentionally don't want to commit native projects (android/ios), ignore them here.
+# Note: only add these if you know you don't want to track native code. If you do want the
+# native projects in the repo (typical for bare React Native), remove these lines.
+/android/
+/ios/
