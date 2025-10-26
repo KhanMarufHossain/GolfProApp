@@ -1,16 +1,51 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { authService } from '../../services/authService';
+import { useUser } from '../../context/UserContext';
 
 export default function SignUpScreen({ navigation }) {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useUser();
+
+  const handleSignUp = async () => {
+    // Basic validation
+    if (!fullName.trim()) {
+      Alert.alert('Error', 'Please enter your full name');
+      return;
+    }
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+
+    // Navigate to role selection with signup data
+    navigation.navigate('ChooseRole', {
+      signupData: {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        password,
+      },
+    });
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={horizontalScale(93.75)} height={verticalScale(93.75)} />
+        <ClubDocket width={horizontalScale(93.75)} height={verticalScale(93.75)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Create an account</Text>
 
@@ -20,6 +55,9 @@ export default function SignUpScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter full name"
             placeholderTextColor="#B7B7B7"
+            value={fullName}
+            onChangeText={setFullName}
+            editable={!loading}
           />
         </View>
         <View style={styles.inputGroup}>
@@ -28,6 +66,11 @@ export default function SignUpScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter email"
             placeholderTextColor="#B7B7B7"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!loading}
           />
         </View>
         <View style={styles.inputGroup}>
@@ -36,15 +79,23 @@ export default function SignUpScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter password"
             placeholderTextColor="#B7B7B7"
+            value={password}
+            onChangeText={setPassword}
             secureTextEntry
+            editable={!loading}
           />
         </View>
 
         <TouchableOpacity
-          style={styles.signupButton}
-          onPress={() => navigation.navigate('Credential')}
+          style={[styles.signupButton, loading && styles.signupButtonDisabled]}
+          onPress={handleSignUp}
+          disabled={loading}
         >
-          <Text style={styles.signupButtonText}>Sign up</Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.signupButtonText}>Sign up</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.loginRow}>
@@ -116,6 +167,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: verticalScale(9.744),
     marginBottom: verticalScale(17.864),
+  },
+  signupButtonDisabled: {
+    opacity: 0.6,
   },
   signupButtonText: {
     color: '#fff',

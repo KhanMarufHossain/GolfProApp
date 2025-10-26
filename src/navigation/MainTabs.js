@@ -21,6 +21,7 @@ export default function MainTabs() {
   const insets = useSafeAreaInsets();
   const { userType } = useUser();
 
+  // Default to golfer if userType is null (shouldn't happen in normal flow)
   const isClub = userType === 'club';
 
   return (

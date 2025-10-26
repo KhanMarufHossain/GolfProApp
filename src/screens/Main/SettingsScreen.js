@@ -1,11 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
+import { useUser } from '../../context/UserContext';
 
 export default function SettingsScreen({ navigation }) {
   const [notif, setNotif] = useState(true);
   const [location, setLocation] = useState(false);
+  const { logout } = useUser();
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            // Navigation will happen automatically via App.js when user becomes null
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.safe}>
@@ -46,7 +66,7 @@ export default function SettingsScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.navigate('Auth') /* placeholder */}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
           <Text style={styles.logoutTxt}>Log Out</Text>
         </TouchableOpacity>
       </ScrollView>

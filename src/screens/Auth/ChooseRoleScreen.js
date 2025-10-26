@@ -1,25 +1,49 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import GolferIcon from '../../../assets/golfer.svg';
 import GolfClubIcon from '../../../assets/golfClub.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../../context/UserContext';
+import { authService } from '../../services/authService';
 
-export default function ChooseRoleScreen({ navigation }) {
+export default function ChooseRoleScreen({ navigation, route }) {
   const [role, setRole] = useState(null);
-  const { setUserType } = useUser();
+  const [loading, setLoading] = useState(false);
+  const { setUserType, setUser } = useUser();
+  const signupData = route?.params?.signupData;
 
-  const onSelect = (r) => {
-    setRole(r);
-    setUserType(r);
-    setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'MainTabs' }],
-      });
-    }, 220);
+  const onSelect = async (selectedRole) => {
+    setRole(selectedRole);
+    setUserType(selectedRole);
+
+    // If coming from signup, complete registration
+    if (signupData) {
+      setLoading(true);
+      try {
+        const roleValue = selectedRole === 'club' ? 'golf_club' : 'golfer';
+        const result = await authService.register(
+          signupData.fullName,
+          signupData.email,
+          signupData.password,
+          roleValue
+        );
+
+        if (result.success) {
+          setUser(result.user);
+          // Navigation will happen automatically when user state changes in App.js
+        } else {
+          Alert.alert('Registration Failed', result.message || 'Unable to create account');
+          setLoading(false);
+        }
+      } catch (error) {
+        Alert.alert('Error', 'An unexpected error occurred');
+        setLoading(false);
+      }
+    }
+    // Note: Role selection without signup is not a valid flow anymore
+    // Users are auto-navigated based on their authenticated state
   };
 
   return (
@@ -35,6 +59,7 @@ export default function ChooseRoleScreen({ navigation }) {
             activeOpacity={0.85}
             style={[styles.option, role === 'golfer' ? styles.optionActive : null]}
             onPress={() => onSelect('golfer')}
+            disabled={loading}
           >
             <View style={[styles.iconWrap, role === 'golfer' ? styles.iconWrapActive : null]}>
               <GolferIcon width={horizontalScale(52.5)} height={verticalScale(52.5)} />
@@ -46,6 +71,7 @@ export default function ChooseRoleScreen({ navigation }) {
             activeOpacity={0.85}
             style={[styles.option, role === 'club' ? styles.optionActive : null]}
             onPress={() => onSelect('club')}
+            disabled={loading}
           >
             <View style={[styles.iconWrap, role === 'club' ? styles.iconWrapActive : null]}>
               <GolfClubIcon width={horizontalScale(52.5)} height={verticalScale(52.5)} />
@@ -53,6 +79,13 @@ export default function ChooseRoleScreen({ navigation }) {
             <Text style={[styles.optionLabel, role === 'club' ? styles.optionLabelActive : null]}>Golf Club</Text>
           </TouchableOpacity>
         </View>
+
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#8B5C2A" />
+            <Text style={styles.loadingText}>Creating account...</Text>
+          </View>
+        )}
 
       </View>
     </SafeAreaView>
@@ -130,5 +163,14 @@ const styles = StyleSheet.create({
   },
   optionLabelActive: {
     color: '#fff',
+  },
+  loadingContainer: {
+    marginTop: verticalScale(24),
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: verticalScale(12),
+    fontSize: moderateScale(14),
+    color: '#888',
   },
 });

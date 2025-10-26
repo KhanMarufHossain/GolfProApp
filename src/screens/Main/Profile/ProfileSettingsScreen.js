@@ -11,8 +11,10 @@ import {
 } from 'react-native';
 import { colors, radius } from '../../../utils/theme';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
+import { useUser } from '../../../context/UserContext';
 
 export default function ProfileSettingsScreen({ navigation }) {
+  const { logout } = useUser();
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
@@ -37,9 +39,9 @@ export default function ProfileSettingsScreen({ navigation }) {
         { 
           text: 'Logout', 
           style: 'destructive',
-          onPress: () => {
-            // Handle logout logic
-            navigation.navigate('Auth');
+          onPress: async () => {
+            await logout();
+            // Navigation will happen automatically via App.js when user becomes null
           }
         }
       ]

@@ -1,17 +1,53 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { authService } from '../../services/authService';
+import { useUser } from '../../context/UserContext';
 
 export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { setUser, setUserType } = useUser();
+
+  const handleLogin = async () => {
+    // Basic validation
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await authService.login(email.trim(), password);
+
+      if (result.success) {
+        setUser(result.user);
+        // Set user type based on role
+        setUserType(result.user.role === 'golf_club' ? 'club' : 'golfer');
+        
+        // Navigation will happen automatically when user state changes in App.js
+      } else {
+        Alert.alert('Login Failed', result.message || 'Invalid email or password');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
+        <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Club Docket</Text>
         <Text style={styles.subtitle}>Welcome Back!</Text>
         <Text style={styles.desc}>To login, enter your email address</Text>
@@ -22,6 +58,11 @@ export default function LoginScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter email"
             placeholderTextColor="#B7B7B7"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!loading}
           />
         </View>
         <View style={styles.inputGroup}>
@@ -31,10 +72,20 @@ export default function LoginScreen({ navigation }) {
               style={[styles.input, { flex: 1 }]}
               placeholder="Enter password"
               placeholderTextColor="#B7B7B7"
-              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              editable={!loading}
             />
-            <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
+            <TouchableOpacity 
+              style={styles.eyeButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Ionicons 
+                name={showPassword ? "eye-outline" : "eye-off-outline"} 
+                size={moderateScale(20.625)} 
+                color="#B7B7B7" 
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -46,10 +97,15 @@ export default function LoginScreen({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => navigation.navigate('ChooseRole')}
+          style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.loginButtonText}>Login</Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.loginButtonText}>Login</Text>
+          )}
         </TouchableOpacity>
 
         <View style={styles.orRow}>
@@ -170,6 +226,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: verticalScale(16.24),
+  },
+  loginButtonDisabled: {
+    opacity: 0.6,
   },
   loginButtonText: {
     color: '#fff',
