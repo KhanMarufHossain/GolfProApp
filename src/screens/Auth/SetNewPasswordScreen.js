@@ -1,73 +1,145 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { authService } from '../../services/authService';
 
+const PasswordField = ({ label, value, onChangeText, isLoading, secureTextEntry, setSecureTextEntry, fieldKey }) => (
+  <View style={styles.inputGroup}>
+    <Text style={styles.inputLabel}>{label}</Text>
+    <View style={styles.passwordRow}>
+      <TextInput
+        style={[styles.input, { flex: 1 }]}
+        placeholder="Type a strong password"
+        placeholderTextColor="#B7B7B7"
+        secureTextEntry={secureTextEntry[fieldKey]}
+        value={value}
+        onChangeText={onChangeText}
+        editable={!isLoading}
+      />
+      <TouchableOpacity 
+        style={styles.eyeButton}
+        onPress={() => setSecureTextEntry({ ...secureTextEntry, [fieldKey]: !secureTextEntry[fieldKey] })}
+        disabled={isLoading}
+      >
+        <Ionicons 
+          name={secureTextEntry[fieldKey] ? 'eye-off-outline' : 'eye-outline'} 
+          size={moderateScale(20.625)} 
+          color="#B7B7B7" 
+        />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
+export default function SetNewPasswordScreen({ navigation, route }) {
+  const { email } = route.params || {};
+  const [form, setForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [secureTextEntry, setSecureTextEntry] = useState({ newPassword: true, confirmPassword: true });
+  const [isLoading, setIsLoading] = useState(false);
 
-export default function SetNewPasswordScreen({ navigation }) {
+  const handleSetPassword = useCallback(async () => {
+    // Validation
+    if (!form.newPassword || !form.confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (form.newPassword !== form.confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (form.newPassword.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+
+    if (!email) {
+      Alert.alert('Error', 'Email not found. Please go back and try again.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const result = await authService.setPassword(email, form.newPassword, form.confirmPassword);
+
+      if (result.success) {
+        Alert.alert(
+          'Success',
+          result.message || 'Password set successfully',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('PasswordChanged'),
+            },
+          ]
+        );
+        setForm({ newPassword: '', confirmPassword: '' });
+      } else {
+        Alert.alert('Error', result.message || 'Failed to set password');
+      }
+    } catch (error) {
+      console.error('Error setting password:', error);
+      Alert.alert('Error', 'An error occurred while setting password');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [form, email, navigation]);
+
+  const updateField = useCallback((field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  }, []);
+
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
-        <Text style={styles.title}>Golf Docket</Text>
-        <Text style={styles.subtitle}>Set new password</Text>
-        <Text style={styles.desc}>
-          Set a new password and continue your journey
-        </Text>
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
+          <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
+          <Text style={styles.title}>Golf Docket</Text>
+          <Text style={styles.subtitle}>Set new password</Text>
+          <Text style={styles.desc}>
+            Set a new password and continue your journey
+          </Text>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Current Password</Text>
-          <View style={styles.passwordRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Type a strong password"
-              placeholderTextColor="#B7B7B7"
-              secureTextEntry
-            />
-            <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>New Password</Text>
-          <View style={styles.passwordRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Re-type password"
-              placeholderTextColor="#B7B7B7"
-              secureTextEntry
-            />
-            <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Confirm password</Text>
-          <View style={styles.passwordRow}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Re-type password"
-              placeholderTextColor="#B7B7B7"
-              secureTextEntry
-            />
-            <TouchableOpacity style={styles.eyeButton}>
-              <Ionicons name="eye-outline" size={moderateScale(20.625)} color="#B7B7B7" />
-            </TouchableOpacity>
-          </View>
-        </View>
+          <PasswordField
+            label="New Password"
+            value={form.newPassword}
+            onChangeText={(t) => updateField('newPassword', t)}
+            isLoading={isLoading}
+            secureTextEntry={secureTextEntry}
+            setSecureTextEntry={setSecureTextEntry}
+            fieldKey="newPassword"
+          />
 
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() => navigation.navigate('VerifySuccess')}
-        >
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
-      </View>
+          <PasswordField
+            label="Confirm Password"
+            value={form.confirmPassword}
+            onChangeText={(t) => updateField('confirmPassword', t)}
+            isLoading={isLoading}
+            secureTextEntry={secureTextEntry}
+            setSecureTextEntry={setSecureTextEntry}
+            fieldKey="confirmPassword"
+          />
+
+          <TouchableOpacity
+            style={[styles.continueButton, isLoading && styles.continueButtonDisabled]}
+            onPress={handleSetPassword}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.continueButtonText}>Continue</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -77,11 +149,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: horizontalScale(30),
+    paddingVertical: verticalScale(20),
   },
   logo: {
     width: horizontalScale(67.5),
@@ -146,6 +223,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: verticalScale(9.744),
     marginBottom: verticalScale(17.864),
+  },
+  continueButtonDisabled: {
+    opacity: 0.6,
   },
   continueButtonText: {
     color: '#fff',

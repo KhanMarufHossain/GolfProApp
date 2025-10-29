@@ -1,16 +1,53 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { horizontalScale, verticalScale, moderateScale } from '../../utils/dimensions';
 import ClubDocket from '../../../assets/ClubDocket.svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
+import { authService } from '../../services/authService';
 
 export default function ForgotPasswordScreen({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSendOtp = useCallback(async () => {
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const result = await authService.sendOtp(email.trim());
+
+      if (result.success) {
+        Alert.alert('Success', result.message || 'OTP sent to your email', [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('VerifyCode', { email: email.trim() }),
+          },
+        ]);
+      } else {
+        Alert.alert('Error', result.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      Alert.alert('Error', 'An error occurred while sending OTP');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [email, navigation]);
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-  <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
+        <ClubDocket width={horizontalScale(67.5)} height={verticalScale(67.5)} />
         <Text style={styles.title}>Golf Docket</Text>
         <Text style={styles.subtitle}>Forgot Password</Text>
         <Text style={styles.desc}>Enter your email to reset password</Text>
@@ -21,19 +58,30 @@ export default function ForgotPasswordScreen({ navigation }) {
             style={styles.input}
             placeholder="Enter email"
             placeholderTextColor="#B7B7B7"
+            value={email}
+            onChangeText={setEmail}
+            editable={!isLoading}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
         </View>
 
         <TouchableOpacity
-          style={styles.nextButton}
-          onPress={() => navigation.navigate('VerifyCode')}
+          style={[styles.nextButton, isLoading && styles.nextButtonDisabled]}
+          onPress={handleSendOtp}
+          disabled={isLoading}
         >
-          <Text style={styles.nextButtonText}>Next</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.nextButtonText}>Next</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.backToLogin}
           onPress={() => navigation.navigate('Login')}
+          disabled={isLoading}
         >
           <Text style={styles.backToLoginText}>← Back to Login</Text>
         </TouchableOpacity>
@@ -107,6 +155,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: verticalScale(9.744),
     marginBottom: verticalScale(17.864),
+  },
+  nextButtonDisabled: {
+    opacity: 0.6,
   },
   nextButtonText: {
     color: '#fff',

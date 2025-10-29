@@ -176,4 +176,38 @@ export const authService = {
       };
     }
   },
+
+  /**
+   * Set new password after OTP verification (Forgot Password flow)
+   * @param {string} email - User's email
+   * @param {string} newPassword - New password
+   * @param {string} confirmPassword - Confirm new password
+   */
+  setPassword: async (email, newPassword, confirmPassword) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.SET_PASSWORD, {
+        email,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (response.data.success) {
+        return {
+          success: true,
+          message: response.data.message || 'Password set successfully',
+        };
+      }
+      
+      return {
+        success: false,
+        message: response.data.message || 'Failed to set password',
+      };
+    } catch (error) {
+      console.error('Set password error:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'An error occurred while setting password',
+      };
+    }
+  },
 };
