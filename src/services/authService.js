@@ -114,4 +114,66 @@ export const authService = {
   getCurrentUser: async () => {
     return await tokenStorage.getUserData();
   },
+
+  /**
+   * Send OTP to email for password reset
+   * @param {string} email - User's email
+   */
+  sendOtp: async (email) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.SEND_OTP, {
+        email,
+      });
+
+      if (response.data.success) {
+        return {
+          success: true,
+          message: response.data.message || 'OTP sent successfully',
+        };
+      }
+      
+      return {
+        success: false,
+        message: response.data.message || 'Failed to send OTP',
+      };
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'An error occurred while sending OTP',
+      };
+    }
+  },
+
+  /**
+   * Verify OTP sent to email
+   * @param {string} email - User's email
+   * @param {string} otp - One-time password
+   */
+  verifyOtp: async (email, otp) => {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_OTP, {
+        email,
+        otp,
+      });
+
+      if (response.data.success) {
+        return {
+          success: true,
+          message: response.data.message || 'OTP verified successfully',
+        };
+      }
+      
+      return {
+        success: false,
+        message: response.data.message || 'Invalid OTP',
+      };
+    } catch (error) {
+      console.error('Verify OTP error:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'An error occurred while verifying OTP',
+      };
+    }
+  },
 };

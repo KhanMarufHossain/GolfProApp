@@ -36,13 +36,13 @@ const Field = ({ label, value, onChangeText, isLoading }) => (
 );
 
 export default function SettingsChangePasswordScreen({ navigation }) {
-  const [form, setForm] = useState({ cur: "", n1: "", n2: "" });
+  const [form, setForm] = useState({n1: "", n2: "" });
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useUser();
 
   const handleChangePassword = async () => {
     // Validation
-    if (!form.cur || !form.n1 || !form.n2) {
+    if (!form.n1 || !form.n2) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
@@ -86,7 +86,6 @@ export default function SettingsChangePasswordScreen({ navigation }) {
         },
         body: JSON.stringify({
           email: email,
-          oldPassword: form.cur,
           newPassword: form.n1,
           confirmPassword: form.n2,
         }),
@@ -106,7 +105,7 @@ export default function SettingsChangePasswordScreen({ navigation }) {
           ]
         );
         // Clear form
-        setForm({ cur: "", n1: "", n2: "" });
+        setForm({ n1: "", n2: "" });
       } else {
         Alert.alert(
           "Error", 
@@ -142,13 +141,6 @@ export default function SettingsChangePasswordScreen({ navigation }) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.box}>
-          <Field
-            label="Current Password"
-            value={form.cur}
-            onChangeText={(t) => updateField('cur', t)}
-            isLoading={isLoading}
-          />
-          <View style={styles.divider} />
           <Field
             label="New Password"
             value={form.n1}
