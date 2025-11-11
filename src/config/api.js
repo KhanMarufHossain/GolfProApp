@@ -1,5 +1,5 @@
 // Base URL configuration - Update this as needed during testing phase
-export const BASE_URL = 'https://photographic-action-collaborative-statutory.trycloudflare.com/api/v1';
+export const BASE_URL = 'https://buyer-filename-measured-innocent.trycloudflare.com/api/v1';
 
 // API Endpoints
 export const API_ENDPOINTS = {
