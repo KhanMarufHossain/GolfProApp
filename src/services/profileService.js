@@ -29,16 +29,45 @@ export async function getProfile() {
   }
 }
 
-export async function updateProfile(patch) {
+export async function updateProfile(profileData) {
   try {
-    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, patch);
-    if (response.data && response.data.success) {
-      return { ok: true, data: response.data.data };
+    console.log('🔵 [updateProfile] Updating profile');
+    console.log('📤 [updateProfile] Data type:', profileData instanceof FormData ? 'FormData' : typeof profileData);
+    
+    // If it's FormData (for image uploads), send it directly
+    if (profileData instanceof FormData) {
+      console.log('📤 [updateProfile] Using provided FormData (image upload)');
+      const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, profileData);
+      console.log('✅ [updateProfile] Response received:', response.status);
+      
+      if (response.data && response.data.success) {
+        console.log('✅ [updateProfile] Update successful');
+        return { ok: true, data: response.data.data, message: response.data.message };
+      }
+      console.log('❌ [updateProfile] Update failed - no success in response');
+      return { ok: false, data: null, message: response.data?.message };
     }
-    return { ok: false, data: null };
+    
+    // For regular JSON updates (text fields only), send as JSON
+    console.log('📤 [updateProfile] Sending JSON update');
+    console.log('📋 [updateProfile] Fields:', Object.keys(profileData));
+    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, profileData);
+    console.log('✅ [updateProfile] Response received:', response.status);
+    
+    if (response.data && response.data.success) {
+      console.log('✅ [updateProfile] Update successful');
+      return { ok: true, data: response.data.data, message: response.data.message };
+    }
+    console.log('❌ [updateProfile] Update failed - no success in response');
+    return { ok: false, data: null, message: response.data?.message };
   } catch (error) {
-    console.error('Failed to update profile:', error);
-    return { ok: false, data: null };
+    console.error('🔴 [updateProfile] Error:', error.message);
+    console.error('🔴 [updateProfile] Full error:', error);
+    if (error.response) {
+      console.error('🔴 [updateProfile] Response status:', error.response.status);
+      console.error('🔴 [updateProfile] Response data:', error.response.data);
+    }
+    return { ok: false, data: null, message: error.response?.data?.message || error.message };
   }
 }
 

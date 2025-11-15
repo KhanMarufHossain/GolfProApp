@@ -1,25 +1,112 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
+import { getProfile, updateProfile } from '../../services/profileService';
 
 export default function SettingsEditProfileScreen({ navigation }) {
   const [form, setForm] = useState({
-    fullName: 'Nick Ribeiro',
-    email: 'nickribeiro@gmail.com',
-    gender: 'Male',
-    dob: '',
-    country: 'USA',
-    city: 'Kansas',
-    address: '1552 Schuylkill Ave Reading',
+    fullName: '',
+    email: '',
+    gender: '',
+    dateOfBirth: '',
+    country: '',
+    city: '',
+    address: '',
   });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const Field = ({ label, value, onChangeText, placeholder }) => (
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      console.log('🔵 [SettingsEditProfileScreen] Loading profile');
+      setLoading(true);
+      const response = await getProfile();
+      
+      if (response.ok && response.data) {
+        console.log('✅ [SettingsEditProfileScreen] Profile loaded');
+        setForm({
+          fullName: response.data.fullName || '',
+          email: response.data.email || '',
+          gender: response.data.gender || '',
+          dateOfBirth: response.data.dateOfBirth || '',
+          country: response.data.country || '',
+          city: response.data.city || '',
+          address: response.data.address || '',
+        });
+      } else {
+        console.log('❌ [SettingsEditProfileScreen] Failed to load profile');
+        Alert.alert('Error', 'Failed to load profile');
+      }
+    } catch (error) {
+      console.error('🔴 [SettingsEditProfileScreen] Error:', error);
+      Alert.alert('Error', 'Failed to load profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!form.fullName.trim()) {
+      Alert.alert('Error', 'Full name is required');
+      return;
+    }
+
+    try {
+      console.log('🔵 [SettingsEditProfileScreen] Saving profile');
+      setSaving(true);
+      const response = await updateProfile({
+        fullName: form.fullName,
+        gender: form.gender,
+        dateOfBirth: form.dateOfBirth,
+        country: form.country,
+        city: form.city,
+        address: form.address,
+      });
+
+      if (response.ok) {
+        console.log('✅ [SettingsEditProfileScreen] Profile saved');
+        Alert.alert('Success', 'Profile updated successfully', [
+          { text: 'OK', onPress: () => navigation.goBack() }
+        ]);
+      } else {
+        console.log('❌ [SettingsEditProfileScreen] Save failed');
+        Alert.alert('Error', response.message || 'Failed to update profile');
+      }
+    } catch (error) {
+      console.error('🔴 [SettingsEditProfileScreen] Error:', error);
+      Alert.alert('Error', 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const Field = ({ label, value, onChangeText, placeholder, editable = true }) => (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput style={styles.input} value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={colors.textMute} />
+      <TextInput 
+        style={[styles.input, !editable && styles.inputDisabled]} 
+        value={value} 
+        onChangeText={onChangeText} 
+        placeholder={placeholder} 
+        placeholderTextColor={colors.textMute}
+        editable={editable}
+      />
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={colors.accent} />
+        <Text style={{ color: colors.text, marginTop: 10 }}>Loading profile...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.safe}>
@@ -32,20 +119,28 @@ export default function SettingsEditProfileScreen({ navigation }) {
         <View style={styles.box}>
           <Field label="Full Name" value={form.fullName} onChangeText={(t) => setForm({ ...form, fullName: t })} />
           <View style={styles.divider} />
-          <Field label="Email" value={form.email} onChangeText={(t) => setForm({ ...form, email: t })} />
+          <Field label="Email" value={form.email} editable={false} placeholder="Email (read-only)" />
           <View style={styles.divider} />
-          <Field label="Gender" value={form.gender} onChangeText={(t) => setForm({ ...form, gender: t })} />
+          <Field label="Gender" value={form.gender} onChangeText={(t) => setForm({ ...form, gender: t })} placeholder="e.g., Male, Female" />
           <View style={styles.divider} />
-          <Field label="Date of Birth" value={form.dob} onChangeText={(t) => setForm({ ...form, dob: t })} placeholder="Select Date of Birth" />
+          <Field label="Date of Birth" value={form.dateOfBirth} onChangeText={(t) => setForm({ ...form, dateOfBirth: t })} placeholder="YYYY-MM-DD" />
           <View style={styles.divider} />
-          <Field label="Country" value={form.country} onChangeText={(t) => setForm({ ...form, country: t })} />
+          <Field label="Country" value={form.country} onChangeText={(t) => setForm({ ...form, country: t })} placeholder="e.g., USA" />
           <View style={styles.divider} />
-          <Field label="City" value={form.city} onChangeText={(t) => setForm({ ...form, city: t })} />
+          <Field label="City" value={form.city} onChangeText={(t) => setForm({ ...form, city: t })} placeholder="e.g., Kansas" />
           <View style={styles.divider} />
-          <Field label="Address" value={form.address} onChangeText={(t) => setForm({ ...form, address: t })} />
+          <Field label="Address" value={form.address} onChangeText={(t) => setForm({ ...form, address: t })} placeholder="Full address" />
         </View>
-        <TouchableOpacity style={styles.primaryBtn}>
-          <Text style={styles.primaryTxt}>Save Change</Text>
+        <TouchableOpacity 
+          style={[styles.primaryBtn, saving && styles.primaryBtnDisabled]} 
+          onPress={handleSave}
+          disabled={saving}
+        >
+          {saving ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.primaryTxt}>Save Changes</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -65,5 +160,7 @@ const styles = StyleSheet.create({
   input: { color: colors.text, fontSize: ms(14) },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: colors.border },
   primaryBtn: { marginTop: vs(16), backgroundColor: colors.accent, borderRadius: radius.lg, paddingVertical: vs(14), alignItems: 'center' },
+  primaryBtnDisabled: { opacity: 0.6 },
   primaryTxt: { color: '#fff', fontWeight: '700' },
+  inputDisabled: { opacity: 0.6 },
 });

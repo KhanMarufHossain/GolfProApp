@@ -105,8 +105,12 @@ const ProfileHomeScreen = ({ navigation }) => {
         name: backendProfile.fullName || 'User',
         email: backendProfile.email,
         location: backendProfile.city || 'Not specified',
-        avatar: backendProfile.profileImage || require('../../../../assets/man.png'),
-        coverImage: backendProfile.coverImage || require('../../../../assets/golffield1.jpg'),
+        avatar: backendProfile.profileImage 
+          ? (typeof backendProfile.profileImage === 'string' ? { uri: backendProfile.profileImage } : backendProfile.profileImage)
+          : require('../../../../assets/man.png'),
+        coverImage: backendProfile.coverImage 
+          ? (typeof backendProfile.coverImage === 'string' ? { uri: backendProfile.coverImage } : backendProfile.coverImage)
+          : require('../../../../assets/golffield1.jpg'),
         gender: backendProfile.gender,
         dateOfBirth: backendProfile.dateOfBirth,
         country: backendProfile.country,

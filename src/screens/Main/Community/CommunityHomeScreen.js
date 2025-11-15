@@ -20,6 +20,7 @@ import { colors } from "../../../utils/theme";
 import PostCard from "../../../components/PostCard";
 import OverflowMenu from "../../../components/OverflowMenu";
 import { fetchFeed, likePost } from "../../../services/communityService";
+import { getProfile } from "../../../services/profileService";
 
 // Temporary mock events – replace with API integration later
 const mockEvents = [
@@ -96,6 +97,24 @@ export default function CommunityHomeScreen({ navigation }) {
   const [events, setEvents] = useState(mockEvents);
   const [filter, setFilter] = useState("All");
   const [menuVisible, setMenuVisible] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = useCallback(async () => {
+    try {
+      console.log('🔵 [CommunityHomeScreen] Loading profile');
+      const response = await getProfile();
+      if (response.ok && response.data) {
+        console.log('✅ [CommunityHomeScreen] Profile loaded:', response.data.fullName);
+        setProfile(response.data);
+      }
+    } catch (error) {
+      console.error('🔴 [CommunityHomeScreen] Error loading profile:', error);
+    }
+  }, []);
 
   const loadFeed = useCallback(async () => {
     setLoading(true);
@@ -167,12 +186,15 @@ export default function CommunityHomeScreen({ navigation }) {
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
             <Image
-              source={require("../../../../assets/man.png")}
+              source={profile?.profileImage 
+                ? (typeof profile.profileImage === 'string' ? { uri: profile.profileImage } : profile.profileImage)
+                : require("../../../../assets/man.png")
+              }
               style={styles.avatar}
             />
           </View>
           <View style={styles.headerTexts}>
-            <Text style={styles.greeting}>Hey, Player 👋</Text>
+            <Text style={styles.greeting}>Hey, {profile?.fullName || 'Player'} 👋</Text>
             <Text style={styles.sub}>Choose your playground</Text>
           </View>
         </View>

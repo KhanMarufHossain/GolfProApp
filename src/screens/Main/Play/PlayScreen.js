@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import CourseCard from '../../../components/CourseCard';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { colors } from '../../../utils/theme'; // Add this import if not already present
+import { getProfile } from '../../../services/profileService';
 
 const data = new Array(6).fill(0).map((_, i) => ({
   id: i,
@@ -22,6 +23,24 @@ const data = new Array(6).fill(0).map((_, i) => ({
 
 export default function PlayScreen({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = useCallback(async () => {
+    try {
+      console.log('🔵 [PlayScreen] Loading profile');
+      const response = await getProfile();
+      if (response.ok && response.data) {
+        console.log('✅ [PlayScreen] Profile loaded:', response.data.fullName);
+        setProfile(response.data);
+      }
+    } catch (error) {
+      console.error('🔴 [PlayScreen] Error loading profile:', error);
+    }
+  }, []);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -48,10 +67,16 @@ export default function PlayScreen({ navigation }) {
       <View style={styles.header}>
         <View style={styles.headerLeftRow}>
           <View style={styles.avatarWrap}>
-            <Image source={require('../../../../assets/man.png')} style={styles.avatar} />
+            <Image 
+              source={profile?.profileImage 
+                ? (typeof profile.profileImage === 'string' ? { uri: profile.profileImage } : profile.profileImage)
+                : require('../../../../assets/man.png')
+              } 
+              style={styles.avatar} 
+            />
           </View>
           <View style={styles.headerTexts}>
-            <Text style={styles.greeting}>Hey, Player 👋</Text>
+            <Text style={styles.greeting}>Hey, {profile?.fullName || 'Player'} 👋</Text>
             <Text style={styles.sub}>Choose your playground</Text>
           </View>
         </View>
