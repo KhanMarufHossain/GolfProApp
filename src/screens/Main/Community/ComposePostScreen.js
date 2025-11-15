@@ -1,39 +1,135 @@
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { createPost } from '../../../services/communityService';
+import { getProfile } from '../../../services/profileService';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { colors } from '../../../utils/theme';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ComposePostScreen({ navigation }) {
   const [text, setText] = useState('');
-  const [image, setImage] = useState(null);
+  const [feeling, setFeeling] = useState('');
+  const [location, setLocation] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  React.useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const res = await getProfile();
+      if (res.ok && res.data) {
+        setProfile(res.data);
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
+
+  const pickImage = async () => {
+    try {
+      console.log('🔵 [ComposePost] Requesting image permission');
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Permission to access gallery is required.');
+        return;
+      }
+
+      console.log('🔵 [ComposePost] Launching image picker');
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        console.log('📋 [ComposePost] Image selected:', result.assets[0]);
+        setSelectedImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.error('🔴 [ComposePost] Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
 
   const submit = async () => {
-    const res = await createPost({ text, image });
-    if (res.ok) {
-      navigation.popToTop();
+    if (!text.trim()) {
+      Alert.alert('Error', 'Please write something for your post');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      console.log('🔵 [ComposePost] Submitting post');
+
+      const formData = new FormData();
+      formData.append('postTitle', text);
+      
+      if (feeling) formData.append('feeling', feeling);
+      if (location) formData.append('location', location);
+
+      if (selectedImage) {
+        console.log('📤 [ComposePost] Adding image to FormData');
+        formData.append('postImage', {
+          uri: selectedImage.uri,
+          type: 'image/jpeg',
+          name: `post-${Date.now()}.jpg`,
+        });
+      }
+
+      const res = await createPost(formData);
+      console.log('📊 [ComposePost] Create response:', { ok: res.ok, message: res.message });
+
+      if (res.ok) {
+        console.log('✅ [ComposePost] Post created successfully');
+        Alert.alert('Success', 'Post created successfully', [
+          { text: 'OK', onPress: () => navigation.popToTop() }
+        ]);
+      } else {
+        console.log('❌ [ComposePost] Create failed');
+        Alert.alert('Error', res.message || 'Failed to create post');
+      }
+    } catch (error) {
+      console.error('🔴 [ComposePost] Error:', error);
+      Alert.alert('Error', 'Failed to create post');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.cancelButton} disabled={submitting}>
           <Text style={styles.cancelTxt}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>New Post</Text>
-        <TouchableOpacity onPress={submit} style={styles.postButton}>
-          <Text style={styles.postTxt}>Post</Text>
+        <TouchableOpacity onPress={submit} style={[styles.postButton, submitting && styles.postButtonDisabled]} disabled={submitting}>
+          {submitting ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={styles.postTxt}>Post</Text>
+          )}
         </TouchableOpacity>
       </View>
       
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.userSection}>
-          <Image source={require('../../../../assets/man.png')} style={styles.avatar} />
+          <Image 
+            source={profile?.profileImage 
+              ? (typeof profile.profileImage === 'string' ? { uri: profile.profileImage } : profile.profileImage)
+              : require('../../../../assets/man.png')
+            } 
+            style={styles.avatar} 
+          />
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>John Blake</Text>
-            <Text style={styles.userMeta}>Club Name</Text>
+            <Text style={styles.userName}>{profile?.fullName || 'User'}</Text>
+            <Text style={styles.userMeta}>{profile?.city || 'Club Name'}</Text>
           </View>
         </View>
         
@@ -44,12 +140,17 @@ export default function ComposePostScreen({ navigation }) {
           placeholder="What's on your mind?"
           style={styles.textInput}
           textAlignVertical="top"
+          editable={!submitting}
         />
         
-        {image && (
+        {selectedImage && (
           <View style={styles.imageContainer}>
-            <Image source={image} style={styles.imagePreview} />
-            <TouchableOpacity style={styles.removeImage} onPress={() => setImage(null)}>
+            <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />
+            <TouchableOpacity 
+              style={styles.removeImage} 
+              onPress={() => setSelectedImage(null)}
+              disabled={submitting}
+            >
               <Text style={styles.removeImageText}>✕</Text>
             </TouchableOpacity>
           </View>
@@ -58,18 +159,25 @@ export default function ComposePostScreen({ navigation }) {
         <View style={styles.actionsRow}>
           <TouchableOpacity 
             style={styles.actionButton} 
-            onPress={() => setImage(require('../../../../assets/golfField.png'))}
+            onPress={pickImage}
+            disabled={submitting}
           >
             <Text style={styles.actionIcon}>📷</Text>
             <Text style={styles.actionText}>Photo</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            disabled={submitting}
+          >
             <Text style={styles.actionIcon}>📍</Text>
             <Text style={styles.actionText}>Location</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            disabled={submitting}
+          >
             <Text style={styles.actionIcon}>😊</Text>
             <Text style={styles.actionText}>Feeling</Text>
           </TouchableOpacity>
@@ -104,6 +212,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(16),
     paddingVertical: verticalScale(8)
   },
+  postButtonDisabled: { opacity: 0.6 },
   postTxt: { color: '#fff', fontWeight: '700', fontSize: moderateScale(14) },
   
   container: { flex: 1 },

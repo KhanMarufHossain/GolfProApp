@@ -8,15 +8,35 @@ export default function PostCard({ post, onPress, onLike, onComment, style, init
   const toggleAdded = () => {
     const next = !added;
     setAdded(next);
-    onToggleAdd && onToggleAdd(next, post?.user);
+    onToggleAdd && onToggleAdd(next, post?.userId);
   };
+
+  // Handle both old data structure (post.user) and new API structure (post.userId)
+  const userInfo = post.user || (post.userId ? {
+    name: post.userId.fullName,
+    avatar: typeof post.userId.profileImage === 'string' 
+      ? { uri: post.userId.profileImage } 
+      : post.userId.profileImage
+  } : null);
+
+  // Handle image - could be string URI from API or local require
+  const imageSource = post.image 
+    ? (typeof post.image === 'string' ? { uri: post.image } : post.image)
+    : (post.postImage ? (typeof post.postImage === 'string' ? { uri: post.postImage } : post.postImage) : null);
+
+  // Handle text - could be post.text or post.postTitle from API
+  const textContent = post.text || post.postTitle;
+
   return (
     <View style={[styles.card, style]}>
       <View style={styles.header}>
-        <Image source={post.user?.avatar} style={styles.avatar} />
+        <Image 
+          source={userInfo?.avatar || require('../../assets/man.png')} 
+          style={styles.avatar} 
+        />
         <View style={{ marginLeft: 12, flex: 1 }}>
-          <Text style={styles.name}>{post.user?.name}</Text>
-          <Text style={styles.meta}>Club Name</Text>
+          <Text style={styles.name}>{userInfo?.name || 'User'}</Text>
+          <Text style={styles.meta}>{post.location || post.userId?.city || 'Club Name'}</Text>
         </View>
         <TouchableOpacity style={styles.menuBtn} onPress={toggleAdded}>
           <Image
@@ -25,8 +45,8 @@ export default function PostCard({ post, onPress, onLike, onComment, style, init
           />
         </TouchableOpacity>
       </View>
-      {post.image ? <Image source={post.image} style={styles.image} /> : null}
-      {!!post.text && <Text style={styles.text}>{post.text}</Text>}
+      {imageSource ? <Image source={imageSource} style={styles.image} /> : null}
+      {!!textContent && <Text style={styles.text}>{textContent}</Text>}
       <View style={styles.footerRow}>
         <View style={styles.actionRow}>
           <TouchableOpacity onPress={onLike} style={styles.actionBtn}>

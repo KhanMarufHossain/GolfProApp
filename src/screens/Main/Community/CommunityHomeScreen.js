@@ -115,15 +115,30 @@ export default function CommunityHomeScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
+      console.log('🔵 [CommunityHomeScreen] Screen focused - refreshing profile and feed');
       loadProfile();
+      loadFeed();
     }, [loadProfile])
   );
 
   const loadFeed = useCallback(async () => {
-    setLoading(true);
-    const res = await fetchFeed();
-    if (res.ok) setFeed(res.data);
-    setLoading(false);
+    try {
+      setLoading(true);
+      console.log('🔵 [CommunityHomeScreen] Loading feed');
+      const res = await fetchFeed();
+      if (res.ok && res.data) {
+        console.log('📊 [CommunityHomeScreen] Feed loaded:', res.data.length, 'posts');
+        setFeed(res.data);
+      } else {
+        console.log('❌ [CommunityHomeScreen] Feed load failed');
+        setFeed([]);
+      }
+    } catch (error) {
+      console.error('🔴 [CommunityHomeScreen] Error loading feed:', error);
+      setFeed([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
