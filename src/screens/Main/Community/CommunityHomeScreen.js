@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   moderateScale,
   horizontalScale,
@@ -99,10 +100,6 @@ export default function CommunityHomeScreen({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
   const loadProfile = useCallback(async () => {
     try {
       console.log('🔵 [CommunityHomeScreen] Loading profile');
@@ -115,6 +112,12 @@ export default function CommunityHomeScreen({ navigation }) {
       console.error('🔴 [CommunityHomeScreen] Error loading profile:', error);
     }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   const loadFeed = useCallback(async () => {
     setLoading(true);

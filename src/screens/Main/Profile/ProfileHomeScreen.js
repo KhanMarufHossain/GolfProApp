@@ -8,6 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   horizontalScale,
   moderateScale,
@@ -87,9 +88,14 @@ const ProfileHomeScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    loadProfile();
     loadFeed();
-  }, [loadProfile, loadFeed]);
+  }, [loadFeed]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   const onLike = async (id) => {
     const res = await likePost(id);

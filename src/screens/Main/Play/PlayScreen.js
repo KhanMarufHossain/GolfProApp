@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, SafeAreaView, StyleSheet, Image, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import CourseCard from '../../../components/CourseCard';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { colors } from '../../../utils/theme'; // Add this import if not already present
@@ -25,10 +26,6 @@ export default function PlayScreen({ navigation }) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
   const loadProfile = useCallback(async () => {
     try {
       console.log('🔵 [PlayScreen] Loading profile');
@@ -41,6 +38,12 @@ export default function PlayScreen({ navigation }) {
       console.error('🔴 [PlayScreen] Error loading profile:', error);
     }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);

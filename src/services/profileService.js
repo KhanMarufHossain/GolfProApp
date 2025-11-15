@@ -51,7 +51,15 @@ export async function updateProfile(profileData) {
     // For regular JSON updates (text fields only), send as JSON
     console.log('📤 [updateProfile] Sending JSON update');
     console.log('📋 [updateProfile] Fields:', Object.keys(profileData));
-    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, profileData);
+    
+    // Normalize gender field to lowercase if present (backend expects lowercase enum values)
+    const normalizedData = { ...profileData };
+    if (normalizedData.gender && typeof normalizedData.gender === 'string') {
+      normalizedData.gender = normalizedData.gender.toLowerCase();
+      console.log('📝 [updateProfile] Normalized gender to lowercase:', normalizedData.gender);
+    }
+    
+    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, normalizedData);
     console.log('✅ [updateProfile] Response received:', response.status);
     
     if (response.data && response.data.success) {

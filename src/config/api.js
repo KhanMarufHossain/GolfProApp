@@ -14,6 +14,6 @@ export const API_ENDPOINTS = {
   },
   PROFILE: {
     GET_MY_PROFILE: '/golfer/get-my-profile',
-    UPDATE_PROFILE: '/golfer/update-profile',
+    UPDATE_PROFILE: '/golfer/update-my-profile',
   },
 };
