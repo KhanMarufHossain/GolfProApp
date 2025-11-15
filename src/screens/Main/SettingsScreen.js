@@ -1,13 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Switch, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
 import { useUser } from '../../context/UserContext';
+import { getProfile } from '../../services/profileService';
 
 export default function SettingsScreen({ navigation }) {
   const [notif, setNotif] = useState(true);
   const [location, setLocation] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   const { logout } = useUser();
+
+  const loadProfile = useCallback(async () => {
+    try {
+      console.log('🔵 [SettingsScreen] Loading profile');
+      setProfileLoading(true);
+      const response = await getProfile();
+      if (response.ok && response.data) {
+        console.log('✅ [SettingsScreen] Profile loaded');
+        setProfile(response.data);
+      }
+    } catch (error) {
+      console.error('🔴 [SettingsScreen] Error loading profile:', error);
+    } finally {
+      setProfileLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   const handleLogout = () => {
     Alert.alert(
@@ -39,9 +69,21 @@ export default function SettingsScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.centerHeader}>
-          <Image source={require('../../../assets/man.png')} style={styles.bigAvatar} />
-          <Text style={styles.bigName}>Nick Ribeiro</Text>
-          <Text style={styles.ghin}>GHIN Number: 2618156</Text>
+          {profileLoading ? (
+            <ActivityIndicator size="large" color={colors.accent} style={{ marginVertical: vs(20) }} />
+          ) : (
+            <>
+              <Image 
+                source={profile?.profileImage 
+                  ? (typeof profile.profileImage === 'string' ? { uri: profile.profileImage } : profile.profileImage)
+                  : require('../../../assets/man.png')
+                } 
+                style={styles.bigAvatar} 
+              />
+              <Text style={styles.bigName}>{profile?.fullName || 'User'}</Text>
+              <Text style={styles.ghin}>GHIN Number: {profile?.ghinNumber || 'N/A'}</Text>
+            </>
+          )}
         </View>
 
         <View style={styles.cardList}>

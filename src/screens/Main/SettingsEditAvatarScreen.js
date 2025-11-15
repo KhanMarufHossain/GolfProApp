@@ -3,11 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Ima
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfile } from '../../services/profileService';
+import { updateProfile, getProfile } from '../../services/profileService';
 
-export default function SettingsEditAvatarScreen({ navigation }) {
+export default function SettingsEditAvatarScreen({ navigation, route }) {
   const [image, setImage] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadedImageUri, setUploadedImageUri] = useState(null);
+  const onRefresh = route.params?.onRefresh;
 
   const pickImage = async () => {
     try {
@@ -54,12 +56,21 @@ export default function SettingsEditAvatarScreen({ navigation }) {
 
       if (response.ok) {
         console.log('✅ [SettingsEditAvatarScreen] Upload successful');
+        // Store the uploaded image for instant display
+        setUploadedImageUri(selectedImage.uri);
+        
+        // Trigger refresh on caller screen if callback provided
+        if (onRefresh) {
+          await onRefresh();
+        }
+        
         Alert.alert('Success', 'Profile image updated successfully', [
           { text: 'OK', onPress: () => navigation.goBack() }
         ]);
       } else {
         console.log('❌ [SettingsEditAvatarScreen] Upload failed');
         Alert.alert('Error', response.message || 'Failed to upload image');
+        setImage(null); // Clear failed image
       }
     } catch (error) {
       console.error('🔴 [SettingsEditAvatarScreen] Error uploading:', error);
@@ -79,13 +90,18 @@ export default function SettingsEditAvatarScreen({ navigation }) {
         <View style={{ width: ms(36) }} />
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        {image ? (
+        {image || uploadedImageUri ? (
           <View style={styles.imagePreview}>
-            <Image source={{ uri: image.uri }} style={styles.previewImage} />
+            <Image source={{ uri: uploadedImageUri || image.uri }} style={styles.previewImage} />
             {uploading && (
               <View style={styles.uploadingOverlay}>
                 <ActivityIndicator size="large" color={colors.accent} />
                 <Text style={styles.uploadingText}>Uploading...</Text>
+              </View>
+            )}
+            {uploadedImageUri && (
+              <View style={styles.successBadge}>
+                <Text style={styles.successText}>✓ Uploaded</Text>
               </View>
             )}
           </View>
@@ -97,6 +113,11 @@ export default function SettingsEditAvatarScreen({ navigation }) {
               <Text style={styles.ctaTxt}>Upload from Gallery</Text>
             </TouchableOpacity>
           </View>
+        )}
+        {uploadedImageUri && (
+          <TouchableOpacity style={styles.changePhotoBtn} onPress={pickImage} disabled={uploading}>
+            <Text style={styles.changePhotoBtnText}>Change Photo</Text>
+          </TouchableOpacity>
         )}
       </ScrollView>
     </View>
@@ -119,4 +140,8 @@ const styles = StyleSheet.create({
   previewImage: { width: '100%', height: '100%', resizeMode: 'cover' },
   uploadingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
   uploadingText: { color: '#fff', marginTop: 10, fontSize: ms(14) },
+  successBadge: { position: 'absolute', top: hs(16), right: hs(16), backgroundColor: colors.accent, paddingHorizontal: hs(12), paddingVertical: vs(6), borderRadius: radius.md },
+  successText: { color: '#fff', fontSize: ms(14), fontWeight: '700' },
+  changePhotoBtn: { marginTop: vs(16), backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.accent, borderRadius: radius.lg, paddingVertical: vs(14), alignItems: 'center' },
+  changePhotoBtnText: { color: colors.accent, fontWeight: '700', fontSize: ms(16) },
 });

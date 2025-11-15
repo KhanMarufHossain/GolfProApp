@@ -52,12 +52,29 @@ export async function updateProfile(profileData) {
     console.log('📤 [updateProfile] Sending JSON update');
     console.log('📋 [updateProfile] Fields:', Object.keys(profileData));
     
-    // Normalize gender field to lowercase if present (backend expects lowercase enum values)
-    const normalizedData = { ...profileData };
-    if (normalizedData.gender && typeof normalizedData.gender === 'string') {
-      normalizedData.gender = normalizedData.gender.toLowerCase();
-      console.log('📝 [updateProfile] Normalized gender to lowercase:', normalizedData.gender);
-    }
+    // Clean and normalize the data
+    const normalizedData = {};
+    
+    // Only include fields that have values (not empty strings or null)
+    Object.keys(profileData).forEach(key => {
+      let value = profileData[key];
+      
+      // Skip undefined and empty string values
+      if (value === '' || value === undefined) {
+        console.log(`📝 [updateProfile] Skipping empty field: ${key}`);
+        return;
+      }
+      
+      // Normalize gender field to lowercase if present (backend expects lowercase enum values)
+      if (key === 'gender' && typeof value === 'string') {
+        value = value.toLowerCase();
+        console.log(`📝 [updateProfile] Normalized gender to lowercase: ${value}`);
+      }
+      
+      normalizedData[key] = value;
+    });
+    
+    console.log('📋 [updateProfile] Cleaned data keys:', Object.keys(normalizedData));
     
     const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, normalizedData);
     console.log('✅ [updateProfile] Response received:', response.status);

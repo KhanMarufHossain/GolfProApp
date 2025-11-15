@@ -7,7 +7,7 @@ import { authService } from '../../services/authService';
 
 export default function VerifyCodeScreen({ navigation, route }) {
   const { email } = route.params || {};
-  const [otp, setOtp] = useState(['', '', '', '', '', '']); // Already 6 elements
+  const [otp, setOtp] = useState(['', '', '', '']); // 4-digit OTP
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef([]);
 
@@ -19,8 +19,8 @@ export default function VerifyCodeScreen({ navigation, route }) {
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Auto-focus next input (now up to index 5)
-    if (value && index < 5) {
+    // Auto-focus next input (now up to index 3 for 4-digit OTP)
+    if (value && index < 3) {
       inputRefs.current[index + 1]?.focus();
     }
   }, [otp]);
@@ -34,8 +34,8 @@ export default function VerifyCodeScreen({ navigation, route }) {
   const handleVerifyOtp = useCallback(async () => {
     const otpCode = otp.join('');
 
-    if (otpCode.length !== 6) {
-      Alert.alert('Error', 'Please enter a complete 6-digit OTP');
+    if (otpCode.length !== 4) {
+      Alert.alert('Error', 'Please enter a complete 4-digit OTP');
       return;
     }
 
@@ -57,7 +57,7 @@ export default function VerifyCodeScreen({ navigation, route }) {
         ]);
       } else {
         Alert.alert('Error', result.message || 'Invalid OTP');
-        setOtp(['', '', '', '', '', '']);
+        setOtp(['', '', '', '']);
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
@@ -80,7 +80,7 @@ export default function VerifyCodeScreen({ navigation, route }) {
 
       if (result.success) {
         Alert.alert('Success', result.message || 'OTP resent to your email');
-        setOtp(['', '', '', '', '', '']); // Fix: Reset to 6 elements
+        setOtp(['', '', '', '']); // Reset to 4-digit OTP
         inputRefs.current[0]?.focus();
       } else {
         Alert.alert('Error', result.message || 'Failed to resend OTP');
@@ -111,7 +111,7 @@ export default function VerifyCodeScreen({ navigation, route }) {
           <Text style={{ fontWeight: 'bold' }}>{email}</Text>. Enter the code below to verify
         </Text>
         <View style={styles.codeRow}>
-          {[0, 1, 2, 3, 4, 5].map((index) => (  // Fix: Map over 6 indices
+          {[0, 1, 2, 3].map((index) => (  // 4-digit OTP
             <TextInput
               key={index}
               ref={(ref) => (inputRefs.current[index] = ref)}

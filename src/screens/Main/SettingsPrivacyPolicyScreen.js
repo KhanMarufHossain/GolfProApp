@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
+import { getProfile } from '../../services/profileService';
 
 export default function SettingsPrivacyPolicyScreen({ navigation }) {
+  const [refreshKey, setRefreshKey] = React.useState(0);
+
+  // Refresh callback to be passed to child screens
+  const handleRefresh = useCallback(async () => {
+    console.log('🔄 [SettingsPrivacyPolicy] Triggering refresh');
+    setRefreshKey(prev => prev + 1);
+    // This will cause all parent screens to refresh when they gain focus
+  }, []);
+
   const Row = ({ title, onPress }) => (
     <TouchableOpacity onPress={onPress} style={styles.row}>
       <Text style={styles.rowTitle}>{title}</Text>
@@ -20,9 +31,9 @@ export default function SettingsPrivacyPolicyScreen({ navigation }) {
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.box}>
-          <Row title="Edit Avatar" onPress={() => navigation.navigate('SettingsEditAvatar')} />
+          <Row title="Edit Avatar" onPress={() => navigation.navigate('SettingsEditAvatar', { onRefresh: handleRefresh })} />
           <View style={styles.divider} />
-          <Row title="Edit Cover" onPress={() => navigation.navigate('SettingsEditCover')} />
+          <Row title="Edit Cover" onPress={() => navigation.navigate('SettingsEditCover', { onRefresh: handleRefresh })} />
           <View style={styles.divider} />
           <Row title="Personal Information" onPress={() => navigation.navigate('SettingsPersonalInfo')} />
           <View style={styles.divider} />
