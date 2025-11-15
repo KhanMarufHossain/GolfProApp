@@ -1,5 +1,5 @@
 // Base URL configuration - Update this as needed during testing phase
-export const BASE_URL = 'https://buyer-filename-measured-innocent.trycloudflare.com/api/v1';
+export const BASE_URL = 'http://192.168.0.107:5050/api/v1';
 
 // API Endpoints
 export const API_ENDPOINTS = {
@@ -11,5 +11,9 @@ export const API_ENDPOINTS = {
     SET_PASSWORD: '/auth/set-password',
     SEND_OTP: '/auth/send-otp',
     VERIFY_OTP: '/auth/verify-otp',
+  },
+  PROFILE: {
+    GET_MY_PROFILE: '/golfer/get-my-profile',
+    UPDATE_PROFILE: '/golfer/update-profile',
   },
 };

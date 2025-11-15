@@ -22,49 +22,58 @@ export default function ProfileHomeScreen({ navigation }) {
   }, []);
 
   const loadProfile = async () => {
-    // Mock data for golfer profile
-    const mockProfile = {
-      name: "John Smith",
-      handicap: "15.2",
-      location: "San Diego, CA",
-      bio: "Golf enthusiast who loves to play and improve every day. Always looking for new courses to explore and connect with fellow golfers!",
-      coverImage: require('../../../../assets/golfField.png'),
-      avatar: require('../../../../assets/man.png'),
-      stats: {
-        rounds: "127",
-        followers: "234",
-        following: "156"
-      },
-      posts: [
-        {
-          id: 1,
-          content: "Great round at Torrey Pines today! Shot my personal best of 76!",
-          image: require('../../../../assets/coursepreview.png'),
-          likes: 23,
-          comments: 8,
-          time: "2 hours ago"
-        },
-        {
-          id: 2,
-          content: "Working on my short game at the practice facility.",
-          likes: 15,
-          comments: 4,
-          time: "1 day ago"
-        }
-      ],
-      recentRounds: [
-        { id: 1, course: "Torrey Pines", date: "Sept 8, 2024", score: "82", par: 72 },
-        { id: 2, course: "Pebble Beach", date: "Sept 5, 2024", score: "76", par: 72 },
-        { id: 3, course: "Augusta National", date: "Sept 1, 2024", score: "88", par: 72 },
-      ],
-      stats_detailed: {
-        averageScore: "82.4",
-        bestRound: "76",
-        totalRounds: "127",
-        handicapTrend: "↓ 0.3"
+    try {
+      console.log('🔵 [NewProfileHomeScreen] Starting to load profile');
+      const response = await getProfile();
+      console.log('📊 [NewProfileHomeScreen] getProfile response:', { ok: response.ok, hasData: !!response.data });
+      
+      if (response.ok && response.data) {
+        const backendProfile = response.data;
+        console.log('📋 [NewProfileHomeScreen] Backend profile received:', JSON.stringify(backendProfile, null, 2));
+        
+        const profile = {
+          _id: backendProfile._id,
+          fullName: backendProfile.fullName,
+          email: backendProfile.email,
+          handicap: backendProfile.userId?.handicapIndex || "N/A",
+          location: backendProfile.city || "Not specified",
+          gender: backendProfile.gender,
+          dateOfBirth: backendProfile.dateOfBirth,
+          country: backendProfile.country,
+          address: backendProfile.address,
+          ghinNumber: backendProfile.ghinNumber,
+          isProfilePublic: backendProfile.isProfilePublic,
+          isActive: backendProfile.isActive,
+          isOnline: backendProfile.isOnline,
+          lastActiveAt: backendProfile.lastActiveAt,
+          createdAt: backendProfile.createdAt,
+          updatedAt: backendProfile.updatedAt,
+          clubId: backendProfile.clubId || [],
+          isLocationSharingEnabled: backendProfile.isLocationSharingEnabled,
+          coverImage: backendProfile.coverImage || require('../../../../assets/golfField.png'),
+          profileImage: backendProfile.profileImage || require('../../../../assets/man.png'),
+          stats: {
+            rounds: "0",
+            followers: "0",
+            following: "0"
+          },
+          posts: [],
+          recentRounds: [],
+          stats_detailed: {
+            averageScore: "N/A",
+            bestRound: "N/A",
+            totalRounds: "0",
+            handicapTrend: "N/A"
+          }
+        };
+        console.log('✅ [NewProfileHomeScreen] Mapped profile:', JSON.stringify(profile, null, 2));
+        setProfile(profile);
+      } else {
+        console.log('❌ [NewProfileHomeScreen] Response not ok or no data:', response);
       }
-    };
-    setProfile(mockProfile);
+    } catch (error) {
+      console.error('🔴 [NewProfileHomeScreen] Failed to load profile:', error);
+    }
   };
 
   if (!profile) return null;
@@ -75,9 +84,9 @@ export default function ProfileHomeScreen({ navigation }) {
       
       <View style={styles.profileInfo}>
         <View style={styles.avatarContainer}>
-          <Image source={profile.avatar} style={styles.avatar} />
+          <Image source={profile.profileImage} style={styles.avatar} />
           <View style={styles.profileDetails}>
-            <Text style={styles.playerName}>{profile.name}</Text>
+            <Text style={styles.playerName}>{profile.fullName}</Text>
             <Text style={styles.handicapLocation}>HCP {profile.handicap} • {profile.location}</Text>
           </View>
           <TouchableOpacity 
@@ -166,9 +175,9 @@ export default function ProfileHomeScreen({ navigation }) {
   const renderPost = ({ item }) => (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
-        <Image source={profile.avatar} style={styles.postAvatar} />
+        <Image source={profile.profileImage} style={styles.postAvatar} />
         <View style={styles.postUserInfo}>
-          <Text style={styles.postUserName}>{profile.name}</Text>
+          <Text style={styles.postUserName}>{profile.fullName}</Text>
           <Text style={styles.postTime}>{item.time}</Text>
         </View>
       </View>

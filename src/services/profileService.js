@@ -1,54 +1,53 @@
-// Profile service with dummy data.
-let _profile = {
-  id: 'me',
-  name: 'John Blake',
-  handicap: 9.2,
-  location: 'Washington, DC',
-  avatar: require('../../assets/man.png'),
-  cover: require('../../assets/golffield1.jpg'),
-  bio: 'Weekend golfer. Love short game practice.',
-  followers: 128,
-  following: 87,
-  rounds: 42,
-  badges: [
-    { id: 'b1', label: 'Ace' },
-    { id: 'b2', label: 'Birdie x10' },
-    { id: 'b3', label: 'Eagle' },
-  ],
-  recentCourses: [
-    { id: 'c1', name: 'East Potomac GC', image: require('../../assets/golfField.png') },
-    { id: 'c2', name: 'Langston', image: require('../../assets/golfField.png') },
-  ],
-};
-
-let _posts = [
-  {
-    id: 'pp1',
-    user: { id: 'me', name: _profile.name, avatar: _profile.avatar },
-    text: 'Personal best today! 78! 🎉',
-    image: require('../../assets/golfField.png'),
-    likes: 23,
-    liked: false,
-    comments: [],
-  },
-];
+import apiClient from '../utils/apiClient';
+import { API_ENDPOINTS } from '../config/api';
 
 export async function getProfile() {
-  return { ok: true, data: JSON.parse(JSON.stringify(_profile)) };
+  try {
+    console.log('🔵 [getProfile] Fetching profile from:', API_ENDPOINTS.PROFILE.GET_MY_PROFILE);
+    const response = await apiClient.get(API_ENDPOINTS.PROFILE.GET_MY_PROFILE);
+    
+    console.log('🟢 [getProfile] API Response received');
+    console.log('📊 [getProfile] Response status:', response.status);
+    console.log('📋 [getProfile] Response data:', JSON.stringify(response.data, null, 2));
+    console.log('🔑 [getProfile] Response keys:', Object.keys(response.data || {}));
+    
+    // The API returns the profile object directly
+    if (response.data && response.data._id) {
+      console.log('✅ [getProfile] Profile valid, returning data');
+      return { ok: true, data: response.data };
+    }
+    console.log('❌ [getProfile] Profile invalid, no _id found');
+    return { ok: false, data: null };
+  } catch (error) {
+    console.error('🔴 [getProfile] Error:', error.message);
+    console.error('🔴 [getProfile] Full error:', error);
+    if (error.response) {
+      console.error('🔴 [getProfile] Response status:', error.response.status);
+      console.error('🔴 [getProfile] Response data:', error.response.data);
+    }
+    return { ok: false, data: null };
+  }
 }
 
 export async function updateProfile(patch) {
-  _profile = { ..._profile, ...patch };
-  return { ok: true, data: JSON.parse(JSON.stringify(_profile)) };
+  try {
+    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, patch);
+    if (response.data && response.data.success) {
+      return { ok: true, data: response.data.data };
+    }
+    return { ok: false, data: null };
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    return { ok: false, data: null };
+  }
 }
 
 export async function getMyPosts() {
-  return { ok: true, data: JSON.parse(JSON.stringify(_posts)) };
+  // This endpoint is not available in the current API, using empty array for now
+  return { ok: true, data: [] };
 }
 
 export async function getMyScorecards() {
-  return { ok: true, data: [
-    { id: 'r1', course: 'East Potomac', date: new Date().toISOString(), gross: 82, net: 78 },
-    { id: 'r2', course: 'Langston', date: new Date().toISOString(), gross: 85, net: 80 },
-  ] };
+  // This endpoint is not available in the current API, using empty array for now
+  return { ok: true, data: [] };
 }

@@ -12,11 +12,38 @@ import {
 } from 'react-native';
 import { colors, radius } from '../../../utils/theme';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
+import { getProfile } from '../../../services/profileService';
 
 export default function FollowersScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Followers');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      console.log('🔵 [FollowersScreen] Loading profile from backend');
+      setLoading(true);
+      const response = await getProfile();
+      console.log('📊 [FollowersScreen] Profile response:', { ok: response.ok, hasData: !!response.data });
+      
+      if (response.ok && response.data) {
+        console.log('📋 [FollowersScreen] Profile data:', JSON.stringify(response.data, null, 2));
+        setProfile(response.data);
+        console.log('✅ [FollowersScreen] Profile loaded');
+      } else {
+        console.log('❌ [FollowersScreen] Failed to load profile');
+      }
+    } catch (error) {
+      console.error('🔴 [FollowersScreen] Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Mock data - in real app, this would come from an API
   const mockFollowers = Array.from({ length: 12 }).map((_, i) => ({

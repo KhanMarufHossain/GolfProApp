@@ -9,7 +9,7 @@ import {
   Image,
   ActivityIndicator 
 } from 'react-native';
-import { getMyScorecards } from '../../../services/profileService';
+import { getMyScorecards, getProfile } from '../../../services/profileService';
 import { colors, radius } from '../../../utils/theme';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 
@@ -17,10 +17,30 @@ export default function ScorecardsScreen({ navigation }) {
   const [scorecards, setScorecards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
+    loadProfile();
     loadScorecards();
   }, []);
+
+  const loadProfile = async () => {
+    try {
+      console.log('🔵 [ScorecardsScreen] Loading profile from backend');
+      const response = await getProfile();
+      console.log('📊 [ScorecardsScreen] Profile response:', { ok: response.ok, hasData: !!response.data });
+      
+      if (response.ok && response.data) {
+        console.log('📋 [ScorecardsScreen] Profile data:', JSON.stringify(response.data, null, 2));
+        setProfile(response.data);
+        console.log('✅ [ScorecardsScreen] Profile loaded');
+      } else {
+        console.log('❌ [ScorecardsScreen] Failed to load profile');
+      }
+    } catch (error) {
+      console.error('🔴 [ScorecardsScreen] Error loading profile:', error);
+    }
+  };
 
   const loadScorecards = async () => {
     setLoading(true);

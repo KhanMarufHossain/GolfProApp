@@ -31,20 +31,34 @@ export default function EditProfileScreen({ navigation, route }) {
 
   const loadProfile = async () => {
     try {
+      console.log('🔵 [EditProfileScreen] Loading profile from backend');
       const p = await getProfile();
-      if (p.ok) {
+      console.log('📊 [EditProfileScreen] Profile response:', { ok: p.ok, hasData: !!p.data });
+      
+      if (p.ok && p.data) {
+        console.log('📋 [EditProfileScreen] Profile data:', JSON.stringify(p.data, null, 2));
         setForm({ 
-          name: p.data.name || '', 
-          location: p.data.location || '', 
+          name: p.data.fullName || '', 
+          location: p.data.city || '', 
           bio: p.data.bio || '',
-          handicap: p.data.handicap || '',
+          handicap: p.data.userId?.handicapIndex || '',
           phone: p.data.phone || '',
-          email: p.data.email || ''
+          email: p.data.email || '',
+          gender: p.data.gender || '',
+          dateOfBirth: p.data.dateOfBirth || '',
+          country: p.data.country || '',
+          address: p.data.address || '',
+          ghinNumber: p.data.ghinNumber || '',
+          isProfilePublic: p.data.isProfilePublic,
+          isActive: p.data.isActive,
+          isOnline: p.data.isOnline,
         });
+        console.log('✅ [EditProfileScreen] Form populated with profile data');
+      } else {
+        console.log('❌ [EditProfileScreen] Failed to load profile');
       }
     } catch (error) {
-      // Handle error gracefully
-      console.error('Failed to load profile:', error);
+      console.error('🔴 [EditProfileScreen] Error loading profile:', error);
     }
   };
 

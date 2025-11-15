@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { 
   View, 
@@ -12,9 +12,11 @@ import {
 import { colors, radius } from '../../../utils/theme';
 import { horizontalScale, verticalScale, moderateScale } from '../../../utils/dimensions';
 import { useUser } from '../../../context/UserContext';
+import { getProfile } from '../../../services/profileService';
 
 export default function ProfileSettingsScreen({ navigation }) {
   const { logout } = useUser();
+  const [profile, setProfile] = useState(null);
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: true,
@@ -25,6 +27,34 @@ export default function ProfileSettingsScreen({ navigation }) {
     darkMode: false,
     autoSync: true,
   });
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      console.log('🔵 [ProfileSettingsScreen] Loading profile from backend');
+      const response = await getProfile();
+      console.log('📊 [ProfileSettingsScreen] Profile response:', { ok: response.ok, hasData: !!response.data });
+      
+      if (response.ok && response.data) {
+        console.log('📋 [ProfileSettingsScreen] Profile data:', JSON.stringify(response.data, null, 2));
+        setProfile(response.data);
+        // Update settings based on profile
+        setSettings(prev => ({
+          ...prev,
+          privateProfile: !response.data.isProfilePublic,
+          allowMessages: response.data.isLocationSharingEnabled,
+        }));
+        console.log('✅ [ProfileSettingsScreen] Settings updated');
+      } else {
+        console.log('❌ [ProfileSettingsScreen] Failed to load profile');
+      }
+    } catch (error) {
+      console.error('🔴 [ProfileSettingsScreen] Error loading profile:', error);
+    }
+  };
 
   const updateSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));

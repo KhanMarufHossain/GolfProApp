@@ -18,6 +18,7 @@ import OverflowMenu from '../../../components/OverflowMenu';
 import PostCard from '../../../components/PostCard';
 import { fetchFeed, likePost } from '../../../services/communityService';
 import { useUser } from '../../../context/UserContext';
+import { getProfile } from '../../../services/profileService';
 
 const ProfileHomeScreen = ({ navigation }) => {
   const { userType } = useUser();
@@ -27,6 +28,8 @@ const ProfileHomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('feed'); // 'feed' | 'friends' | 'messages' | 'requests' | 'members'
+  const [backendProfile, setBackendProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
   
   const [friendRequests, setFriendRequests] = useState([
     { id: 'fr1', name: 'Nick Blake', avatar: require('../../../../assets/man.png'), hcp: 17, status: 'pending' },
@@ -62,9 +65,31 @@ const ProfileHomeScreen = ({ navigation }) => {
     setLoading(false);
   }, []);
 
+  // Load user profile from backend
+  const loadProfile = useCallback(async () => {
+    try {
+      console.log('🔵 [ProfileHomeScreen] Loading profile from backend');
+      setProfileLoading(true);
+      const response = await getProfile();
+      console.log('📊 [ProfileHomeScreen] Profile response:', { ok: response.ok, hasData: !!response.data });
+      
+      if (response.ok && response.data) {
+        console.log('📋 [ProfileHomeScreen] Profile data received:', JSON.stringify(response.data, null, 2));
+        setBackendProfile(response.data);
+      } else {
+        console.log('❌ [ProfileHomeScreen] Failed to load profile:', response);
+      }
+    } catch (error) {
+      console.error('🔴 [ProfileHomeScreen] Error loading profile:', error);
+    } finally {
+      setProfileLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
+    loadProfile();
     loadFeed();
-  }, [loadFeed]);
+  }, [loadProfile, loadFeed]);
 
   const onLike = async (id) => {
     const res = await likePost(id);
@@ -73,7 +98,37 @@ const ProfileHomeScreen = ({ navigation }) => {
     }
   };
 
-  const profile = isClub
+  // Use backend profile if available, otherwise use dummy data
+  const profile = backendProfile
+    ? {
+        _id: backendProfile._id,
+        name: backendProfile.fullName || 'User',
+        email: backendProfile.email,
+        location: backendProfile.city || 'Not specified',
+        avatar: backendProfile.profileImage || require('../../../../assets/man.png'),
+        coverImage: backendProfile.coverImage || require('../../../../assets/golffield1.jpg'),
+        gender: backendProfile.gender,
+        dateOfBirth: backendProfile.dateOfBirth,
+        country: backendProfile.country,
+        address: backendProfile.address,
+        ghinNumber: backendProfile.ghinNumber,
+        isProfilePublic: backendProfile.isProfilePublic,
+        isActive: backendProfile.isActive,
+        isOnline: backendProfile.isOnline,
+        lastActiveAt: backendProfile.lastActiveAt,
+        createdAt: backendProfile.createdAt,
+        updatedAt: backendProfile.updatedAt,
+        clubId: backendProfile.clubId || [],
+        isLocationSharingEnabled: backendProfile.isLocationSharingEnabled,
+        stats: {
+          hp: backendProfile.userId?.handicapIndex || 'N/A',
+          friends: '0',
+          clubMembers: String(backendProfile.clubId?.length || 0),
+          coursePlayed: '0'
+        },
+        rank: 'N/A',
+      }
+    : isClub
     ? {
         name: 'Steelwood Golf Club',
         location: 'Kansas US',
