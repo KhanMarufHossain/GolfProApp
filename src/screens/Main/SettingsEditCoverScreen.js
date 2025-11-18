@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Ima
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfile, getProfile } from '../../services/profileService';
+import { updateProfile } from '../../services/profileService';
 
 export default function SettingsEditCoverScreen({ navigation, route }) {
   const [image, setImage] = useState(null);
@@ -42,16 +42,19 @@ export default function SettingsEditCoverScreen({ navigation, route }) {
   const uploadCoverImage = async (selectedImage) => {
     try {
       console.log('🔵 [SettingsEditCoverScreen] Uploading cover image');
+      console.log('📋 [SettingsEditCoverScreen] Image URI:', selectedImage.uri);
       setUploading(true);
 
-      const formData = new FormData();
-      formData.append('coverImage', {
-        uri: selectedImage.uri,
-        type: 'image/jpeg',
-        name: `cover-${Date.now()}.jpg`,
-      });
+      const uriParts = selectedImage.uri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
 
-      const response = await updateProfile(formData);
+      const response = await updateProfile({
+        coverImage: {
+          uri: selectedImage.uri,
+          type: selectedImage.type || `image/${fileType}` || 'image/jpeg',
+          name: selectedImage.fileName || `cover-${Date.now()}.${fileType || 'jpg'}`,
+        },
+      });
       console.log('📊 [SettingsEditCoverScreen] Upload response:', { ok: response.ok, message: response.message });
 
       if (response.ok) {

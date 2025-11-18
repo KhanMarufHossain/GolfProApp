@@ -9,11 +9,9 @@ import NotificationsScreen from './NotificationsScreen';
 import SettingsScreen from './SettingsScreen';
 import SettingsPrivacyPolicyScreen from './SettingsPrivacyPolicyScreen';
 import SettingsEditProfileScreen from './SettingsEditProfileScreen';
-import SettingsPersonalInfoScreen from './SettingsPersonalInfoScreen';
 import SettingsEditAvatarScreen from './SettingsEditAvatarScreen';
 import SettingsEditCoverScreen from './SettingsEditCoverScreen';
 import SettingsChangePasswordScreen from './SettingsChangePasswordScreen';
-import SettingsProfileDetailsScreen from './SettingsProfileDetailsScreen';
 import SettingsPhoneScreen from './SettingsPhoneScreen';
 import SettingsPhotosScreen from './SettingsPhotosScreen';
 import LeaderboardScreen from './LeaderboardScreen';
@@ -41,11 +39,9 @@ export default function PlayStack() {
       <Stack.Screen name="Settings" component={SettingsScreen} />
   <Stack.Screen name="SettingsPrivacyPolicy" component={SettingsPrivacyPolicyScreen} />
   <Stack.Screen name="SettingsEditProfile" component={SettingsEditProfileScreen} />
-  <Stack.Screen name="SettingsPersonalInfo" component={SettingsPersonalInfoScreen} />
   <Stack.Screen name="SettingsEditAvatar" component={SettingsEditAvatarScreen} />
   <Stack.Screen name="SettingsEditCover" component={SettingsEditCoverScreen} />
   <Stack.Screen name="SettingsChangePassword" component={SettingsChangePasswordScreen} />
-  <Stack.Screen name="SettingsProfileDetails" component={SettingsProfileDetailsScreen} />
   <Stack.Screen name="SettingsPhone" component={SettingsPhoneScreen} />
   <Stack.Screen name="SettingsPhotos" component={SettingsPhotosScreen} />
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />

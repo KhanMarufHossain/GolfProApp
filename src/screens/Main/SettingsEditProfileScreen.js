@@ -13,7 +13,9 @@ export default function SettingsEditProfileScreen({ navigation }) {
     country: '',
     city: '',
     address: '',
+    ghinNumber: '',
   });
+  const [profileData, setProfileData] = useState(null); // Store full profile data
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -29,14 +31,24 @@ export default function SettingsEditProfileScreen({ navigation }) {
       
       if (response.ok && response.data) {
         console.log('✅ [SettingsEditProfileScreen] Profile loaded');
+        setProfileData(response.data); // Store full profile data
+        
+        // Format date for display (convert from ISO to YYYY-MM-DD)
+        let formattedDate = '';
+        if (response.data.dateOfBirth) {
+          const date = new Date(response.data.dateOfBirth);
+          formattedDate = date.toISOString().split('T')[0];
+        }
+        
         setForm({
           fullName: response.data.fullName || '',
-          email: response.data.email || '',
+          email: response.data.userId?.email || response.data.email || '',
           gender: response.data.gender || '',
-          dateOfBirth: response.data.dateOfBirth || '',
+          dateOfBirth: formattedDate,
           country: response.data.country || '',
           city: response.data.city || '',
           address: response.data.address || '',
+          ghinNumber: response.data.ghinNumber || '',
         });
       } else {
         console.log('❌ [SettingsEditProfileScreen] Failed to load profile');
@@ -56,17 +68,31 @@ export default function SettingsEditProfileScreen({ navigation }) {
       return;
     }
 
+    // Validate date format if provided
+    if (form.dateOfBirth && !form.dateOfBirth.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      Alert.alert('Error', 'Date of Birth must be in YYYY-MM-DD format');
+      return;
+    }
+
     try {
       console.log('🔵 [SettingsEditProfileScreen] Saving profile');
       setSaving(true);
-      const response = await updateProfile({
+      
+      const updateData = {
         fullName: form.fullName,
         gender: form.gender,
         dateOfBirth: form.dateOfBirth,
         country: form.country,
         city: form.city,
         address: form.address,
-      });
+      };
+      
+      // Only include ghinNumber if it has a value
+      if (form.ghinNumber && form.ghinNumber.trim()) {
+        updateData.ghinNumber = form.ghinNumber;
+      }
+      
+      const response = await updateProfile(updateData);
 
       if (response.ok) {
         console.log('✅ [SettingsEditProfileScreen] Profile saved');
@@ -117,20 +143,35 @@ export default function SettingsEditProfileScreen({ navigation }) {
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.box}>
-          <Field label="Full Name" value={form.fullName} onChangeText={(t) => setForm({ ...form, fullName: t })} />
+          <Field label="Full Name" value={form.fullName} onChangeText={(t) => setForm({ ...form, fullName: t })} placeholder="Enter your full name" />
           <View style={styles.divider} />
           <Field label="Email" value={form.email} editable={false} placeholder="Email (read-only)" />
           <View style={styles.divider} />
-          <Field label="Gender" value={form.gender} onChangeText={(t) => setForm({ ...form, gender: t })} placeholder="e.g., Male, Female" />
+          <Field label="Gender" value={form.gender} onChangeText={(t) => setForm({ ...form, gender: t })} placeholder="male, female, or other" />
           <View style={styles.divider} />
           <Field label="Date of Birth" value={form.dateOfBirth} onChangeText={(t) => setForm({ ...form, dateOfBirth: t })} placeholder="YYYY-MM-DD" />
           <View style={styles.divider} />
-          <Field label="Country" value={form.country} onChangeText={(t) => setForm({ ...form, country: t })} placeholder="e.g., USA" />
+          <Field label="Country" value={form.country} onChangeText={(t) => setForm({ ...form, country: t })} placeholder="e.g., USA, Bangladesh" />
           <View style={styles.divider} />
-          <Field label="City" value={form.city} onChangeText={(t) => setForm({ ...form, city: t })} placeholder="e.g., Kansas" />
+          <Field label="City" value={form.city} onChangeText={(t) => setForm({ ...form, city: t })} placeholder="e.g., Kansas, Dhaka" />
           <View style={styles.divider} />
-          <Field label="Address" value={form.address} onChangeText={(t) => setForm({ ...form, address: t })} placeholder="Full address" />
+          <Field label="Address" value={form.address} onChangeText={(t) => setForm({ ...form, address: t })} placeholder="Full address (optional)" />
+          <View style={styles.divider} />
+          <Field label="GHIN Number" value={form.ghinNumber} onChangeText={(t) => setForm({ ...form, ghinNumber: t })} placeholder="GHIN Number (optional)" />
         </View>
+        
+        {profileData && (
+          <View style={styles.infoBox}>
+            <Text style={styles.infoTitle}>Additional Profile Info</Text>
+            <Text style={styles.infoText}>Profile Public: {profileData.isProfilePublic ? 'Yes' : 'No'}</Text>
+            <Text style={styles.infoText}>Location Sharing: {profileData.isLocationSharingEnabled ? 'Enabled' : 'Disabled'}</Text>
+            <Text style={styles.infoText}>Handicap Index: {profileData.userId?.handicapIndex || 'N/A'}</Text>
+            {profileData.clubId && profileData.clubId.length > 0 && (
+              <Text style={styles.infoText}>Clubs: {profileData.clubId.length} club(s)</Text>
+            )}
+          </View>
+        )}
+        
         <TouchableOpacity 
           style={[styles.primaryBtn, saving && styles.primaryBtnDisabled]} 
           onPress={handleSave}
@@ -163,4 +204,7 @@ const styles = StyleSheet.create({
   primaryBtnDisabled: { opacity: 0.6 },
   primaryTxt: { color: '#fff', fontWeight: '700' },
   inputDisabled: { opacity: 0.6 },
+  infoBox: { marginTop: vs(16), backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, padding: hs(16) },
+  infoTitle: { fontSize: ms(14), fontWeight: '700', color: colors.text, marginBottom: vs(8) },
+  infoText: { fontSize: ms(12), color: colors.textMute, marginBottom: vs(4) },
 });

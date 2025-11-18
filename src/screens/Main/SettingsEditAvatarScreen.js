@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Ima
 import { colors, radius } from '../../utils/theme';
 import { horizontalScale as hs, verticalScale as vs, moderateScale as ms, verticalScale } from '../../utils/dimensions';
 import * as ImagePicker from 'expo-image-picker';
-import { updateProfile, getProfile } from '../../services/profileService';
+import { updateProfile } from '../../services/profileService';
 
 export default function SettingsEditAvatarScreen({ navigation, route }) {
   const [image, setImage] = useState(null);
@@ -42,16 +42,19 @@ export default function SettingsEditAvatarScreen({ navigation, route }) {
   const uploadProfileImage = async (selectedImage) => {
     try {
       console.log('🔵 [SettingsEditAvatarScreen] Uploading profile image');
+      console.log('📋 [SettingsEditAvatarScreen] Image URI:', selectedImage.uri);
       setUploading(true);
 
-      const formData = new FormData();
-      formData.append('profileImage', {
-        uri: selectedImage.uri,
-        type: 'image/jpeg',
-        name: `profile-${Date.now()}.jpg`,
-      });
+      const uriParts = selectedImage.uri.split('.');
+      const fileType = uriParts[uriParts.length - 1];
 
-      const response = await updateProfile(formData);
+      const response = await updateProfile({
+        profileImage: {
+          uri: selectedImage.uri,
+          type: selectedImage.type || `image/${fileType}` || 'image/jpeg',
+          name: selectedImage.fileName || `profile-${Date.now()}.${fileType || 'jpg'}`,
+        },
+      });
       console.log('📊 [SettingsEditAvatarScreen] Upload response:', { ok: response.ok, message: response.message });
 
       if (response.ok) {

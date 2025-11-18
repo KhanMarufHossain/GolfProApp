@@ -34,17 +34,35 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+   
+    
+    console.log(`🌐 [apiClient] ${config.method?.toUpperCase()} ${config.url}`);
+    console.log(`🔑 [apiClient] Has auth token: ${!!token}`);
+    console.log(`📦 [apiClient] Data type: ${config.data instanceof FormData ? 'FormData' : typeof config.data}`);
+    
     return config;
   },
   (error) => {
+    console.error('🔴 [apiClient] Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
 
 // Response interceptor to handle token refresh
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`✅ [apiClient] ${response.config.method?.toUpperCase()} ${response.config.url} - Status: ${response.status}`);
+    return response;
+  },
   async (error) => {
+    console.error('🔴 [apiClient] Response error:', {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    
     const originalRequest = error.config;
 
     // If error is 401 and we haven't tried to refresh yet

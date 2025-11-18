@@ -10,11 +10,9 @@ import NotificationsScreen from './src/screens/Main/NotificationsScreen';
 import SettingsScreen from './src/screens/Main/SettingsScreen';
 import SettingsPrivacyPolicyScreen from './src/screens/Main/SettingsPrivacyPolicyScreen';
 import SettingsEditProfileScreen from './src/screens/Main/SettingsEditProfileScreen';
-import SettingsPersonalInfoScreen from './src/screens/Main/SettingsPersonalInfoScreen';
 import SettingsEditAvatarScreen from './src/screens/Main/SettingsEditAvatarScreen';
 import SettingsEditCoverScreen from './src/screens/Main/SettingsEditCoverScreen';
 import SettingsChangePasswordScreen from './src/screens/Main/SettingsChangePasswordScreen';
-import SettingsProfileDetailsScreen from './src/screens/Main/SettingsProfileDetailsScreen';
 import SettingsPhoneScreen from './src/screens/Main/SettingsPhoneScreen';
 import SettingsPhotosScreen from './src/screens/Main/SettingsPhotosScreen';
 
@@ -41,11 +39,9 @@ function RootNavigator() {
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="SettingsPrivacyPolicy" component={SettingsPrivacyPolicyScreen} />
           <Stack.Screen name="SettingsEditProfile" component={SettingsEditProfileScreen} />
-          <Stack.Screen name="SettingsPersonalInfo" component={SettingsPersonalInfoScreen} />
           <Stack.Screen name="SettingsEditAvatar" component={SettingsEditAvatarScreen} />
           <Stack.Screen name="SettingsEditCover" component={SettingsEditCoverScreen} />
           <Stack.Screen name="SettingsChangePassword" component={SettingsChangePasswordScreen} />
-          <Stack.Screen name="SettingsProfileDetails" component={SettingsProfileDetailsScreen} />
           <Stack.Screen name="SettingsPhone" component={SettingsPhoneScreen} />
           <Stack.Screen name="SettingsPhotos" component={SettingsPhotosScreen} />
         </>

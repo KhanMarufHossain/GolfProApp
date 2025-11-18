@@ -1,5 +1,27 @@
 import apiClient from '../utils/apiClient';
-import { API_ENDPOINTS } from '../config/api';
+import { API_ENDPOINTS, BASE_URL } from '../config/api';
+import { tokenStorage } from '../utils/tokenStorage';
+
+const buildFormDataPayload = (data) => {
+  if (data instanceof FormData) {
+    return data;
+  }
+
+  const formData = new FormData();
+  Object.entries(data || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
+
+    let normalizedValue = value;
+    if (key === 'gender' && typeof value === 'string') {
+      normalizedValue = value.toLowerCase();
+    }
+
+    formData.append(key, normalizedValue);
+  });
+  return formData;
+};
 
 export async function getProfile() {
   try {
@@ -33,61 +55,48 @@ export async function updateProfile(profileData) {
   try {
     console.log('🔵 [updateProfile] Updating profile');
     console.log('📤 [updateProfile] Data type:', profileData instanceof FormData ? 'FormData' : typeof profileData);
-    
-    // If it's FormData (for image uploads), send it directly
-    if (profileData instanceof FormData) {
-      console.log('📤 [updateProfile] Using provided FormData (image upload)');
-      const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, profileData);
-      console.log('✅ [updateProfile] Response received:', response.status);
-      
-      if (response.data && response.data.success) {
-        console.log('✅ [updateProfile] Update successful');
-        return { ok: true, data: response.data.data, message: response.data.message };
-      }
-      console.log('❌ [updateProfile] Update failed - no success in response');
-      return { ok: false, data: null, message: response.data?.message };
+
+    const payload = buildFormDataPayload(profileData);
+
+    if (payload?._parts) {
+      console.log('📋 [updateProfile] FormData parts:', payload._parts.map(([key]) => key));
     }
-    
-    // For regular JSON updates (text fields only), send as JSON
-    console.log('📤 [updateProfile] Sending JSON update');
-    console.log('📋 [updateProfile] Fields:', Object.keys(profileData));
-    
-    // Clean and normalize the data
-    const normalizedData = {};
-    
-    // Only include fields that have values (not empty strings or null)
-    Object.keys(profileData).forEach(key => {
-      let value = profileData[key];
-      
-      // Skip undefined and empty string values
-      if (value === '' || value === undefined) {
-        console.log(`📝 [updateProfile] Skipping empty field: ${key}`);
-        return;
-      }
-      
-      // Normalize gender field to lowercase if present (backend expects lowercase enum values)
-      if (key === 'gender' && typeof value === 'string') {
-        value = value.toLowerCase();
-        console.log(`📝 [updateProfile] Normalized gender to lowercase: ${value}`);
-      }
-      
-      normalizedData[key] = value;
+
+    const token = await tokenStorage.getAccessToken();
+    const headers = { Accept: 'application/json' };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${BASE_URL}${API_ENDPOINTS.PROFILE.UPDATE_PROFILE}`, {
+      method: 'PATCH',
+      headers,
+      body: payload,
     });
-    
-    console.log('📋 [updateProfile] Cleaned data keys:', Object.keys(normalizedData));
-    
-    const response = await apiClient.patch(API_ENDPOINTS.PROFILE.UPDATE_PROFILE, normalizedData);
-    console.log('✅ [updateProfile] Response received:', response.status);
-    
-    if (response.data && response.data.success) {
+
+    const json = await response.json();
+    console.log('✅ [updateProfile] Response status:', response.status);
+
+    if (response.ok && json?.success) {
       console.log('✅ [updateProfile] Update successful');
-      return { ok: true, data: response.data.data, message: response.data.message };
+      return { ok: true, data: json.data, message: json.message };
     }
-    console.log('❌ [updateProfile] Update failed - no success in response');
-    return { ok: false, data: null, message: response.data?.message };
+
+    console.log('❌ [updateProfile] Update failed - backend response indicates error');
+    return { ok: false, data: null, message: json?.message || 'Failed to update profile' };
   } catch (error) {
     console.error('🔴 [updateProfile] Error:', error.message);
     console.error('🔴 [updateProfile] Full error:', error);
+    if (typeof error?.toJSON === 'function') {
+      console.error('🔴 [updateProfile] Error JSON:', error.toJSON());
+    }
+    if (error.request) {
+      console.error('🔴 [updateProfile] Error request info:', {
+        readyState: error.request.readyState,
+        status: error.request.status,
+        responseURL: error.request.responseURL,
+      });
+    }
     if (error.response) {
       console.error('🔴 [updateProfile] Response status:', error.response.status);
       console.error('🔴 [updateProfile] Response data:', error.response.data);

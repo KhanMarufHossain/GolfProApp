@@ -35,7 +35,7 @@ export default function SettingsPrivacyPolicyScreen({ navigation }) {
           <View style={styles.divider} />
           <Row title="Edit Cover" onPress={() => navigation.navigate('SettingsEditCover', { onRefresh: handleRefresh })} />
           <View style={styles.divider} />
-          <Row title="Personal Information" onPress={() => navigation.navigate('SettingsPersonalInfo')} />
+          <Row title="Personal Information" onPress={() => navigation.navigate('SettingsEditProfile')} />
           <View style={styles.divider} />
           <Row title="Edit Profile" onPress={() => navigation.navigate('SettingsEditProfile')} />
           <View style={styles.divider} />
