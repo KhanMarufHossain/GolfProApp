@@ -97,7 +97,7 @@ const buildEventCardModel = (event) => {
     location: formatLocation(event?.clubId),
     date: formatDateDisplay(startDate),
     time: formatTimeDisplay(startTime, startDate),
-    type: event?.eventType || event?.format || event?.eventFormat || "Stroke Play",
+    type: event?.gameFormat|| "Stroke Play",
     joined: isJoined,
     status: isJoined ? "joined" : normalizedStatus,
     baseStatus: normalizedStatus || "upcoming",
