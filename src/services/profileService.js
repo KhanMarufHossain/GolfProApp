@@ -1,6 +1,41 @@
+import { Platform } from 'react-native';
 import apiClient from '../utils/apiClient';
-import { API_ENDPOINTS, BASE_URL } from '../config/api';
-import { tokenStorage } from '../utils/tokenStorage';
+import { API_ENDPOINTS } from '../config/api';
+
+const isFileAsset = (value) => value && typeof value === 'object' && typeof value.uri === 'string';
+
+const getFileExtension = (value) => {
+  const nameCandidate = value?.fileName || value?.name || value?.uri;
+  if (!nameCandidate || typeof nameCandidate !== 'string' || !nameCandidate.includes('.')) {
+    return 'jpg';
+  }
+  const lastChunk = nameCandidate.split('?')[0];
+  return lastChunk.split('.').pop().toLowerCase() || 'jpg';
+};
+
+const normalizeFileAsset = (value) => {
+  if (!isFileAsset(value)) {
+    return value;
+  }
+
+  const extension = getFileExtension(value);
+  const normalizedName = value.fileName || value.name || `upload-${Date.now()}.${extension}`;
+  const providedType = value.mimeType || value.type;
+  const mimeType = providedType && providedType.includes('/')
+    ? providedType
+    : `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+
+  let normalizedUri = value.uri;
+  if (Platform.OS === 'ios' && typeof normalizedUri === 'string' && normalizedUri.startsWith('file://')) {
+    normalizedUri = normalizedUri.replace('file://', '');
+  }
+
+  return {
+    uri: normalizedUri,
+    type: mimeType || 'application/octet-stream',
+    name: normalizedName,
+  };
+};
 
 const buildFormDataPayload = (data) => {
   if (data instanceof FormData) {
@@ -16,6 +51,10 @@ const buildFormDataPayload = (data) => {
     let normalizedValue = value;
     if (key === 'gender' && typeof value === 'string') {
       normalizedValue = value.toLowerCase();
+    }
+
+    if (isFileAsset(normalizedValue)) {
+      normalizedValue = normalizeFileAsset(normalizedValue);
     }
 
     formData.append(key, normalizedValue);
@@ -62,41 +101,29 @@ export async function updateProfile(profileData) {
       console.log('📋 [updateProfile] FormData parts:', payload._parts.map(([key]) => key));
     }
 
-    const token = await tokenStorage.getAccessToken();
-    const headers = { Accept: 'application/json' };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    const headers = payload instanceof FormData
+      ? { 'Content-Type': 'multipart/form-data', Accept: 'application/json' }
+      : { Accept: 'application/json' };
 
-    const response = await fetch(`${BASE_URL}${API_ENDPOINTS.PROFILE.UPDATE_PROFILE}`, {
-      method: 'PATCH',
-      headers,
-      body: payload,
-    });
+    const response = await apiClient.patch(
+      API_ENDPOINTS.PROFILE.UPDATE_PROFILE,
+      payload,
+      { headers }
+    );
 
-    const json = await response.json();
     console.log('✅ [updateProfile] Response status:', response.status);
+    const { data } = response;
 
-    if (response.ok && json?.success) {
+    if (data?.success) {
       console.log('✅ [updateProfile] Update successful');
-      return { ok: true, data: json.data, message: json.message };
+      return { ok: true, data: data.data, message: data.message };
     }
 
     console.log('❌ [updateProfile] Update failed - backend response indicates error');
-    return { ok: false, data: null, message: json?.message || 'Failed to update profile' };
+    return { ok: false, data: null, message: data?.message || 'Failed to update profile' };
   } catch (error) {
     console.error('🔴 [updateProfile] Error:', error.message);
     console.error('🔴 [updateProfile] Full error:', error);
-    if (typeof error?.toJSON === 'function') {
-      console.error('🔴 [updateProfile] Error JSON:', error.toJSON());
-    }
-    if (error.request) {
-      console.error('🔴 [updateProfile] Error request info:', {
-        readyState: error.request.readyState,
-        status: error.request.status,
-        responseURL: error.request.responseURL,
-      });
-    }
     if (error.response) {
       console.error('🔴 [updateProfile] Response status:', error.response.status);
       console.error('🔴 [updateProfile] Response data:', error.response.data);
