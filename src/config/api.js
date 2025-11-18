@@ -1,5 +1,5 @@
 // Base URL configuration - Update this as needed during testing phase
-export const BASE_URL = 'https://tough-students-lot-taxi.trycloudflare.com/api/v1';
+export const BASE_URL = 'https://deviation-squad-rec-safe.trycloudflare.com/api/v1';
 
 // API Endpoints
 export const API_ENDPOINTS = {
