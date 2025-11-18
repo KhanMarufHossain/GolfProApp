@@ -9,6 +9,7 @@ import {
   Image,
   RefreshControl,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
@@ -22,72 +23,88 @@ import PostCard from "../../../components/PostCard";
 import OverflowMenu from "../../../components/OverflowMenu";
 import { fetchFeed, likePost } from "../../../services/communityService";
 import { getProfile } from "../../../services/profileService";
-
-// Temporary mock events – replace with API integration later
-const mockEvents = [
-  {
-    id: "1",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Stroke Play",
-    joined: true,
-    status: "joined",
-  },
-  {
-    id: "2",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Stroke Play",
-    joined: false,
-    status: "upcoming",
-  },
-  {
-    id: "3",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Match Play",
-    joined: false,
-    status: "upcoming",
-  },
-  {
-    id: "4",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Stroke Play",
-    joined: false,
-    status: "active",
-  },
-  {
-    id: "5",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Stroke Play",
-    joined: false,
-    status: "live",
-  },
-  {
-    id: "6",
-    club: "Steelwood Country Club",
-    location: "Location",
-    date: "4 August, 2025",
-    time: "12:00 PM",
-    type: "Stroke Play",
-    joined: false,
-    status: "live",
-  },
-];
+import { fetchEvents } from "../../../services/eventsService";
 
 const FILTERS = ["All", "Match", "Active", "Upcoming", "Finish"];
+
+const normalizeStatus = (status) => {
+  if (!status) return "upcoming";
+  const normalized = status.toString().toLowerCase();
+  if (["in-progress", "ongoing"].includes(normalized)) return "active";
+  if (["completed", "finished", "done"].includes(normalized)) return "finished";
+  return normalized;
+};
+
+const formatDateDisplay = (value) => {
+  if (!value) return "Date TBA";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date TBA";
+  return date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const formatTimeDisplay = (value, fallbackDate) => {
+  if (!value && fallbackDate) {
+    const fallback = new Date(fallbackDate);
+    if (!Number.isNaN(fallback.getTime())) {
+      return fallback.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    }
+  }
+
+  if (value instanceof Date) {
+    return value.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  }
+
+  if (typeof value === "string") {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+    return value;
+  }
+
+  if (typeof value === "number") {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) {
+      return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+  }
+
+  return "Time TBA";
+};
+
+const formatLocation = (club = {}) => {
+  const { city, country } = club;
+  const parts = [city, country].filter(Boolean);
+  return parts.length ? parts.join(", ") : "Location";
+};
+
+const buildEventCardModel = (event) => {
+  const normalizedStatus = normalizeStatus(event?.status);
+  const isJoined = Boolean(event?.isJoined);
+  const startDate = event?.startDate || event?.eventDate || event?.eventStartDate || event?.createdAt;
+  const startTime = event?.startTime || event?.eventTime || startDate;
+
+  return {
+    id: event?._id || event?.id || `${Date.now()}-${Math.random()}`,
+    club: event?.clubId?.clubName || event?.eventName || "Event",
+    location: formatLocation(event?.clubId),
+    date: formatDateDisplay(startDate),
+    time: formatTimeDisplay(startTime, startDate),
+    type: event?.eventType || event?.format || event?.eventFormat || "Stroke Play",
+    joined: isJoined,
+    status: isJoined ? "joined" : normalizedStatus,
+    baseStatus: normalizedStatus || "upcoming",
+    clubImage: event?.clubId?.clubProfileImage,
+    raw: event,
+  };
+};
 
 export default function CommunityHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -95,7 +112,9 @@ export default function CommunityHomeScreen({ navigation }) {
   const [segment, setSegment] = useState("feed");
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [events, setEvents] = useState(mockEvents);
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [eventsError, setEventsError] = useState(null);
   const [filter, setFilter] = useState("All");
   const [menuVisible, setMenuVisible] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -118,7 +137,8 @@ export default function CommunityHomeScreen({ navigation }) {
       console.log('🔵 [CommunityHomeScreen] Screen focused - refreshing profile and feed');
       loadProfile();
       loadFeed();
-    }, [loadProfile])
+      loadEvents();
+    }, [loadProfile, loadFeed, loadEvents])
   );
 
   const loadFeed = useCallback(async () => {
@@ -141,9 +161,34 @@ export default function CommunityHomeScreen({ navigation }) {
     }
   }, []);
 
+  const loadEvents = useCallback(async () => {
+    try {
+      setEventsLoading(true);
+      setEventsError(null);
+      console.log('🔵 [CommunityHomeScreen] Loading events');
+      const res = await fetchEvents();
+      if (res.ok && res.data) {
+        const mappedEvents = res.data.map(buildEventCardModel);
+        console.log('📊 [CommunityHomeScreen] Events loaded:', mappedEvents.length);
+        setEvents(mappedEvents);
+      } else {
+        console.log('❌ [CommunityHomeScreen] Event load failed');
+        setEvents([]);
+        setEventsError(res.message || 'Failed to load events');
+      }
+    } catch (error) {
+      console.error('🔴 [CommunityHomeScreen] Error loading events:', error);
+      setEvents([]);
+      setEventsError(error.message);
+    } finally {
+      setEventsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadFeed();
-  }, [loadFeed]);
+    loadEvents();
+  }, [loadFeed, loadEvents]);
 
   const onLike = async (id) => {
     const res = await likePost(id);
@@ -158,21 +203,31 @@ export default function CommunityHomeScreen({ navigation }) {
           ? {
               ...e,
               joined: !e.joined,
-              status: !e.joined ? "joined" : "upcoming",
+              status: !e.joined ? "joined" : (e.baseStatus || "upcoming"),
             }
           : e
       )
     );
   };
 
-  const filteredEvents = events.filter((e) => {
-    if (filter === "All") return true;
-    if (filter === "Match") return e.type === "Match Play";
-    if (filter === "Active")
-      return e.status === "active" || e.status === "joined";
-    if (filter === "Upcoming") return e.status === "upcoming";
-    if (filter === "Finish") return e.status === "finished";
-    return true;
+  const filteredEvents = events.filter((event) => {
+    const status = event.status?.toLowerCase();
+    const type = event.type?.toLowerCase();
+
+    switch (filter) {
+      case "All":
+        return true;
+      case "Match":
+        return type ? type.includes("match") : false;
+      case "Active":
+        return ["active", "live", "joined"].includes(status);
+      case "Upcoming":
+        return ["upcoming", "scheduled", "pending"].includes(status);
+      case "Finish":
+        return ["finished", "completed", "done", "closed"].includes(status);
+      default:
+        return true;
+    }
   });
 
   const compositeFeed = useMemo(() => {
@@ -350,12 +405,29 @@ export default function CommunityHomeScreen({ navigation }) {
           {/* Event List */}
           <FlatList
             data={filteredEvents}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id?.toString()}
             contentContainerStyle={[
               styles.eventList,
               { paddingBottom: insets.bottom + moderateScale(20) },
             ]}
             showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={eventsLoading} onRefresh={loadEvents} />
+            }
+            ListEmptyComponent={
+              <View style={styles.eventsEmptyState}>
+                {eventsLoading ? (
+                  <ActivityIndicator color={colors.accent} />
+                ) : (
+                  <>
+                    <Text style={styles.eventsEmptyText}>{eventsError || 'No events found at the moment.'}</Text>
+                    <TouchableOpacity style={styles.emptyRetryBtn} onPress={loadEvents}>
+                      <Text style={styles.emptyRetryText}>Reload</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
+            }
             renderItem={({ item }) => (
               <EventCard
                 event={item}
@@ -443,7 +515,11 @@ function EventCard({ event, onToggleJoin, navigation }) {
       <View style={styles.eventHeader}>
         <View style={styles.eventHeaderLeft}>
           <Image
-            source={require("../../../../assets/golfField.png")}
+            source={
+              event.clubImage
+                ? { uri: event.clubImage }
+                : require("../../../../assets/golfField.png")
+            }
             style={styles.clubImage}
           />
           <View style={styles.eventHeaderText}>
@@ -778,6 +854,29 @@ const styles = StyleSheet.create({
   eventList: {
     paddingHorizontal: moderateScale(16),
     paddingTop: moderateScale(8),
+  },
+  eventsEmptyState: {
+    paddingVertical: moderateScale(40),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  eventsEmptyText: {
+    color: colors.textMute,
+    fontSize: moderateScale(13),
+    textAlign: "center",
+    marginBottom: verticalScale(12),
+    paddingHorizontal: horizontalScale(24),
+  },
+  emptyRetryBtn: {
+    paddingHorizontal: horizontalScale(18),
+    paddingVertical: verticalScale(8),
+    borderRadius: moderateScale(8),
+    backgroundColor: "#8B5C2A",
+  },
+  emptyRetryText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: moderateScale(12),
   },
 
   // Event card styles (matching Figma exactly, scaled)

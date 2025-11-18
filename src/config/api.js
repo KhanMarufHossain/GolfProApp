@@ -16,6 +16,9 @@ export const API_ENDPOINTS = {
     GET_MY_PROFILE: '/golfer/get-my-profile',
     UPDATE_PROFILE: '/golfer/update-my-profile',
   },
+  EVENTS: {
+    GET_EVENTS: '/events',
+  },
   POSTS: {
     GET_ALL_POSTS: '/posts/get-all-posts',
     CREATE_POST: '/posts/create-new-post',
