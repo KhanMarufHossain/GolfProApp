@@ -1,5 +1,5 @@
 // Base URL configuration - Update this as needed during testing phase
-export const BASE_URL = 'http://192.168.0.107:5050/api/v1';
+export const BASE_URL = 'https://tough-students-lot-taxi.trycloudflare.com/api/v1';
 
 // API Endpoints
 export const API_ENDPOINTS = {
